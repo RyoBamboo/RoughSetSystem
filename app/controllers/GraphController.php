@@ -524,9 +524,16 @@ class GraphController extends BaseController
     }
 
     public function diff() {
+
         $this->data['pageaction'] = 'diff';
 
-       return View::make('graph.diff', $this->data);
-    }
+        $item_names = array();
+        $items = $this->item_gestion->all();
+        foreach ($items as $item) {
+            $item_names[] = $item->name;
+        }
 
+        $this->data['item_names'] = $item_names;
+        return View::make('graph.diff', $this->data);
+    }
 }
