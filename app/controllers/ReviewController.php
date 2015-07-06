@@ -19,14 +19,11 @@ class ReviewController extends \BaseController {
         $this->data['pagename'] = 'review';
     }
 
-    /*--------------------------------
-     * 商品一覧
-     *-------------------------------*/
+
     public function getIndex() {
         $items = Item::paginate(10);
 
         $no = 1; // リストに表示する時に使う連番
-
         foreach ($items as $item) {
             $item->count = Review::where('item_id', '=', $item->id)->count();
             $item->no = $no;
@@ -39,14 +36,10 @@ class ReviewController extends \BaseController {
         $this->data['items'] = $items;
         $this->data['pageaction'] = 'index';
 
-       // return View::make('review', array('items' => $items));
         return View::make('review.index', $this->data);
     }
 
 
-    /*--------------------------------
-     * 商品登録
-     *-------------------------------*/
     public function getAdd()
     {
 
@@ -80,9 +73,6 @@ class ReviewController extends \BaseController {
     }
 
 
-    /*--------------------------------
-     * 商品削除
-     *-------------------------------*/
     public function getDelete($item_id)
     {
 
@@ -318,9 +308,6 @@ class ReviewController extends \BaseController {
 
         return json_encode($tweets);
     }
-
-
-
 
 
     /**
