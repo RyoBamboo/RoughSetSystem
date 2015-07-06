@@ -50,9 +50,20 @@ function init() {
 
 
 function loadContent() {
+    var params = location.href.split("?")[1];
+    var items = params.split("&");
+    var item1 = items[0].split("=")[1];
+    var item2 = items[1].split("=")[1];
+
+    var data = {
+        "item1" : item1,
+        "item2" : item2
+    };
+
     $.ajax({
         type: "POST",
         url: "http://rst.prodrb.com/graph/test",
+        data: data,
         success: function(res){
             if(res){
                 json = $.parseJSON(res);

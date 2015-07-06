@@ -445,24 +445,21 @@ class GraphController extends BaseController
     }
 
     /*-----------------------------------------------------------------------------------------------*/
-
     public function test() {
 
+        $params = Input::all();
         $common_attr = array(); // 共通の評価句抽出
-        $sample1 = array();
-        $sample2 = array();
 
-        $sample1 = array('id'=>3);
-        $sample2 = array('id'=>4);
+        $sample1 = array('id'=>$params['item1']);
+        $sample2 = array('id'=>$params['item2']);
 
         $item = $this->item_gestion->find($sample1['id']);
         $data['ATTRS'][] = array('belong'=>3, 'label'=>$item->name);
         $item = $this->item_gestion->find($sample2['id']);
         $data['ATTRS'][] = array('belong'=>4, 'label'=>$item->name);
 
-
-        $dat1 = fopen('assets/dat/3.dat', "r");
-        $dat2 = fopen('assets/dat/4.dat', "r");
+        $dat1 = fopen('assets/dat/'. $sample1['id'] .'.dat', "r");
+        $dat2 = fopen('assets/dat/'. $sample2['id'] .'.dat', "r");
 
         // 一つ目のサンプルの評価句抽出
         while($line = fgets($dat1)) {
@@ -513,7 +510,6 @@ class GraphController extends BaseController
         }
 
         $json = json_encode($data);
-//        $json = json_encode(array('common'=>$common_attr, 'sample1'=>$sample1, 'sample2'=>$sample2));
         echo $json;
         exit;
     }
@@ -524,4 +520,18 @@ class GraphController extends BaseController
         return View::make('graph.testView', $this->data);
     }
 
+
+    public function diff() {
+
+        $this->data['pageaction'] = 'diff';
+
+        $item_names = array();
+        $items = $this->item_gestion->all();
+        foreach ($items as $item) {
+            $item_names[$item->id] = $item->name;
+        }
+
+        $this->data['item_names'] = $item_names;
+        return View::make('graph.diff', $this->data);
+    }
 }
