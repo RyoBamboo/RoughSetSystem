@@ -34,6 +34,7 @@ class ReviewController extends \BaseController {
         return View::make('review.index', $this->data);
     }
 
+
     public function getAdd()
     {
 
@@ -67,9 +68,6 @@ class ReviewController extends \BaseController {
     }
 
 
-    /*--------------------------------
-     * 商品削除
-     *-------------------------------*/
     public function getDelete($item_id)
     {
 
@@ -87,16 +85,11 @@ class ReviewController extends \BaseController {
     }
 
 
-    /*-------------------------------
-     * レビュー一覧
-    /*------------------------------*/
     public function getShow($item_id)
     {
         $reviews = $this->review_gestion->where('item_id', '=', $item_id)->paginate();
 
-        //$reviews = Review::where('item_id', '=', $item_id)->get();
         $no = 1;
-
         foreach($reviews as $review) {
             $review->no = $no;
             $no ++;
@@ -113,15 +106,6 @@ class ReviewController extends \BaseController {
     // TODO: やはりここきたない
     public function postSearch()
     {
-        /**
-         *  resutlsの中身
-         *
-         * 'itemName' => '【霧島酒造株式会社】金霧島 900ml 25度 専用化粧箱入り（スピリッツ）',
-         * 'itemImageUrl' => 'http://thumbnail.image.rakuten.co.jp/@0_mall/kirishima/cabinet/kinkiri/kinkiri_001.jpg?_ex=64x64',
-         * 'reviewCount' => 365,
-         * 'reviewCode' => '302339_10000001',
-         */
-
         require_once dirname(dirname(__FILE__)) . '/sdk/rws-php-sdk-1.0.6/autoload.php';
 
         $params = Input::all();
@@ -161,9 +145,6 @@ class ReviewController extends \BaseController {
     }
 
 
-    /*--------------------------------
-     * レビューの更新
-     *-------------------------------*/
     public function postUpdate()
     {
 
@@ -179,69 +160,5 @@ class ReviewController extends \BaseController {
 
         // 再度取得
         Review::getReviews($item_code, $item_id);
-    }
-
-    /**
-     * Amazonレビュー
-     */
-    public function getAmazon() {
-
-        $reviews = array();
-        $page = 1;
-        while(true) {
-            $url = 'http://www.amazon.co.jp/product-reviews/B004TQF9CA/ref=cm_cr_dp_see_all_summary?ie=UTF8&sortBy=byRankDescending&showViewpoints=0&pageNumber='. $page;
-            $page++;
-
-            $curl = curl_init($url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            $html = curl_exec($curl);
-            if ($html === false) break;
-
-            $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'SJIS');
-            preg_match_all('/<div class="reviewText">(.+)<\/div>/im', $html, $m);
-
-            if ($m[1] == false) break;
-            foreach ($m[1] as $review) {
-                $review = str_replace("<br>", PHP_EOL, $review);
-                $review = trim(strip_tags($review));
-
-                $reviews[] = $review;
-            }
-        }
-
-        return View::make('amazon_index')->with('reviews', $reviews);
-    }
-
-    public function getTwitter() {
-        require_once dirname(dirname(__FILE__)) . '/sdk/twitteroauth/autoload.php';
-
-        $this->data['pageaction'] = 'twitter';
-
-        /* OAuth認証 */
-        $consumer_key = "r0npbeLcSLZAQXQrHayqSSoch";
-        $consumer_secret = "U23iFehpPwi8jivyCsOrS6hppC0gxb7JtHjnfxgs38Qy9G7Ai5";
-        $access_token = "1615225646-NfDxvIGtD6rx5Dhw3IamIQLuAPwfqMRtZ8HfYfs";
-        $access_token_secret = "EQ7fx7BVW8T6oOrITVLOtfZKPSxMK5GUDgJkeDZ6xiu51";
-
-        /* オブジェクト生成 */
-        $tw_obj = new TwitterOAuth ($consumer_key, $consumer_secret, $access_token, $access_token_secret);
-
-        $tweets = array();
-        $params =array(
-            "q"=>"お酒",
-            "count"=>100
-        );
-        $result = $tw_obj->get("search/tweets", $params);
-        foreach($result->statuses as $value) {
-            $result = preg_match('/http(.+)/ims', $value->text, $m);
-            if ($result == false) {
-                $tweets[] = $value->text;
-            }
-        }
-
-        $this->data['tweets'] = $tweets;
-
-        return View::make('review.twitter', $this->data);
-
     }
 }
