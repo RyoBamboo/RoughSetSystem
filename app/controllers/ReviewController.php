@@ -11,11 +11,6 @@ class ReviewController extends \BaseController {
     {
         $this->review_gestion = $review_gestion;
 
-        $this->beforeFilter(
-            '@existsFilter',
-            ['on'=>['get']]
-        );
-
         $this->data['pagename'] = 'review';
     }
 
@@ -249,22 +244,4 @@ class ReviewController extends \BaseController {
         return View::make('review.twitter', $this->data);
 
     }
-
-
-
-
-
-    /**
-     * URLパラメータのidの存在をチェックする。
-     *
-     * @ return void
-     */
-    public function existsFilter()
-    {
-        $id = Route::input('id');
-        if ($id) {
-            var_dump($id);exit;
-        }
-    }
-
 }
