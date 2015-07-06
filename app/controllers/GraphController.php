@@ -445,7 +445,6 @@ class GraphController extends BaseController
     }
 
     /*-----------------------------------------------------------------------------------------------*/
-
     public function test() {
 
         $common_attr = array(); // 共通の評価句抽出
@@ -522,6 +521,12 @@ class GraphController extends BaseController
         $this->data['pageaction'] = 'view';
 
         return View::make('graph.testView', $this->data);
+    }
+
+    public function diff() {
+        $this->data['pagenaction'] = 'diff';
+
+       return View::make('graph.diff', $this->data);
     }
 
 }
