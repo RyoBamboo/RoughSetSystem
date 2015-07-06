@@ -1,21 +1,22 @@
 <?php
 
 use Illuminate\Pagination\CustomPresenter;
-use Abraham\TwitterOAuth\TwitterOAuth;
 
 class ReviewController extends \BaseController {
 
     private $review_gestion;
 
-    public function __construct(Review $review_gestion)
+    public function __construct(Review $review_gestion, Item $item_gestion)
     {
         $this->review_gestion = $review_gestion;
+        $this->item_gestion = $item_gestion;
 
         $this->data['pagename'] = 'review';
     }
 
 
-    public function getIndex() {
+    public function getIndex()
+    {
         $items = Item::paginate(10);
 
         $no = 1; // リストに表示する時に使う連番
@@ -37,11 +38,8 @@ class ReviewController extends \BaseController {
 
     public function getAdd()
     {
-
         $this->data['pageaction'] = 'add';
 
-        //$view = View::make('review_add');
-        //return $view;
         return View::make('review.add', $this->data);
     }
 
@@ -56,7 +54,6 @@ class ReviewController extends \BaseController {
             'created' => time()
         ));
 
-
         foreach ($params['items'] as $param) {
             // レビューの抽出
             if ($param['itemFrom'] == 'rakuten') {
@@ -70,7 +67,6 @@ class ReviewController extends \BaseController {
 
     public function getDelete($item_id)
     {
-
         $message = "エラーが発生しました。";
 
         if (Item::find($item_id)) {
@@ -98,7 +94,6 @@ class ReviewController extends \BaseController {
         $this->data['pageaction'] = 'show';
         $this->data['reviews'] = $reviews;
 
-        //return View::make('review_show', array('reviews' => $reviews));
         return View::make('review.show', $this->data);
     }
 
@@ -147,7 +142,6 @@ class ReviewController extends \BaseController {
 
     public function postUpdate()
     {
-
         $item_id = Input::get('item_id');
 
         // TODO: とりあえずすべてのレビューを消去してすべて更新する方法採用。後々訂正
