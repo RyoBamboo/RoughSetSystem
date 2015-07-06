@@ -1,0 +1,103 @@
+/* Fonts
+ =============================================================*/
+
+body, h1, h2, h3, h4, h5, h6,
+.uk-navbar-nav > li > a { font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300;}
+
+
+
+/* Base
+ =============================================================*/
+
+
+
+/* Layout
+ =============================================================*/
+.tm-background {
+    background: #252525;
+}
+
+/**
+ * Blocks
+ */
+
+.tm-middle,
+.tm-footer {
+    padding: 90px 0;
+}
+
+
+/**
+ * Middle
+ */
+.tm-middle {
+    background: #FFFFFF;
+}
+
+.tm-sidebar {
+    border-right: 1px solid #E5E5E5;
+}
+
+.tm-main {
+    padding-left: 50px; !important;
+}
+
+/**
+ * Footer
+ */
+.tm-footer {
+    color: #ddd !important;
+}
+
+
+/* Uikit component modifiers
+ =============================================================*/
+
+/**
+ * Navbar
+ */
+.tm-navbar {
+    padding: 15px 0;
+    background: #222222;
+}
+
+.tm-navbar .uk-navbar-nav > li {
+    margin-left: 20px;
+}
+.tm-navbar .uk-navbar-nav > li > a {
+    border: none;
+    border-radius: 3px !important;
+    font-size: 15px;
+    text-shadow: none;
+}
+
+/* Hover */
+.tm-navbar .uk-navbar-nav > li:hover > a {
+    border: none;
+    color: #FFFFFF;
+}
+
+/* Active */
+.tm-navbar .uk-navbar-nav > li.uk-active > a {
+    background-color: #2BA3D4;
+    color: #FFFFFF;
+}
+
+/* Onclick */
+.tm-navbar .uk-navbar-nav > li > a:active { background-color: transparent; }
+
+
+/**
+ * Nav
+ */
+.tm-nav > li > a {
+    color: #777777;
+}
+
+/* Hover */
+.tm-nav > li > a:hover,
+.tm-nav > li > a:focus,
+.tm-nav > li.uk-active > a  {
+    background: #F5F5F5;
+    color: #444;
+}
