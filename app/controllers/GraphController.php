@@ -447,95 +447,165 @@ class GraphController extends BaseController
     /*-----------------------------------------------------------------------------------------------*/
     public function test() {
 
-        $item_ids = Input::all();
         $params = Input::all();
+        $attr1 = array();
+        $attr2 = array();
+        $item_ids = Input::all();
+        $current_flag = null; // ファイル読み込み時に使う分岐用フラグ
+        $data = array();
+        $result = array();
+
+
         foreach ($item_ids as $item_id) {
             $item = $this->item_gestion->find($item_id);
-        }
-        $common_attr = array(); // 共通の評価句抽出
+            $data['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
+            $result['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
 
-        $sample1 = array('id'=>$params['item1']);
-        $sample2 = array('id'=>$params['item2']);
+            $file = fopen('assets/dat/'. $item->id .'.dat', "r");
+            while($line = fgets($file)) {
 
-        $item = $this->item_gestion->find($sample1['id']);
-        $data['ATTRS'][] = array('belong'=>3, 'label'=>$item->name);
-        $item = $this->item_gestion->find($sample2['id']);
-        $data['ATTRS'][] = array('belong'=>4, 'label'=>$item->name);
+                // #ATTRS 抽出
+                if ($current_flag == 'ATTRS') {
+                    $str = explode(' ', $line);
+                    if (count($str) == 1) {
+                        $current_flag = null;
+                        continue;
+                    }
 
-        $dat1 = fopen('assets/dat/'. $sample1['id'] .'.dat', "r");
-        $dat2 = fopen('assets/dat/'. $sample2['id'] .'.dat', "r");
+                    $attr_text = $str[0];
+                    $attr_id = $str[1];
+                    $data[$item_id]['ATTRS'][$attr_id] = array('type'=>'attr', 'text'=>$attr_text, 'belong'=>$item_id);
+                }
 
-        // 一つ目のサンプルの評価句抽出
-        while($line = fgets($dat1)) {
-            if (!preg_match('/^\n/', $line)) {
-                if (strpos($line, '#ATTRS') === false) {
-                    $sample1['attrs'][] = explode(' ', $line)[0]; // 評価句だけ抽出
+                // フラグ検出
+                if (preg_match('/^#([A-Z]+)/', $line, $match)) {
+                    $current_flag = $match[1];
+                }
+            }
+
+            // 共通の評価句とそうでないものを分ける
+            if (count($data['ITEMS']) == 1) {
+                foreach ($data[$item_id]['ATTRS'] as $attr) {
+                    $result['ATTRS'][] = $attr;
                 }
             } else {
-                break;
-            }
-        }
+                $tmp = array();
+                foreach ($data[$item_id]['ATTRS'] as $attr) {
+                    foreach ($result['ATTRS'] as &$_attr) {
+                        if ($_attr['text'] == $attr['text']) {
+                            $_attr['belong'] = 0;
+                            continue;
+                        }
 
-        // ２つ目のサンプルの評価句抽出
-        while($line = fgets($dat2)) {
-            if (!preg_match('/^\n/', $line)) {
-                if (strpos($line, '#ATTRS') === false) {
-                    $sample2['attrs'][] = explode(' ', $line)[0]; // 評価句だけ抽出
+                        if (!in_array($attr['text'], $tmp)) {
+                            $tmp[] = $attr['text'];
+                        }
+                    }
                 }
-            } else {
-                break;
-            }
-        }
 
-        // 共通の評価句の抽出
-        foreach ($sample1['attrs'] as $sample1_attr) {
-            foreach ($sample2['attrs'] as $sample2_attr) {
-                if ($sample1_attr == $sample2_attr) {
-                    $attr = array('belong'=>0, 'label'=>$sample1_attr);
-                    $data['ATTRS'][] = $attr;
-                    $common_attr[] = $sample1_attr;
-                    continue;
+                foreach ($result['ATTRS'] as $attr) {
+                    foreach ($tmp as $key => $v) {
+
+                        if ($attr['text'] == $v) {
+                            unset($tmp[$key]);
+                        }
+                    }
                 }
-            }
-        }
 
-        foreach ($sample1['attrs'] as $sample1_attr) {
-            if (in_array($sample1_attr, $common_attr) == false ) {
-                $attr = array('belong'=>1, 'label'=>$sample1_attr);
-                $data['ATTRS'][] = $attr;
-            }
-        }
-
-        foreach ($sample2['attrs'] as $sample2_attr) {
-            if (in_array($sample2_attr, $common_attr) == false ) {
-                $attr = array('belong'=>2, 'label'=>$sample2_attr);
-                $data['ATTRS'][] = $attr;
-            }
-        }
-
-
-        /*--------------------------
-         * 係受け結果の取得
-         *------------------------*/
-        $flag = false;
-        while($line = fgets($dat1)) {
-            if (strpos($line, 'INFOATTRS') !== false) {
-                $flag = true;
-                continue;
-            }
-
-
-            if ($flag == true) {
-                if (!preg_match('/#DRH/', $line)){
-                } else {
-                    break;
+                foreach ($tmp as $v) {
+                    $result['ATTRS'][] = array('type'=>'attr', 'text'=>$v, 'belong'=>$item_id);
                 }
             }
         }
 
-        $json = json_encode($data);
+
+        $json = json_encode($result);
         echo $json;
-        exit;
+        return;
+//        $common_attr = array(); // 共通の評価句抽出
+//
+//        $sample1 = array('id'=>$params['item1']);
+//        $sample2 = array('id'=>$params['item2']);
+//
+//        $item = $this->item_gestion->find($sample1['id']);
+//        $data['ATTRS'][] = array('belong'=>3, 'label'=>$item->name);
+//        $item = $this->item_gestion->find($sample2['id']);
+//        $data['ATTRS'][] = array('belong'=>4, 'label'=>$item->name);
+//
+//        $dat1 = fopen('assets/dat/'. $sample1['id'] .'.dat', "r");
+//        $dat2 = fopen('assets/dat/'. $sample2['id'] .'.dat', "r");
+//
+//        // 一つ目のサンプルの評価句抽出
+//        while($line = fgets($dat1)) {
+//            if (!preg_match('/^\n/', $line)) {
+//                if (strpos($line, '#ATTRS') === false) {
+//                    $sample1['attrs'][] = explode(' ', $line)[0]; // 評価句だけ抽出
+//                }
+//            } else {
+//                break;
+//            }
+//        }
+//
+//        // ２つ目のサンプルの評価句抽出
+//        while($line = fgets($dat2)) {
+//            if (!preg_match('/^\n/', $line)) {
+//                if (strpos($line, '#ATTRS') === false) {
+//                    $sample2['attrs'][] = explode(' ', $line)[0]; // 評価句だけ抽出
+//                }
+//            } else {
+//                break;
+//            }
+//        }
+//
+//        // 共通の評価句の抽出
+//        foreach ($sample1['attrs'] as $sample1_attr) {
+//            foreach ($sample2['attrs'] as $sample2_attr) {
+//                if ($sample1_attr == $sample2_attr) {
+//                    $attr = array('belong'=>0, 'label'=>$sample1_attr);
+//                    $data['ATTRS'][] = $attr;
+//                    $common_attr[] = $sample1_attr;
+//                    continue;
+//                }
+//            }
+//        }
+//
+//        foreach ($sample1['attrs'] as $sample1_attr) {
+//            if (in_array($sample1_attr, $common_attr) == false ) {
+//                $attr = array('belong'=>1, 'label'=>$sample1_attr);
+//                $data['ATTRS'][] = $attr;
+//            }
+//        }
+//
+//        foreach ($sample2['attrs'] as $sample2_attr) {
+//            if (in_array($sample2_attr, $common_attr) == false ) {
+//                $attr = array('belong'=>2, 'label'=>$sample2_attr);
+//                $data['ATTRS'][] = $attr;
+//            }
+//        }
+//
+//
+//        /*--------------------------
+//         * 係受け結果の取得
+//         *------------------------*/
+//        $flag = false;
+//        while($line = fgets($dat1)) {
+//            if (strpos($line, 'INFOATTRS') !== false) {
+//                $flag = true;
+//                continue;
+//            }
+//
+//
+//            if ($flag == true) {
+//                if (!preg_match('/#DRH/', $line)){
+//                } else {
+//                    break;
+//                }
+//            }
+//        }
+//
+//        $json = json_encode($data);
+//        echo $json;
+//        exit;
     }
 
     public function testView() {
