@@ -9,8 +9,7 @@
 class Html {
 
     // htmlを取得して返す
-    public static function getHtml($url)
-    {
+    public static function getHtml($url) {
         $timeout = 2;
         $ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:17.0) Gecko/20100101 Firefox/17.0';
         $ch = curl_init();
@@ -37,8 +36,7 @@ class Html {
      * $header: 先頭文字列
      * $footer: 後方文字列
      */
-    public static function splitHtml($str, $header, $footer, $trim_flag = true)
-    {
+    public static function splitHtml($str, $header, $footer, $trim_flag = true) {
         $h = strpos($str, $header);
         $h += strlen($header);
 
@@ -97,6 +95,8 @@ class Html {
     /**
      *
      * アイテムコードから楽天の商品情報を取得して返す
+     *
+     * レビュー抽出時にも使っているかもなので削除しない
      *
      */
     public static function getItemParamsByCode($params) {
@@ -172,19 +172,5 @@ class Html {
         }
 
         return $list;
-
-//        // 画像URL取得
-//        preg_match_all('/<img alt="(.*)" src="(.*)" onload=/', $html, $mm);
-//        $item_imgurls = $mm[2];
-//
-//        // レビュー数取得
-//        preg_match_all('/<img alt="(.*)" src="(.*)" onload=/', $html, $mm);
-//        $item_imgurls = $mm[2];
-//
-//        // アイテム名数取得
-//        preg_match_all('/<h2 class="(.*)">(.*)<\/h2>/', $html, $mm);
-//        $item_names = $mm[2];
-
-
     }
 }
