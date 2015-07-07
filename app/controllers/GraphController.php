@@ -447,7 +447,11 @@ class GraphController extends BaseController
     /*-----------------------------------------------------------------------------------------------*/
     public function test() {
 
+        $item_ids = Input::all();
         $params = Input::all();
+        foreach ($item_ids as $item_id) {
+            $item = $this->item_gestion->find($item_id);
+        }
         $common_attr = array(); // 共通の評価句抽出
 
         $sample1 = array('id'=>$params['item1']);
@@ -506,6 +510,26 @@ class GraphController extends BaseController
             if (in_array($sample2_attr, $common_attr) == false ) {
                 $attr = array('belong'=>2, 'label'=>$sample2_attr);
                 $data['ATTRS'][] = $attr;
+            }
+        }
+
+
+        /*--------------------------
+         * 係受け結果の取得
+         *------------------------*/
+        $flag = false;
+        while($line = fgets($dat1)) {
+            if (strpos($line, 'INFOATTRS') !== false) {
+                $flag = true;
+                continue;
+            }
+
+
+            if ($flag == true) {
+                if (!preg_match('/#DRH/', $line)){
+                } else {
+                    break;
+                }
             }
         }
 
