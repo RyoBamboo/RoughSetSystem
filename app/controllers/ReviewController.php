@@ -123,9 +123,6 @@ class ReviewController extends \BaseController {
             ));
 
             $results = Html::getItemParamsByKeyword($response);
-        } else {
-
-            $results = Html::getItemParamsByCode($params);
         }
 
         /*---------------------
@@ -137,6 +134,7 @@ class ReviewController extends \BaseController {
 
         header('Content-Type: application/json');
         echo json_encode($results);
+        exit;
     }
 
 
