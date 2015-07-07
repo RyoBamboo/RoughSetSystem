@@ -1,6 +1,7 @@
 <?php
 
-class Match {
+class Match
+{
 
     //共起頻度
     /*
