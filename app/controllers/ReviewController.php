@@ -98,40 +98,19 @@ class ReviewController extends \BaseController {
     }
 
 
-    // TODO: やはりここきたない
     public function postSearch()
     {
-        require_once dirname(dirname(__FILE__)) . '/sdk/rws-php-sdk-1.0.6/autoload.php';
-
         $params = Input::all();
 
-        /*---------------------
-         * 楽天の検索
-         *-------------------*/
-        if ($params['searchType'] == 'item-keyword') {
+        // 楽天商品の検索
+        $rakuten_gestion = Rakuten::getInstance();
+        $rakuten_items = $rakuten_gestion->searchItemByKeyword($params['itemKeyword']);
 
-            $client = new RakutenRws_Client();
-            $client->setApplicationId(Config::get('const.RAKUTEN_API_ID'));
+        // Amazon商品の検索
+        $amazon_gestion = Amazon::getInstance();
+        $amazon_items = $amazon_gestion->searchItemByKeyword($params['itemKeyword']);
 
-            // 検索条件設定
-            $response = $client->execute('IchibaItemSearch' ,array(
-                'keyword' => $params['itemKeyword'],
-                'sort'=> '-reviewCount',
-                'hasReviewFlag'=>1,
-                'hits'=> 10,
-                'availability'=>0,
-            ));
-
-            $results = Html::getItemParamsByKeyword($response);
-        }
-
-        /*---------------------
-         * Amazonの検索
-         *-------------------*/
-        $results2 = Html::getItemParamsFromAmazon($params['itemKeyword']);
-
-        $results = array_merge($results, $results2);
-
+        $results = array_merge($rakuten_items, $amazon_items);
         header('Content-Type: application/json');
         echo json_encode($results);
         exit;
