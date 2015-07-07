@@ -17,11 +17,11 @@ class ReviewController extends \BaseController {
 
     public function getIndex()
     {
-        $items = Item::paginate(10);
+        $items = $this->item_gestion->paginate(10);
 
         $no = 1; // リストに表示する時に使う連番
         foreach ($items as $item) {
-            $item->count = Review::where('item_id', '=', $item->id)->count();
+            $item->count = $this->review_gestion->where('item_id', '=', $item->id)->count();
             $item->no = $no;
             $no += 1;
 
