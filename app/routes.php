@@ -26,6 +26,11 @@ Route::group(['prefix'=>'graph'], function() {
         'uses'=>'GraphController@index'
     ]);
 
+    Route::get('diff', [
+        'as'=>'graph.diff',
+        'uses'=>'GraphController@diff'
+    ]);
+
     Route::get('view/{id?}', [
         'as'=>'graph.view',
         'uses'=>'GraphController@view'
