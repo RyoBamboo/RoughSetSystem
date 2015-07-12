@@ -113,13 +113,13 @@ function update() {
         .attr("class", "node")
         .call(force.drag);
 
-    nodeEnter.append("image")
-        .attr("class", "circle")
-        .attr("xlink:href", 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg' ) //ノード用画像の設定
-        .attr("x", "-16px")
-        .attr("y", "-16px")
-        .attr("width", "32px")
-        .attr("height", "32px");
+    //nodeEnter.append("image")
+    //    .attr("class", "circle")
+    //    .attr("xlink:href", 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg' ) //ノード用画像の設定
+    //    .attr("x", "-16px")
+    //    .attr("y", "-16px")
+    //    .attr("width", "32px")
+    //    .attr("height", "32px");
 
     nodeEnter.append("text")
         .text(function(d) { return d.text });
