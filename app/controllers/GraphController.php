@@ -375,7 +375,6 @@ class GraphController extends BaseController
         echo PHP_EOL;
         fwrite($fp, PHP_EOL); // TODO: ファイルへ書き込み
 
-        Log::debug('test');
         /*-----------------------------------------
          * 決定ルールの算出
          *---------------------------------------*/
@@ -473,7 +472,27 @@ class GraphController extends BaseController
                     $data[$item_id]['ATTRS'][$attr_id] = array('type'=>'attr', 'text'=>$attr_text, 'belong'=>$item_id);
                 }
 
-                // #ATTRS 抽出
+                // #INFOATTR
+                if ($current_flag == 'INFOATTRS') {
+                    $str = explode(' ', $line);
+                    if (count($str) == 1) {
+                        $current_flag = null;
+                        continue;
+                    }
+
+                    $id = $str[0]; unset($str[0]);
+                    $reivew_id = $str[1]; unset($str[1]);
+                    $dc = 0;
+                    array_pop($str);
+
+                    foreach ($str as $_str) {
+                        if ($_str == '*') continue;
+                        $__str = explode(":", $_str);
+                        $attr_id = $__str[0];
+                        $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = $__str[1];
+                    }
+
+                }
 
                 // フラグ検出
                 if (preg_match('/^#([A-Z]+)/', $line, $match)) {
@@ -504,6 +523,7 @@ class GraphController extends BaseController
         }
 
 
+        Log::debug($result['ATTRS']);
         $json = json_encode($result);
         echo $json;
         return;
