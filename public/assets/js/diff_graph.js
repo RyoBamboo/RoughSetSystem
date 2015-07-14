@@ -3,7 +3,8 @@
 *------------------------------------------*/
 var WIDTH = 1000, HEIGHT = 600; // 描画する幅と高さ
 var STAGE; // 描画するステージ
-
+var item1;
+var item2;
 var ATTRS_1 = []; // サンプル１の評価句配列
 var ATTRS_2 = []; // サンプル２の評価句配列
 var ATTRS_COMMON = []; // 共通の評価句配列
@@ -52,8 +53,8 @@ function init() {
 function loadContent() {
     var params = location.href.split("?")[1];
     var items = params.split("&");
-    var item1 = items[0].split("=")[1];
-    var item2 = items[1].split("=")[1];
+    item1 = items[0].split("=")[1];
+    item2 = items[1].split("=")[1];
 
     var data = {
         "item1" : item1,
@@ -68,6 +69,7 @@ function loadContent() {
             if(res){
                 json = $.parseJSON(res);
                 ATTRS = json['ATTRS'];
+                ITEMS = json['ITEMS'];
                 draw();
                 update();
             }
@@ -76,19 +78,31 @@ function loadContent() {
 }
 
 function draw() {
+    // ITEMS描画
+    for (var key in ITEMS) {
+        NODES.push(ITEMS[key]);
+    }
+
     // ATTRS描画
     for (var key in ATTRS) {
         NODES.push(ATTRS[key]);
+        for (var _key in ATTRS[key]['chunks']) {
+            NODES.push(ATTRS[key]['chunks'][_key]);
+            LINKS.push({ source: ATTRS[key], target: ATTRS[key]['chunks'][_key]});
+        }
     }
+
 
     for (key in NODES) {
         // 共通の評価句のリンク追加
         if(NODES[key].belong == 0) {
+            console.log(NODES[key]);
             LINKS.push({source: 0, target: NODES[key]});
             LINKS.push({source: 1, target: NODES[key]});
-        } else if (NODES[key].belong == 1) {
+            console.log(NODES[key]);
+        } else if (NODES[key].belong == item1) {
             LINKS.push({source: 0, target: NODES[key]});
-        } else if (NODES[key].belong == 2) {
+        } else if (NODES[key].belong == item2) {
             LINKS.push({source: 1, target: NODES[key]});
         }
     }
@@ -106,16 +120,16 @@ function update() {
         .attr("class", "node")
         .call(force.drag);
 
-    nodeEnter.append("image")
-        .attr("class", "circle")
-        .attr("xlink:href", 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg' ) //ノード用画像の設定
-        .attr("x", "-16px")
-        .attr("y", "-16px")
-        .attr("width", "32px")
-        .attr("height", "32px");
+    //nodeEnter.append("image")
+    //    .attr("class", "circle")
+    //    .attr("xlink:href", 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg' ) //ノード用画像の設定
+    //    .attr("x", "-16px")
+    //    .attr("y", "-16px")
+    //    .attr("width", "32px")
+    //    .attr("height", "32px");
 
     nodeEnter.append("text")
-        .text(function(d) { return d.label });
+        .text(function(d) { return d.text });
 
     node.exit().remove();
     force.start();
