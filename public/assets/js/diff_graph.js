@@ -86,13 +86,20 @@ function draw() {
     // ATTRS描画
     for (var key in ATTRS) {
         NODES.push(ATTRS[key]);
+        for (var _key in ATTRS[key]['chunks']) {
+            NODES.push(ATTRS[key]['chunks'][_key]);
+            LINKS.push({ source: ATTRS[key], target: ATTRS[key]['chunks'][_key]});
+        }
     }
+
 
     for (key in NODES) {
         // 共通の評価句のリンク追加
         if(NODES[key].belong == 0) {
+            console.log(NODES[key]);
             LINKS.push({source: 0, target: NODES[key]});
             LINKS.push({source: 1, target: NODES[key]});
+            console.log(NODES[key]);
         } else if (NODES[key].belong == item1) {
             LINKS.push({source: 0, target: NODES[key]});
         } else if (NODES[key].belong == item2) {

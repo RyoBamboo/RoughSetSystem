@@ -489,9 +489,8 @@ class GraphController extends BaseController
                         if ($_str == '*') continue;
                         $__str = explode(":", $_str);
                         $attr_id = $__str[0];
-                        $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = $__str[1];
+                        $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = array('type'=>'chunk', 'text'=>$__str[1]);
                     }
-
                 }
 
                 // フラグ検出
@@ -522,8 +521,6 @@ class GraphController extends BaseController
             }
         }
 
-
-        Log::debug($result['ATTRS']);
         $json = json_encode($result);
         echo $json;
         return;
