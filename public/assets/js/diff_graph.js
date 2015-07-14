@@ -5,9 +5,6 @@ var WIDTH = 1000, HEIGHT = 600; // 描画する幅と高さ
 var STAGE; // 描画するステージ
 var item1;
 var item2;
-var ATTRS_1 = []; // サンプル１の評価句配列
-var ATTRS_2 = []; // サンプル２の評価句配列
-var ATTRS_COMMON = []; // 共通の評価句配列
 var NODES = []; // ノードを格納する配列
 var LINKS = []; // ノード間のリンク情報を納める配列
 
