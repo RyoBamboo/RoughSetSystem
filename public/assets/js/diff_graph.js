@@ -5,14 +5,10 @@ var WIDTH = 1000, HEIGHT = 600; // 描画する幅と高さ
 var STAGE; // 描画するステージ
 var item1;
 var item2;
-var ATTRS_1 = []; // サンプル１の評価句配列
-var ATTRS_2 = []; // サンプル２の評価句配列
-var ATTRS_COMMON = []; // 共通の評価句配列
 var NODES = []; // ノードを格納する配列
 var LINKS = []; // ノード間のリンク情報を納める配列
 
 init();
-
 
 // グラフの初期設定
 var force = d3.layout.force()
@@ -26,7 +22,6 @@ var force = d3.layout.force()
     .gravity(0.0)
     .theta(0.1)
     .alpha(0.1);
-
 
 force.on("tick", function() {
     var node = STAGE.selectAll("g.node").data(NODES);
@@ -63,7 +58,7 @@ function loadContent() {
 
     $.ajax({
         type: "POST",
-        url: "http://rst.prodrb.com/graph/test",
+        url: "/graph/test",
         data: data,
         success: function(res){
             if(res){
@@ -72,10 +67,12 @@ function loadContent() {
                 ITEMS = json['ITEMS'];
                 draw();
                 update();
+                setEvent();
             }
         }
     });
 }
+
 
 function draw() {
     // ITEMS描画
@@ -92,14 +89,11 @@ function draw() {
         }
     }
 
-
     for (key in NODES) {
         // 共通の評価句のリンク追加
         if(NODES[key].belong == 0) {
-            console.log(NODES[key]);
             LINKS.push({source: 0, target: NODES[key]});
             LINKS.push({source: 1, target: NODES[key]});
-            console.log(NODES[key]);
         } else if (NODES[key].belong == item1) {
             LINKS.push({source: 0, target: NODES[key]});
         } else if (NODES[key].belong == item2) {
@@ -113,27 +107,75 @@ function update() {
         .data(LINKS)
         .enter()
         .append("line")
+        .attr("attr_text", function(d) {
+            return d.source.text;
+        })
+        .attr("class", function(d) {
+            return d.target.type;
+        })
         .style({stroke: "#ccc", "stroke-width": 1});
 
     var node = STAGE.selectAll("g.node").data(NODES);
     var nodeEnter = node.enter().append("svg:g")
-        .attr("class", "node")
+        .attr("class", function(d) {
+           return "node " + d.type;
+        })
+        .attr("attr_text", function(d) {
+            return d.attr_text;
+        })
         .call(force.drag);
 
-    //nodeEnter.append("image")
-    //    .attr("class", "circle")
-    //    .attr("xlink:href", 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg' ) //ノード用画像の設定
-    //    .attr("x", "-16px")
-    //    .attr("y", "-16px")
-    //    .attr("width", "32px")
-    //    .attr("height", "32px");
+    nodeEnter.append("image")
+        .attr("class", "circle")
+        .attr("xlink:href", function (d) {
+            switch (d.type) {
+                case 'item':
+                    return '/assets/img/red.png';
+                    break;
+                case 'attr':
+                    return '/assets/img/blue.png';
+                    break;
+                case 'chunk':
+                    return '/assets/img/green.png';
+                default:
+                    return 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg'
+                    break;
+            }
+        } ) //ノード用画像の設定
+        .attr("x", "-16px")
+        .attr("y", "-16px")
+        .attr("width", "32px")
+        .attr("height", "32px");
 
     nodeEnter.append("text")
         .text(function(d) { return d.text });
 
     node.exit().remove();
     force.start();
+
+    // レビューノードを非表示にする
+    hideReviewNodes();
 }
 
 
+
+/*--------------------------------------------------
+ * Filter
+ *------------------------------------------------*/
+function hideReviewNodes() {
+    $(".chunk").hide();
+}
+
+/*--------------------------------------------------
+ * Event Handler
+ *------------------------------------------------*/
+// 評価句ノードをクリックするとレビューノードの表示/非表示切り替え
+function setEvent() {
+    STAGE.selectAll("g.attr")
+        .on("click", function() {
+            var attr_text = $(this).closest('text').context.textContent;
+            $("line[attr_text=" + attr_text +"]").toggle();
+            $("g[attr_text=" + attr_text +"]").toggle();
+        });
+}
 
