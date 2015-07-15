@@ -81,7 +81,7 @@ $(function() {
             setTimeout(function() {
                 $("#update-review-modal").modal('hide');
 
-                location.href = "http://rst.prodrb.com/review";
+                location.href = "/review";
             }, 2000);
 
         }).fail(function(data) {

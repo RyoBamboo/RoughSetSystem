@@ -153,7 +153,7 @@ function loadContent() {
 	$.ajax({
 		type: "POST",
 		//url: "/ajax/load_content2.php",
-        url: "http://rst.prodrb.com/graph/load",
+        url: "/graph/load",
 		data: data,
 		success: function(res){
 			if(res){

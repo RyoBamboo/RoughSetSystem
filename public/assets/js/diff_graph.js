@@ -58,7 +58,7 @@ function loadContent() {
 
     $.ajax({
         type: "POST",
-        url: "http://rst.prodrb.com/graph/test",
+        url: "/graph/test",
         data: data,
         success: function(res){
             if(res){
