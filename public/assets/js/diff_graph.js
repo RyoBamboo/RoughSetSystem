@@ -67,6 +67,7 @@ function loadContent() {
                 ITEMS = json['ITEMS'];
                 draw();
                 update();
+                setEvent();
             }
         }
     });
@@ -106,6 +107,9 @@ function update() {
         .data(LINKS)
         .enter()
         .append("line")
+        .attr("attr_text", function(d) {
+            return d.source.text;
+        })
         .attr("class", function(d) {
             return d.target.type;
         })
@@ -115,6 +119,9 @@ function update() {
     var nodeEnter = node.enter().append("svg:g")
         .attr("class", function(d) {
            return "node " + d.type;
+        })
+        .attr("attr_text", function(d) {
+            return d.attr_text;
         })
         .call(force.drag);
 
@@ -145,6 +152,8 @@ function update() {
 
     node.exit().remove();
     force.start();
+
+    // レビューノードを非表示にする
     hideReviewNodes();
 }
 
@@ -156,3 +165,17 @@ function update() {
 function hideReviewNodes() {
     $(".chunk").hide();
 }
+
+/*--------------------------------------------------
+ * Event Handler
+ *------------------------------------------------*/
+// 評価句ノードをクリックするとレビューノードの表示/非表示切り替え
+function setEvent() {
+    STAGE.selectAll("g.attr")
+        .on("click", function() {
+            var attr_text = $(this).closest('text').context.textContent;
+            $("line[attr_text=" + attr_text +"]").toggle();
+            $("g[attr_text=" + attr_text +"]").toggle();
+        });
+}
+
