@@ -177,5 +177,12 @@ function setEvent() {
             $("line[attr_text=" + attr_text +"]").toggle();
             $("g[attr_text=" + attr_text +"]").toggle();
         });
+
+    zoom = d3.behavior.zoom()
+        .on("zoom", function() {
+            
+        });
+
+    STAGE.call(zoom);
 }
 
