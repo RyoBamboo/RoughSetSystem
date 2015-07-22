@@ -138,7 +138,7 @@ function update() {
                 case 'chunk':
                     return '/assets/img/green.png';
                 default:
-                    return 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg'
+                    return 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg';
                     break;
             }
         } ) //ノード用画像の設定
@@ -178,11 +178,23 @@ function setEvent() {
             $("g[attr_text=" + attr_text +"]").toggle();
         });
 
-    zoom = d3.behavior.zoom()
-        .on("zoom", function() {
-            
-        });
+    //zoom = d3.behavior.zoom()
+    //    .on("zoom", function() {
+    //        // ここ参考http://shimz.me/blog/d3-js/2526
+    //        var befere_width, before_height;
+    //        before_width = WIDTH;
+    //        before_height = HEIGHT;
+    //    });
+    //
+    //STAGE.call(zoom);
 
+    zoom = d3.behavior.drag()
+        .on("drag", function() {
+            WIDTH  -= d3.event.dx;
+            HEIGHT -= d3.event.dy;
+
+
+        });
     STAGE.call(zoom);
 }
 
