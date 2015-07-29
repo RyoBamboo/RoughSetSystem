@@ -4,11 +4,10 @@
             レビューを抽出しています
         </div>
         <div class="uk-container uk-container-center">
-            <p class="uk-text-center">この処理は数分かかる場合があります</p><br>
-            <div class="uk-modal-spinner"></div>
-        </div>
-        <div class="uk-modal-footer">
-            <button class="uk-button uk-button-danger">キャンセル</button>
+            <p>この処理は数分かかる場合があります</p>
+            <div class="uk-progress uk-progress-striped uk-active">
+                <div class="uk-progress-bar" style="width: 100%;"></div>
+            </div>
         </div>
     </div>
 </div>

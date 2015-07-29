@@ -6,7 +6,7 @@ $(function() {
      * レビューの抽出
     *----------------------------------------------*/
     $(document).on('click', '#get-review', function() {
-
+        return;
         var param = {
             title : $('#item-name').val(),
             items: lists
