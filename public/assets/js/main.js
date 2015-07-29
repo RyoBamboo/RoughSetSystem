@@ -6,13 +6,10 @@ $(function() {
      * レビューの抽出
     *----------------------------------------------*/
     $(document).on('click', '#get-review', function() {
-        return;
         var param = {
-            title : $('#item-name').val(),
-            items: lists
+            "title" : $('#item-name').val(),
+            "items": lists
         };
-
-        console.log(param);
 
         var data = JSON.stringify(param);
 
@@ -25,15 +22,11 @@ $(function() {
         }).done(function(data) {
 
             //レビュー抽出後のモーダルの表示変更
-            $('.modal-title').html('レビューの抽出が完了しました');
-            $('.modal-body').html('完了');
-            $('.modal-footer').html(
-                '<a href="/review/add" type="button" class="btn btn-default">続けて抽出する</a>' +
-                '<a href="/review" type="button" class="btn btn-default">一覧に戻る</a>'
-            );
+            $(".uk-modal-dialog").html('<div class="uk-container uk-container-center"><p>レビューの抽出が完了しました</p></div>');
 
-        }).fail(function(data) {
-            console.log(data);
+        }).fail(function(xhr, textStatus, errorThrown) {
+            //レビュー抽出後のモーダルの表示変更
+            console.log(textStatus);
             console.log('失敗したで！');
         });
     });
