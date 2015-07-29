@@ -12,6 +12,8 @@ $(function() {
             items: lists
         };
 
+        console.log(param);
+
         var data = JSON.stringify(param);
 
         $.ajax({
@@ -118,7 +120,6 @@ $(function() {
                     '</td>' +
                     '<td>' + value.itemName + '</td>' +
                     '<td>' + value.reviewCount + '</td>' +
-                    '<td><a href="#my-id" data-toggle="modal" data-uk-modal data-item-code="' + value.reviewCode + '" class="get-review uk-button uk-button-primary uk-button-small">登録</a></td>'+
                     '</tr>';
                 });
 
