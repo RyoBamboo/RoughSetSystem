@@ -12,6 +12,8 @@ $(function() {
             items: lists
         };
 
+        console.log(param);
+
         var data = JSON.stringify(param);
 
         $.ajax({

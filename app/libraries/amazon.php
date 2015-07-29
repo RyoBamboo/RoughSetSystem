@@ -28,21 +28,23 @@ class Amazon {
         $item = array();
         $list = array();
 
+
         $i = 0;
         foreach ($item_codes as $item_code) {
-            $split_str1 = '<li id="result_'. $i .'" data-asin="'. $item_code .'" class="s-result-item">';
+            $split_str1 = '<li id="result_'. $i .'" data-asin="'. $item_code .'" class="s-result-item  ">';
             $i++;
             $split_str2 = '<li id="result_'. $i .'" data-asin';
             preg_match('/' .$split_str1 .'(.*)'. $split_str2 .'/ms', $_html, $m);
-            if (!isset($m[1]))break;
+            if (!isset($m[1])) break;
 
             // 画像URL取得
             preg_match('/<img alt="(.*)" src="(.*)" onload=/', $m[1], $mm);
             $item_imgurl = $mm[2];
 
+
             // アイテム名数取得
             preg_match_all('/<h2 class="(.*)">(.*)<\/h2>/', $m[1], $mm);
-            $item_name = $mm[2];
+            $item_name = $mm[2][0];
 
             // レビュー数取得
             preg_match('/<a class="a-size-small a-link-normal a-text-normal" target="_blank" href="(.+)">([0-9]+)<\/a>/', $m[1], $mm);
@@ -56,6 +58,7 @@ class Amazon {
                 'reviewCode'=>$item_code,
                 'from'=>'amazon'
             );
+
 
             $list[] = $item;
         }
