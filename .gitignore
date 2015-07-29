@@ -19,3 +19,4 @@ crashlytics.properties
 crashlytics-build.properties
 .idea_modules/
 ._.DS_Store
+*.dat
