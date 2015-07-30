@@ -162,4 +162,46 @@ $(function() {
         }).fail(function(data, status, errorThrown) {
         });
     });
+
+    /*------------------------------------------------
+     * 係受け構文ネガポジ操作
+     *----------------------------------------------*/
+    $('.btn-chunk').on('click', function() {
+
+        var node = $(this);
+
+        var params = {
+            id   : $(this).data("id"),
+            type : $(this).text()
+        };
+
+        $.ajax({
+            'url': "/chunk/update",
+            'data': params,
+            'type': "POST"
+        }).done(function(data) {
+            // ページ際読み込み
+            location.reload();
+        }).fail(function(data, status, errorThrown) {
+        });
+    });
+
+    $(document).on('click', '#make-modal', function() {
+        var id = $(this).data('id')
+
+        var data = {
+            "item-id" : id
+        }
+
+        $.ajax({
+            'url':"/graph/make",
+            'data':data,
+            'type': "POST"
+        }).done(function(data) {
+            console.log('ok');
+        }).fail(function(data, status, errorThrown) {
+            console.log('fail');
+            console.log(status);
+        });
+    });
 });

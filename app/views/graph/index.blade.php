@@ -1,4 +1,9 @@
 @extends('base')
+
+@section('css')
+    <link rel="stylesheet" type="text/css" href={{asset("/assets/lib/uikit/css/components/progress.gradient.css")}}>
+@endsection
+
 @section('content')
     <div class="uk-container uk-container-center">
         <div class="uk-grid">
@@ -26,7 +31,7 @@
                             <td>{{ $item->updated }}</td>
                             <td>
                                 <a href="/graph/view/{{ $item->id }}" class="uk-button uk-button-small uk-button-primary">グラフを見る</a>
-                                <a href="/graph/make/{{ $item->id }}" class="uk-button uk-button-small">グラフを作成する</a>
+                                <a id="make-modal" data-id={{ $item->id }} href="#my-id" data-uk-modal class="uk-button uk-button-small">グラフを作成する</a>
                             </td>
                         </tr>
                     @endforeach
@@ -35,4 +40,5 @@
             </div>
         </div>
     </div>
+    @include('graph.make_modal')
 @endsection
