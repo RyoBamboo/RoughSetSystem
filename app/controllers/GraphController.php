@@ -237,7 +237,10 @@ class GraphController extends BaseController
     /*-----------------------------------------------------------------------------------------------
 
     /* TODO: グラフ表示に使うdatファイルを作成する関数。これ自体も関数化すること検討 */
-    public function make($id) {
+    public function make() {
+
+        $params = Input::all();
+        $id = $params['item-id'];
 
         // 決定表作成時はmax_execution_timeの制限を外す
         set_time_limit(3000);

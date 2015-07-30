@@ -62,6 +62,9 @@ class ReviewController extends \BaseController {
                 Review::getAmazonReview($param['itemCode'], $item->id);
             }
         }
+
+        $response = array('status'=>'ok');
+        return json_encode($response);
     }
 
 

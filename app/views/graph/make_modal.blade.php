@@ -1,7 +1,7 @@
 <div id="my-id" class="uk-modal">
     <div class="uk-modal-dialog">
         <div class="uk-modal-header">
-            レビューを抽出しています
+            決定表を作成しています
         </div>
         <div class="uk-container uk-container-center">
             <p>この処理は数分かかる場合があります</p>
