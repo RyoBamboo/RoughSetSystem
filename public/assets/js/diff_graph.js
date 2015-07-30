@@ -16,7 +16,7 @@ var force = d3.layout.force()
     .size([WIDTH, HEIGHT])
     .links(LINKS)
     .linkStrength(0.1)
-    .friction(0.9)
+    .friction(0.7)
     .distance(50)
     .charge(-30)
     .gravity(0.0)
@@ -170,12 +170,12 @@ function hideReviewNodes() {
  * Event Handler
  *------------------------------------------------*/
 // 評価句ノードをクリックするとレビューノードの表示/非表示切り替え
-function setEvent() {
-    STAGE.selectAll("g.attr")
-        .on("click", function() {
-            var attr_text = $(this).closest('text').context.textContent;
-            $("line[attr_text=" + attr_text +"]").toggle();
-            $("g[attr_text=" + attr_text +"]").toggle();
-        });
-}
+//function setEvent() {
+//    STAGE.selectAll("g.attr")
+//        .on("click", function() {
+//            var attr_text = $(this).closest('text').context.textContent;
+//            $("line[attr_text=" + attr_text +"]").toggle();
+//            $("g[attr_text=" + attr_text +"]").toggle();
+//        });
+//}
 
