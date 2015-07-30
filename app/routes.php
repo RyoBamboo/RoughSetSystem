@@ -36,10 +36,11 @@ Route::group(['prefix'=>'graph'], function() {
         'uses'=>'GraphController@view'
     ]);
 
-//    Route::get('make/{id?}', [
-//        'as'=>'graph.make',
-//        'uses'=>'GraphController@make'
-//    ]);
+    Route::get('detail/{id?}', [
+        'as'=>'graph.detail',
+        'uses'=>'GraphController@detail'
+    ]);
+
 
     Route::post('make', [
         'as'=>'graph.make',
