@@ -1,4 +1,9 @@
 @extends('base')
+
+@section('css')
+    <link rel="stylesheet" type="text/css" href={{asset("/assets/lib/uikit/css/components/progress.gradient.css")}}>
+@endsection
+
 @section('content')
     <div class="uk-container uk-container-center">
         <div class="uk-grid">
@@ -24,7 +29,7 @@
                 </fieldset>
                 {{ Form::close() }}
                 {{ Form::submit('検索', array('id'=>'item-search', 'class'=>'uk-button uk-button-primary')) }}
-                {{ Form::submit('登録', array('id'=>'get-review', 'class'=>'uk-button uk-button-primary')) }}
+                {{ Form::submit('登録', array('id'=>'get-review', 'class'=>'uk-button uk-button-primary', 'data-uk-modal'=>"{target:'#my-id'}")) }}
                 <table id="resultTable" class="uk-table">
                 </table>
             </div>
