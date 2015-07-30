@@ -198,7 +198,7 @@ $(function() {
             'data':data,
             'type': "POST"
         }).done(function(data) {
-            console.log('ok');
+            $(".uk-modal-dialog").html('<div class="uk-container uk-container-center"><p>決定表の作成が完了しました</p></div>');
         }).fail(function(data, status, errorThrown) {
             console.log('fail');
             console.log(status);
