@@ -177,5 +177,5 @@ function hideReviewNodes() {
 //            $("line[attr_text=" + attr_text +"]").toggle();
 //            $("g[attr_text=" + attr_text +"]").toggle();
 //        });
-}
+//}
 
