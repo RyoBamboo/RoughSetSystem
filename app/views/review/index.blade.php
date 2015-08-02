@@ -29,8 +29,7 @@
                             <td>{{ $item->updated }}</td>
                             <td>
                                 <a href="/review/show/{{ $item->id }}"  class="uk-button uk-button-small">レビュー一覧</a>
-                                <a href="#update-review-modal" data-toggle="modal" data-id="{{ $item->id }}" class="update-review uk-button uk-button-small">更新</a>
-                                <a href="#delete-review-modal" data-toggle="modal" data-id="{{ $item->id }}" class="modal-delete uk-button uk-button-small uk-button-danger">削除</a>
+                                <a data-uk-modal="{target:'#my-id'}" data-id="{{ $item->id }}" class="modal-delete uk-button uk-button-small uk-button-danger">削除</a>
                             </td>
                         </tr>
                     @endforeach
@@ -39,4 +38,5 @@
             </div>
         </div>
     </div>
+    @include('review.delete_modal')
 @endsection
