@@ -8,7 +8,7 @@
         </div>
         <div class="uk-modal-footer uk-text-right">
             <button type="button" class="uk-button">キャンセル</button>
-            <button href="/review/delete/" type="button" class="uk-button uk-button-danger">削除</button>
+            <a href="/review/delete/" type="button" class="uk-button uk-button-danger">削除</a>
         </div>
     </div>
 </div>
