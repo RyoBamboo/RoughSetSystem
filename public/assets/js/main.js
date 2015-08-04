@@ -131,8 +131,7 @@ $(function() {
      *----------------------------------------------*/
     $('.modal-delete').on('click', function() {
 
-        var element = $('.modal-footer > a');
-
+        var element = $('.uk-modal-footer > .uk-button-danger');
         var url = element.attr('href') + $(this).attr('data-id');
 
         element.attr('href', url);
