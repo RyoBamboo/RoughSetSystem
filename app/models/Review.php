@@ -33,7 +33,7 @@ class Review extends Eloquent {
                 $html = Html::getHtml($url);
                 $review = Html::splitHtml($html, '<dd class="revRvwUserEntryCmt description">', "</dd>");
                 // 改行削除
-                $review = preg_replace('/(?:\n|\r|\r\n)/', '', $review );
+                $review = preg_replace('/(?:\n|\r|\r\n| |　)/', '', $review );
 
                 $star = Html::splitHtml($html, '<span class="revUserRvwerNum value">', "</span>");
                 if ($star >= 4) {
@@ -89,7 +89,7 @@ class Review extends Eloquent {
                 $review = mb_convert_encoding($review, 'UTF-8', 'SJIS');
                 $review = trim(strip_tags($review));
                 // 改行削除
-                $review = preg_replace('/(?:\n|\r|\r\n)/', '', $review );
+                $review = preg_replace('/(?:\n|\r|\r\n| |　)/', '', $review );
 
                 Log::debug($stars[1][$i]);
 
