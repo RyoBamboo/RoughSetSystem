@@ -1,10 +1,5 @@
 @extends('base')
 
-@section('css')
-    <link rel="stylesheet" type="text/css" href={{asset("/assets/css/uikit/css/components/progress.gradient.css")}}>
-@endsection
-
-
 @section('content')
     <div class="uk-container uk-container-center">
         <div class="uk-grid">
@@ -19,12 +14,12 @@
                         <option>CSVファイルを入力して登録する</option>
                     </select>
 
-                    <div class="tm-upload-button">
-                        ファイルを選択
-                        <input type="file">
-                    </div>
-                    <div class="uk-form-file uk-text-primary">
-                        text<input type="file">
+                    <div class="uk-form-row">
+                        <div class="tm-upload-button">
+                            <i class="fa fa-plus"></i>
+                            ファイルを選択
+                            <input type="file">
+                        </div>
                     </div>
                     <button class="uk-button">更新</button>
                 </form>
