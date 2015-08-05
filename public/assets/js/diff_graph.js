@@ -176,12 +176,12 @@ function hideReviewNodes() {
  * Event Handler
  *------------------------------------------------*/
 // 評価句ノードをクリックするとレビューノードの表示/非表示切り替え
-//function setEvent() {
-//    STAGE.selectAll("g.attr")
-//        .on("click", function() {
-//            var attr_text = $(this).closest('text').context.textContent;
-//            $("line[attr_text=" + attr_text +"]").toggle();
-//            $("g[attr_text=" + attr_text +"]").toggle();
-//        });
-//}
+function setEvent() {
+    STAGE.selectAll("g.attr")
+        .on("click", function() {
+            var attr_text = $(this).closest('text').context.textContent;
+            $("line[attr_text=" + attr_text +"]").toggle();
+            $("g[attr_text=" + attr_text +"]").toggle();
+        });
+}
 
