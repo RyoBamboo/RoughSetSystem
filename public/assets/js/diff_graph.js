@@ -128,18 +128,24 @@ function update() {
     nodeEnter.append("image")
         .attr("class", "circle")
         .attr("xlink:href", function (d) {
-            switch (d.type) {
-                case 'item':
-                    return '/assets/img/red.png';
-                    break;
-                case 'attr':
-                    return '/assets/img/blue.png';
-                    break;
-                case 'chunk':
-                    return '/assets/img/green.png';
-                default:
-                    return 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg'
-                    break;
+            if (d.type == 'item') {
+                return '/assets/img/red.png';
+            //switch (d.type) {
+            //    case 'item':
+            //        return '/assets/img/red.png';
+            //        break;
+            //    case 'attr':
+            //        return '/assets/img/blue.png';
+            //        break;
+            //    case 'chunk':
+            //        return '/assets/img/green.png';
+            //    default:
+            //        return 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg'
+            //        break;
+            } else if (d.type == 'attr' && d.belong == 0) {
+                return '/assets/img/green.png';
+            } else {
+                return '/assets/img/blue.png';
             }
         } ) //ノード用画像の設定
         .attr("x", "-16px")
