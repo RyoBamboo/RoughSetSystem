@@ -492,7 +492,12 @@ class GraphController extends BaseController
                         if ($_str == '*') continue;
                         $__str = explode(":", $_str);
                         $attr_id = $__str[0];
-                        $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = array('type'=>'chunk', 'text'=>$__str[1], 'attr_text'=>$data[$item_id]['ATTRS'][$attr_id]['text']);
+                        $___str = preg_split("/,/u", $__str[1]);
+                        foreach ($___str as $____str) {
+                            $test = preg_split("/;/u", $____str);
+                            $negaposi = $test[1];
+                            $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = array('type'=>'chunk', 'text'=>$test[0], 'attr_text'=>$data[$item_id]['ATTRS'][$attr_id]['text']);
+                        }
                     }
                 }
 
