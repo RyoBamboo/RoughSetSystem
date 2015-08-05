@@ -8,7 +8,7 @@
             </div>
             <div class="tm-main uk-width-8-10">
                 <h1 class="uk-article-title">Thesauru</h1>
-                <form class="uk-form">
+                <form class="uk-form" enctype="multipart/form-data">
                     <select>
                         <option>文字を入力して登録する</option>
                         <option>CSVファイルを入力して登録する</option>
@@ -18,7 +18,7 @@
                         <div class="tm-upload-button">
                             <i class="fa fa-plus"></i>
                             ファイルを選択
-                            <input type="file">
+                            <input name='thesaurus' id="file-upload" type="file">
                         </div>
                     </div>
                     <button class="uk-button">更新</button>

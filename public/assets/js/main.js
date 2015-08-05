@@ -203,4 +203,28 @@ $(function() {
             console.log(status);
         });
     });
+
+
+    /*------------------------------------------------
+     * 新規感性ワードの登録処理
+     *----------------------------------------------*/
+    $('#file-upload').on('change', function() {
+        if (this.files[0]['size'] != 0) {
+            var fd = new FormData();
+            var file = $('#file-upload');
+            fd.append(file.attr('name'), file.prop("files")[0]);
+
+            $.ajax({
+                'url':'/thesaurus/upload',
+                'type': 'POST',
+                'data':fd,
+                'processData': false,
+                'contentType': false,
+                'dataType':'json'
+            })
+            .done(function(data) {
+                console.log(data);
+            });
+        }
+    });
 });

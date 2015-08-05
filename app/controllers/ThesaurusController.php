@@ -117,15 +117,46 @@ class ThesaurusController extends BaseController {
     }
 
     // 更新
-    public function postUpdate()
+    public function postUpload()
     {
+        if (Input::hasFile('thesaurus')) {
+            $fp = fopen(Input::file('thesaurus')->getRealPath(), "r");
+            while ($line = fgets($fp)) {
+                $params = explode(',', $line);
+                foreach ($params as $key => $param) {
+                    if (is_numeric($param)) {
+                        $end_key = $key;
+                        $params = array_slice($params, 0, $end_key+1);
+                    }
+                }
 
+                $rayer = array_pop($params); // 階層構造
+                $text  = $params[0]; // 基本語句
+                $result = array();
+
+                $thesaurus = $this->thesaurus_gestion->where('text', $text)->first();
+                if ($thesaurus != NULL) {
+                    $synonym = $thesaurus->synonym;
+                    foreach ($params as $key=>$param) {
+                        if ($param != '' && strpos($synonym, $param) === false && $key <= $end_key) {
+                            $result[$text]['synonym'][] = $param;
+                            $result[$text]['rayer'] = $rayer;
+                        }
+                    }
+                } else {
+                    // 存在していない感性ワードなので新規登録
+                    $result[$text]['synonym'][] = $params;
+                    $result[$text]['rayer'] = $rayer;
+                }
+            }
+
+            return json_encode($result);
+        }
     }
 
     // TODO:のちにajax化
     public function getCsv()
     {
-
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=thesaurus.csv");
 
