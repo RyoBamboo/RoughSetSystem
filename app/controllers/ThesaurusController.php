@@ -15,7 +15,7 @@ class ThesaurusController extends BaseController {
         $this->data['pagename'] = 'thesaurus';
     }
 
-    public function getIndex()
+    public function index()
     {
         $thesauruses = $this->thesaurus_gestion->all();
 
@@ -49,7 +49,7 @@ class ThesaurusController extends BaseController {
 
 
     // 追加フォームの表示
-    public function getAdd()
+    public function add()
     {
         $this->data['pageaction'] = 'add';
         return View::make('thesaurus.add', $this->data);
@@ -57,7 +57,7 @@ class ThesaurusController extends BaseController {
 
 
     // 追加
-    public function postAdd()
+    public function store()
     {
         $filepath = ($_FILES['thesaurus_csv']['tmp_name']);
         $buf = file_get_contents($filepath);
@@ -111,13 +111,13 @@ class ThesaurusController extends BaseController {
     }
 
     // 削除
-    public function getDelete()
+    public function delete()
     {
 
     }
 
     // 更新
-    public function postUpload()
+    public function upload()
     {
         if (Input::hasFile('thesaurus')) {
             $fp = fopen(Input::file('thesaurus')->getRealPath(), "r");

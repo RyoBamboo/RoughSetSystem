@@ -24,7 +24,7 @@
                             <td>{{ $thesaurus->synonym }}</td>
                             <td>{{ $thesaurus->rayer }}</td>
                             <td>
-                                <button data-uk-modal="{target:'#my-id'}" data-id="{{ $thesaurus->id }}" class="uk-button uk-button-danger">削除</button>
+                                <button data-uk-modal="{target:'#my-id'}" data-id="{{ $thesaurus->id }}" class="modal-delete uk-button uk-button-danger">削除</button>
                             </td>
                         </tr>
                     @endforeach

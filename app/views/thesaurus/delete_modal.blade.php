@@ -8,7 +8,7 @@
         </div>
         <div class="uk-modal-footer uk-text-right">
             <button type="button" class="uk-button">キャンセル</button>
-            <a href="/thesaurus/delete/{{ $thesaurus->id }}" type="button" class="uk-button uk-button-danger">削除</a>
+            <a href="/thesaurus/delete/" type="button" class="uk-button uk-button-danger">削除</a>
         </div>
     </div>
 </div>
