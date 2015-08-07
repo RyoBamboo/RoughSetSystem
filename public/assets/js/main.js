@@ -223,7 +223,17 @@ $(function() {
                 'dataType':'json'
             })
             .done(function(data) {
-                   console.log(data);
+                    $.each(data, function(key, value) {
+                        var text = key;
+                        var rayer = value['rayer'];
+                        var synonyms = '';
+                        $.each(value['synonym'], function(i, synonym) {
+                            if (i != 0) synonym =  "," + synonym;
+                            synonyms += synonym;
+                        });
+
+                        $('tbody').append("<tr><td>"+ text +"</td><td>"+ synonyms +"</td><td>"+ rayer +"</td></tr>");
+                    });
             });
         }
     });

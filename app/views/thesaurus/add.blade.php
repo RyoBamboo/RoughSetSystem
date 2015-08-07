@@ -8,7 +8,7 @@
             </div>
             <div class="tm-main uk-width-8-10">
                 <h1 class="uk-article-title">Thesauru</h1>
-                <form class="uk-form" enctype="multipart/form-data">
+                <form class="uk-form" method="post" action="/thesaurus/store/" enctype="multipart/form-data">
                     <select>
                         <option>文字を入力して登録する</option>
                         <option>CSVファイルを入力して登録する</option>
@@ -23,7 +23,7 @@
                     </div>
                     <button class="uk-button">更新</button>
                 </form>
-                <table class="uk-table">
+                <table class="uk-table" >
                     <thead>
                         <tr>
                             <th>基本後</th>

@@ -59,7 +59,7 @@ class ThesaurusController extends BaseController {
     // 追加
     public function store()
     {
-        $filepath = ($_FILES['thesaurus_csv']['tmp_name']);
+        $filepath = ($_FILES['thesaurus']['tmp_name']);
         $buf = file_get_contents($filepath);
         $lines = preg_split("/\n|\r|\r\n/", $buf);
         foreach ($lines as $line) {
@@ -71,7 +71,6 @@ class ThesaurusController extends BaseController {
 
             end($params);
             $end_key = key($params);
-
             // 最後の部分を取得する処理
             while (true) {
                 if (is_numeric($params[$end_key]) == true) {
@@ -146,7 +145,7 @@ class ThesaurusController extends BaseController {
                     }
                 } else {
                     // 存在していない感性ワードなので新規登録
-                    $result[$text]['synonym'][] = $params;
+                    $result[$text]['synonym'] = $params;
                     $result[$text]['rayer'] = $rayer;
                 }
             }
