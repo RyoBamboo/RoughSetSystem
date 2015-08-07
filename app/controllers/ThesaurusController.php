@@ -111,9 +111,10 @@ class ThesaurusController extends BaseController {
     }
 
     // 削除
-    public function delete()
+    public function delete($id)
     {
-
+        $this->thesaurus_gestion->where('id', $id)->delete();
+        return Redirect::to('/thesaurus');
     }
 
     // 更新
