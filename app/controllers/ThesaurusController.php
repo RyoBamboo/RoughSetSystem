@@ -122,6 +122,7 @@ class ThesaurusController extends BaseController {
     {
         if (Input::hasFile('thesaurus')) {
             $fp = fopen(Input::file('thesaurus')->getRealPath(), "r");
+            $result = array();
             while ($line = fgets($fp)) {
                 $params = explode(',', $line);
                 foreach ($params as $key => $param) {
@@ -133,7 +134,6 @@ class ThesaurusController extends BaseController {
 
                 $rayer = array_pop($params); // 階層構造
                 $text  = $params[0]; // 基本語句
-                $result = array();
 
                 $thesaurus = $this->thesaurus_gestion->where('text', $text)->first();
                 if ($thesaurus != NULL) {

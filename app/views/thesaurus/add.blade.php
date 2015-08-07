@@ -23,6 +23,17 @@
                     </div>
                     <button class="uk-button">更新</button>
                 </form>
+                <table class="uk-table">
+                    <thead>
+                        <tr>
+                            <th>基本後</th>
+                            <th>類義語</th>
+                            <th>階層</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
