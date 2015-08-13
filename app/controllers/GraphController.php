@@ -554,4 +554,8 @@ class GraphController extends BaseController
         $this->data['item_names'] = $item_names;
         return View::make('graph.diff', $this->data);
     }
+
+    public function testGraph() {
+
+    }
 }
