@@ -60,6 +60,11 @@ Route::group(['prefix'=>'graph'], function() {
         'as'=>'graph.testView',
         'uses'=>'GraphController@testView'
     ]);
+
+    Route::get('graphTest', [
+        'as'=>'graph.graphTest',
+        'uses'=>'GraphController@graphTest'
+    ]);
 });
 
 
