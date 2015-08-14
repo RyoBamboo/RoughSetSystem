@@ -540,6 +540,12 @@ class GraphController extends BaseController
         return View::make('graph.testView', $this->data);
     }
 
+    public function testView2() {
+        $this->data['pageaction'] = 'view';
+
+        return View::make('graph.testView2', $this->data);
+    }
+
 
     public function diff() {
 
@@ -554,7 +560,6 @@ class GraphController extends BaseController
         $this->data['item_names'] = $item_names;
         return View::make('graph.diff', $this->data);
     }
-
 
     public function testGraph() {
         $results = array();

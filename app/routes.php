@@ -61,7 +61,12 @@ Route::group(['prefix'=>'graph'], function() {
         'uses'=>'GraphController@testView'
     ]);
 
-    Route::get('testGraph', [
+    Route::get('testView2', [
+        'as'=>'graph.testView2',
+        'uses'=>'GraphController@testView2'
+    ]);
+
+    Route::post('testGraph', [
         'as'=>'graph.testGraph',
         'uses'=>'GraphController@testGraph'
     ]);
