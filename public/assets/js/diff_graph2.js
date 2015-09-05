@@ -47,18 +47,15 @@ function init() {
 
 function loadContent() {
     var params = location.href.split("?")[1];
-    var items = params.split("&");
-    item1 = items[0].split("=")[1];
-    item2 = items[1].split("=")[1];
+    var item_ids = params.split("=")[1];
 
     var data = {
-        "item1" : item1,
-        "item2" : item2
+        "item_ids" : item_ids,
     };
 
     $.ajax({
         type: "POST",
-        url: "/graph/test",
+        url: "/graph/testGraph",
         data: data,
         success: function(res){
             if(res){
