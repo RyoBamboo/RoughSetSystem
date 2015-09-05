@@ -1,4 +1,5 @@
 @extends('base')
+
 @section('content')
     <div class="uk-container uk-container-center">
         <div class="uk-grid">
@@ -13,8 +14,7 @@
                             <th>基本語</th>
                             <th>類義語</th>
                             <th>分類</th>
-                            <th>作成日時</th>
-                            <th>更新日時</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,8 +23,9 @@
                             <td>{{ $thesaurus->text }}</td>
                             <td>{{ $thesaurus->synonym }}</td>
                             <td>{{ $thesaurus->rayer }}</td>
-                            <td>{{ $thesaurus->created }}</td>
-                            <td>{{ $thesaurus->updated }}</td>
+                            <td>
+                                <button data-uk-modal="{target:'#my-id'}" data-id="{{ $thesaurus->id }}" class="modal-delete uk-button uk-button-danger">削除</button>
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -32,4 +33,5 @@
             </div>
         </div>
     </div>
+    @include('thesaurus.delete_modal')
 @endsection

@@ -33,13 +33,5 @@ class Thesaurus extends Eloquent {
     }
 
 
-    // 既に類義語として登録されているか判定する
-    public static function IsSynonym($new_synonym) {
-    }
-
-    //新しい類義語を１文字追加する
-    public static function updateSynonym($new_synonym) {
-
-    }
 
 }

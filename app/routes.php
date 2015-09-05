@@ -64,7 +64,32 @@ Route::group(['prefix'=>'graph'], function() {
 
 
 /* Thesaurus */
-Route::controller('thesaurus', 'ThesaurusController');
+Route::group(['prefix'=>'thesaurus'], function() {
+    Route::get('', [
+        'as'=>'thesaurus',
+        'uses'=>'ThesaurusController@index'
+    ]);
+
+    Route::get('add', [
+        'as'=>'add',
+        'uses'=>'ThesaurusController@add'
+    ]);
+
+    Route::get('delete/{id?}', [
+        'as'=>'delete',
+        'uses'=>'ThesaurusController@delete'
+    ]);
+
+    Route::post('store', [
+        'as'=>'store',
+        'uses'=>'ThesaurusController@store'
+    ]);
+
+    Route::post('upload', [
+        'as'=>'upload',
+        'uses'=>'ThesaurusController@upload'
+    ]);
+});
 
 
 /* Chunk */

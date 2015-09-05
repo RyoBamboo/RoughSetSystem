@@ -15,7 +15,7 @@ class ThesaurusController extends BaseController {
         $this->data['pagename'] = 'thesaurus';
     }
 
-    public function getIndex()
+    public function index()
     {
         $thesauruses = $this->thesaurus_gestion->all();
 
@@ -49,7 +49,7 @@ class ThesaurusController extends BaseController {
 
 
     // 追加フォームの表示
-    public function getAdd()
+    public function add()
     {
         $this->data['pageaction'] = 'add';
         return View::make('thesaurus.add', $this->data);
@@ -57,75 +57,95 @@ class ThesaurusController extends BaseController {
 
 
     // 追加
-    public function postAdd()
+    public function store()
     {
-        $filepath = ($_FILES['thesaurus_csv']['tmp_name']);
-        $buf = file_get_contents($filepath);
-        $lines = preg_split("/\n|\r|\r\n/", $buf);
-        foreach ($lines as $line) {
-            if (empty($line)) {
-                continue;
-            }
-
-            $params = explode(",",$line);
-
-            end($params);
-            $end_key = key($params);
-
-            // 最後の部分を取得する処理
-            while (true) {
-                if (is_numeric($params[$end_key]) == true) {
-                    break;
-                }
-
-                $end_key--;
-            }
-
-            $rayer = $params[$end_key];
-            $text = $params[0];
-            array_pop($params);
-            $synonym = implode(",", $params);
-
-            // TODO
-            // ここからcsvの更新処理
-            $thesaurus = Thesaurus::where('text', $text)->first();
-            if ($thesaurus != NULL) {
-                $new_synonym = $thesaurus->synonym;
-                $update_flag = false;
-                for ($i = 0; $i < $end_key; $i++) {
-                    if (!empty($params[$i]) &&strpos($new_synonym, $params[$i]) === false) {
-                        // 登録されている基本語の類義語として登録
-                        $new_synonym .= ',' . $params[$i];
-                        $update_flag = true;
+        if (Input::hasFile('thesaurus')) {
+            $fp = fopen(Input::file('thesaurus')->getRealPath(), "r");
+            while ($line = fgets($fp)) {
+                $params = explode(',', $line);
+                foreach ($params as $key => $param) {
+                    if (is_numeric($param)) {
+                        $end_key = $key;
+                        $params = array_slice($params, 0, $end_key+1);
                     }
                 }
 
-                if ($update_flag) {
-                    Thesaurus::where('id', $thesaurus->id)->update(array('synonym'=>$new_synonym, 'updated_at'=>time()));
+                $rayer = array_pop($params); // 階層構造
+                $text  = $params[0]; // 基本語句
+                $update_flag = false;
+
+                $thesaurus = $this->thesaurus_gestion->where('text', $text)->first();
+                if ($thesaurus != NULL) {
+                    $synonym = $thesaurus->synonym;
+                    foreach ($params as $key=>$param) {
+                        if ($param != '' && strpos($synonym, $param) === false && $key <= $end_key) {
+                            $synonym .= ','. $param;
+                            $update_flag = true;
+                        }
+
+                        if ($update_flag) {
+                            Thesaurus::where('id', $thesaurus->id)->update(array('synonym'=>$synonym, 'updated_at'=>time()));
+                        }
+                    }
+                } else {
+                    // 存在していない感性ワードなので新規登録
+                    $synonym = implode(',', $params);
+                    Thesaurus::insert(array('text'=>$text, 'synonym'=>$synonym, 'rayer'=>$rayer, 'created_at'=>time(), 'updated_at'=>time()));
                 }
-            } else {
-                // 存在していない基本語なので新規登録
-                Thesaurus::insert(array('text'=>$text, 'synonym'=>$synonym, 'rayer'=>$rayer, 'created_at'=>time(), 'updated_at'=>time()));
             }
         }
+
+        return Redirect::to('/thesaurus');
     }
 
     // 削除
-    public function getDelete()
+    public function delete($id)
     {
-
+        $this->thesaurus_gestion->where('id', $id)->delete();
+        return Redirect::to('/thesaurus');
     }
 
     // 更新
-    public function postUpdate()
+    public function upload()
     {
+        if (Input::hasFile('thesaurus')) {
+            $fp = fopen(Input::file('thesaurus')->getRealPath(), "r");
+            $result = array();
+            while ($line = fgets($fp)) {
+                $params = explode(',', $line);
+                foreach ($params as $key => $param) {
+                    if (is_numeric($param)) {
+                        $end_key = $key;
+                        $params = array_slice($params, 0, $end_key+1);
+                    }
+                }
 
+                $rayer = array_pop($params); // 階層構造
+                $text  = $params[0]; // 基本語句
+
+                $thesaurus = $this->thesaurus_gestion->where('text', $text)->first();
+                if ($thesaurus != NULL) {
+                    $synonym = $thesaurus->synonym;
+                    foreach ($params as $key=>$param) {
+                        if ($param != '' && strpos($synonym, $param) === false && $key <= $end_key) {
+                            $result[$text]['synonym'][] = $param;
+                            $result[$text]['rayer'] = $rayer;
+                        }
+                    }
+                } else {
+                    // 存在していない感性ワードなので新規登録
+                    $result[$text]['synonym'] = $params;
+                    $result[$text]['rayer'] = $rayer;
+                }
+            }
+
+            return json_encode($result);
+        }
     }
 
     // TODO:のちにajax化
     public function getCsv()
     {
-
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=thesaurus.csv");
 
