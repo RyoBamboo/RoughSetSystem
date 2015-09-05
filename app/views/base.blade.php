@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <!-- include CSS -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href={{asset("/assets/lib/uikit/css/uikit.gradient.css")}}>
     <link rel="stylesheet" type="text/css" href={{asset("/assets/css/base.css")}}>
     @yield('css')
