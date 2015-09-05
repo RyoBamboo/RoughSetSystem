@@ -26,7 +26,7 @@
                 <table class="uk-table" >
                     <thead>
                         <tr>
-                            <th>基本後</th>
+                            <th>基本語</th>
                             <th>類義語</th>
                             <th>階層</th>
                         </tr>
