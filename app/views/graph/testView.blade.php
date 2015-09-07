@@ -7,7 +7,6 @@
 @section('js')
     <script src="/assets/js/d3.v2.js"></script>
     <script src="/assets/js/util.js"></script>
-    {{--<script src="/assets/js/graph.js"></script>--}}
     <script src="/assets/js/diff_graph.js"></script>
 @stop
 
@@ -21,6 +20,15 @@
                 <!-- ここにグラフ描画 -->
                 <div id="graph"></div>
             </div>
+        </div>
+    </div>
+    <!-- レビュー詳細表示用モーダル -->
+    <div class="uk-modal">
+        <div class="uk-modal-dialog">
+            <h3>レビュー</h3>
+            <p class="review_text"></p>
+            <h3>要点</h3>
+            <p class="chunk_text"></p>
         </div>
     </div>
 @stop

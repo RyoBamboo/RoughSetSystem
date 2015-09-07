@@ -484,7 +484,8 @@ class GraphController extends BaseController
                     }
 
                     $id = $str[0]; unset($str[0]);
-                    $reivew_id = $str[1]; unset($str[1]);
+                    $review_id = $str[1]; unset($str[1]);
+                    $review = $this->review_gestion->find($review_id);
                     $dc = 0;
                     array_pop($str);
 
@@ -496,7 +497,7 @@ class GraphController extends BaseController
                         foreach ($___str as $____str) {
                             $test = preg_split("/;/u", $____str);
                             $negaposi = $test[1];
-                            $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = array('type'=>'chunk', 'text'=>$test[0], 'attr_text'=>$data[$item_id]['ATTRS'][$attr_id]['text']);
+                            $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = array('type'=>'chunk', 'text'=>$test[0], 'attr_text'=>$data[$item_id]['ATTRS'][$attr_id]['text'], 'review_text'=>$review->content);
                         }
                     }
                 }
