@@ -123,6 +123,9 @@ function update() {
         .attr("attr_text", function(d) {
             return d.attr_text;
         })
+        .attr("review_text", function(d) {
+            return d.review_text;
+        })
         .call(force.drag);
 
     nodeEnter.append("image")
@@ -152,7 +155,6 @@ function update() {
         .attr("y", "-16px")
         .attr("width", "32px")
         .attr("height", "32px");
-
     nodeEnter.append("text")
         .text(function(d) { return d.text });
 
@@ -175,13 +177,27 @@ function hideReviewNodes() {
 /*--------------------------------------------------
  * Event Handler
  *------------------------------------------------*/
-// 評価句ノードをクリックするとレビューノードの表示/非表示切り替え
 function setEvent() {
+    // 評価句ノードをクリックするとレビューノードの表示/非表示切り替え
     STAGE.selectAll("g.attr")
         .on("click", function() {
             var attr_text = $(this).closest('text').context.textContent;
             $("line[attr_text=" + attr_text +"]").toggle();
             $("g[attr_text=" + attr_text +"]").toggle();
+        });
+
+    // チャンクノードをクリックすると元のレビューを表示
+    STAGE.selectAll("g.chunk")
+        .on("click", function(d) {
+            var modal = UIkit.modal(".uk-modal");
+            if ( modal.isActive() ) {
+                modal.hide();
+            } else {
+                console.log(d);
+                $(".uk-modal-dialog .review_text").text(d.review_text);
+                $(".uk-modal-dialog .chunk_text").text(d.text);
+                modal.show();
+            }
         });
 }
 
