@@ -82,16 +82,13 @@ class Review extends Eloquent {
             if ($m[1] == false) {
                 break;
             }
-            // 評価の取得（[0]は評価の平均なので除外する）
-            preg_match_all('/<span class="swSprite s_star_([0-5])/', $html, $stars);
-            $i = 1;
+            preg_match_all('/<span class="a-icon-alt">([0-5])<\/span>/', $html, $stars);
+            $i = 0;
             foreach ($m[1] as $review) {
-                $review = mb_convert_encoding($review, 'UTF-8', 'SJIS');
+//                $review = mb_convert_encoding($review, 'UTF-8', 'SJIS');
                 $review = trim(strip_tags($review));
                 // 改行削除
                 $review = preg_replace('/(?:\n|\r|\r\n| |　)/', '', $review );
-
-                Log::debug($stars[1][$i]);
 
                 if ($stars[1][$i] >= 4) {
                     $is_bought = 1;
