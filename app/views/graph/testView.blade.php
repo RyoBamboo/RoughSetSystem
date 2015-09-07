@@ -25,7 +25,10 @@
     <!-- レビュー詳細表示用モーダル -->
     <div class="uk-modal">
         <div class="uk-modal-dialog">
-            <p>test</p>
+            <h3>レビュー</h3>
+            <p class="review_text"></p>
+            <h3>要点</h3>
+            <p class="chunk_text"></p>
         </div>
     </div>
 @stop

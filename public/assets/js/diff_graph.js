@@ -193,7 +193,9 @@ function setEvent() {
             if ( modal.isActive() ) {
                 modal.hide();
             } else {
-                $(".uk-modal-dialog > p").text(d.review_text);
+                console.log(d);
+                $(".uk-modal-dialog .review_text").text(d.review_text);
+                $(".uk-modal-dialog .chunk_text").text(d.text);
                 modal.show();
             }
         });
