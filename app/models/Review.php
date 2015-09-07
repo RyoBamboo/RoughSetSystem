@@ -96,6 +96,7 @@ class Review extends Eloquent {
                     $is_bought = 0;
                 }
 
+                
                 Review::insert(
                     array('item_id'=> $item_id, 'content' => $review, 'is_bought'=>$is_bought, 'created_at' => time(), 'updated_at'=>time())
                 );
