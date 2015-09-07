@@ -540,6 +540,12 @@ class GraphController extends BaseController
         return View::make('graph.testView', $this->data);
     }
 
+    public function testView2() {
+        $this->data['pageaction'] = 'view';
+
+        return View::make('graph.testView2', $this->data);
+    }
+
 
     public function diff() {
 
@@ -553,5 +559,81 @@ class GraphController extends BaseController
 
         $this->data['item_names'] = $item_names;
         return View::make('graph.diff', $this->data);
+    }
+
+    public function testGraph() {
+        $results = array();
+
+        $item_ids = explode('_', Input::get('item_ids'));
+        $current_flag = null; // ファイル読み込み時に使う分岐用フラグ
+
+        foreach ($item_ids as $item_id) {
+            $item = $this->item_gestion->find($item_id);
+            $attrs = array();
+            $chunks = array();
+
+            // 決定表の読み込み
+            $fp = fopen("assets/dat/{$item->id}.dat", 'r');
+            while ($line = fgets($fp)) {
+                $data['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item->id);
+
+                // #ATTRS抽出
+                if ($current_flag == 'ATTRS') {
+                    $attr_params = explode(' ', $line) ;
+                    if (count($attr_params) == 1) {
+                        $current_flag = null;
+                        continue;
+                    }
+
+                    $attr_text = $attr_params[0];
+                    $attr_id = $attr_params[1];
+                    $attr_rayer = trim($attr_params[2]);
+
+                    $attrs[$attr_id] = array('type'=>'attr', 'text'=>$attr_text, 'rayer'=>$attr_rayer, 'belong'=>$attr_id);
+                }
+
+
+                // #INFOATTR抽出
+                if ($current_flag == 'INFOATTRS') {
+                    $infoattr_params = explode(' ', $line) ;
+                    if (count($infoattr_params) == 1) {
+                        $current_flag = null;
+                        continue;
+                    }
+
+                    $infoattr_id = $infoattr_params[0]; unset($infoattr_params[0]);
+                    $review_id = $infoattr_params[1]; unset($infoattr_params[1]);
+                    $is_bought = trim(array_pop($infoattr_params));
+
+                    foreach ($infoattr_params as $infoattr_param) {
+                        if ($infoattr_param == '*') continue;
+                        $infoattrs = explode(':', $infoattr_param);
+                        $attr_id = $infoattrs[0];
+                        $infoattrs = preg_split("/,/u", $infoattrs[1]);
+                        foreach ($infoattrs as $infoattr) {
+                            $attrs_text = $attrs[$attr_id]['text'];
+                            $info = preg_split("/;/u", $infoattr);
+                            $negaposi = $info[1];
+                            $chunk = array(
+                                'type'=>'chunk', 'text'=>$info[0], 'infoattr_id'=>$infoattr_id,
+                                'attr_text'=>$attrs_text, 'negaposi'=>$negaposi,
+                                'review_id'=>$review_id, 'is_bought'=>$is_bought
+                            );
+                            $attrs[$attr_id]['chunks'][] = $chunk;
+                        }
+                    }
+                }
+
+
+                // フラグ検出
+                if (preg_match('/^#([A-Z]+)/', $line, $match)) {
+                    $current_flag = $match[1];
+                }
+            }
+
+            $results[$item_id] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item->id, 'attrs'=>$attrs);
+        }
+
+        return json_encode($results);
     }
 }
