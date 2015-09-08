@@ -63,6 +63,7 @@ function loadContent() {
         success: function(res){
             if(res){
                 json = $.parseJSON(res);
+                console.log(json);
                 ATTRS = json['ATTRS'];
                 ITEMS = json['ITEMS'];
                 draw();
