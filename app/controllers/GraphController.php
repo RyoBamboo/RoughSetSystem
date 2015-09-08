@@ -469,6 +469,15 @@ class GraphController extends BaseController
             fwrite($fp, PHP_EOL); // TODO: ファイルへ書き込み
         }
 
+
+        /*-----------------------------------------
+         * 感性ワードの出現率の出力(Relative Frequency)
+         *---------------------------------------*/
+        fwrite($fp, "#RF" . PHP_EOL); // TODO: ファイルへ書き込み
+        foreach ($review_percents as $key => $review_percent) {
+            fwrite($fp, $key ." ". $review_percent .PHP_EOL);
+        }
+
     }
 
     /*-----------------------------------------------------------------------------------------------*/
