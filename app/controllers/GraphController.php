@@ -34,6 +34,11 @@ class GraphController extends BaseController
         return View::make('graph.view', $this->data);
     }
 
+    public function detail() {
+        $this->data['pageaction'] = 'view';
+        return View::make('graph.detail', $this->data);
+    }
+
 
     // TODO: グラフ生成時に使用
     public function load() {

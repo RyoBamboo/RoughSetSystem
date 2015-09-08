@@ -36,6 +36,11 @@ Route::group(['prefix'=>'graph'], function() {
         'uses'=>'GraphController@view'
     ]);
 
+    Route::get('detail', [
+        'as'=>'graph.detail',
+        'uses'=>'GraphController@detail'
+    ]);
+
 //    Route::get('make/{id?}', [
 //        'as'=>'graph.make',
 //        'uses'=>'GraphController@make'
