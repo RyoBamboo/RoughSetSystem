@@ -302,20 +302,20 @@ class GraphController extends BaseController
         /*-----------------------------------------
          * 感性ワードの出現率を検索する
          *---------------------------------------*/
-//        $all_review_count = $this->review_gestion->count(); // 全レビュー件数
-//        foreach ($ll_result as $key => $value) {
-//            $review_count = count($ll_result[$key]);
-//            $review_percents[$key] = $review_count/$all_review_count;
-//        }
-
-        $all_review_count = 0; // 採用したレビュー件数
+        $all_review_count = $this->review_gestion->where('item_id', '=', $id)->count(); // 全レビュー件数
         foreach ($ll_result as $key => $value) {
-            $review_counts[$key] = count($ll_result[$key]);
-            $all_review_count += count($ll_result[$key]);
-        }
-        foreach ($review_counts as $key => $review_count) {
+            $review_count = count($ll_result[$key]);
             $review_percents[$key] = $review_count/$all_review_count;
         }
+
+//        $all_review_count = 0; // 採用したレビュー件数
+//        foreach ($ll_result as $key => $value) {
+//            $review_counts[$key] = count($ll_result[$key]);
+//            $all_review_count += count($ll_result[$key]);
+//        }
+//        foreach ($review_counts as $key => $review_count) {
+//            $review_percents[$key] = $review_count/$all_review_count;
+//        }
 
         // 形を整える
         foreach ($review_percents as $key => $review_percent) {
