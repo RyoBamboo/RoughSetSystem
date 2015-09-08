@@ -271,6 +271,7 @@ class GraphController extends BaseController
             $last_result = Chunk::getChunks($yahoo_result, $review->content, $review, $last_result, $review->is_bought);
         }
 
+
         /*-----------------------------------------
          * 類義語検索
          *---------------------------------------*/
@@ -297,6 +298,30 @@ class GraphController extends BaseController
                 }
             }
         }
+
+        /*-----------------------------------------
+         * 感性ワードの出現率を検索する
+         *---------------------------------------*/
+        $all_review_count = $this->review_gestion->where('item_id', '=', $id)->count(); // 全レビュー件数
+        foreach ($ll_result as $key => $value) {
+            $review_count = count($ll_result[$key]);
+            $review_percents[$key] = $review_count/$all_review_count;
+        }
+
+//        $all_review_count = 0; // 採用したレビュー件数
+//        foreach ($ll_result as $key => $value) {
+//            $review_counts[$key] = count($ll_result[$key]);
+//            $all_review_count += count($ll_result[$key]);
+//        }
+//        foreach ($review_counts as $key => $review_count) {
+//            $review_percents[$key] = $review_count/$all_review_count;
+//        }
+
+        // 形を整える
+        foreach ($review_percents as $key => $review_percent) {
+            $review_percents[$key]  = substr($review_percent * 100, 0, 4);
+        }
+
 
         /*-----------------------------------------
          * 決定表を作成する
@@ -444,18 +469,30 @@ class GraphController extends BaseController
             fwrite($fp, PHP_EOL); // TODO: ファイルへ書き込み
         }
 
+
+        /*-----------------------------------------
+         * 感性ワードの出現率の出力(Relative Frequency)
+         *---------------------------------------*/
+        fwrite($fp, "#RF" . PHP_EOL); // TODO: ファイルへ書き込み
+        foreach ($review_percents as $key => $review_percent) {
+            fwrite($fp, $key ." ". $review_percent .PHP_EOL);
+        }
+
     }
 
     /*-----------------------------------------------------------------------------------------------*/
     public function test() {
 
         $item_ids = Input::all();
+        $attr_ids = array();
         $current_flag = null; // ファイル読み込み時に使う分岐用フラグ
         $data = array();
         $result = array();
 
         foreach ($item_ids as $item_id) {
             $item = $this->item_gestion->find($item_id);
+            $attr_ids = null;
+            $current_flag = null;
             $data['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
             $result['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
 
@@ -472,6 +509,7 @@ class GraphController extends BaseController
 
                     $attr_text = $str[0];
                     $attr_id = $str[1];
+                    $attr_ids[] = $attr_id;
                     $data[$item_id]['ATTRS'][$attr_id] = array('type'=>'attr', 'text'=>$attr_text, 'belong'=>$item_id);
                 }
 
@@ -502,11 +540,28 @@ class GraphController extends BaseController
                     }
                 }
 
+
+                // 感性ワード出現率(#RF)の抽出
+                if ($current_flag == 'RF') {
+                    $str = explode(' ', $line);
+                    if (count($str) == 1) {
+                        $current_flag = null;
+                        continue;
+                    }
+
+                    foreach ($attr_ids as $attr_id) {
+                        if ($data[$item_id]['ATTRS'][$attr_id]['text'] == $str[0]) {
+                            $data[$item_id]['ATTRS'][$attr_id]['rf'] = $str[1];
+                        }
+                    }
+                }
+
                 // フラグ検出
                 if (preg_match('/^#([A-Z]+)/', $line, $match)) {
                     $current_flag = $match[1];
                 }
             }
+
 
             // 共通の評価句とそうでないものを分ける
             if (count($data['ITEMS']) == 1) {
@@ -594,6 +649,8 @@ class GraphController extends BaseController
                 }
 
 
+
+
                 // #INFOATTR抽出
                 if ($current_flag == 'INFOATTRS') {
                     $infoattr_params = explode(' ', $line) ;
@@ -629,6 +686,7 @@ class GraphController extends BaseController
                 // フラグ検出
                 if (preg_match('/^#([A-Z]+)/', $line, $match)) {
                     $current_flag = $match[1];
+                    Log::debug($current_flag);
                 }
             }
 
