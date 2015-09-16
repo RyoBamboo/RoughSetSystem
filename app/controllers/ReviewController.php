@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Pagination\CustomPresenter;
+use Illuminate\Routing\UrlGenerator;
 
 class ReviewController extends \BaseController {
 
@@ -134,5 +135,11 @@ class ReviewController extends \BaseController {
 
         // 再度取得
         Review::getReviews($item_code, $item_id);
+    }
+
+    public function getDel($id) {
+        $this->review_gestion->find($id)->delete();
+        return Redirect::to($_SERVER['HTTP_REFERER']);
+
     }
 }
