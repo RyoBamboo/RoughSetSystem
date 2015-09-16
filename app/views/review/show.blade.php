@@ -19,7 +19,7 @@
                     <tbody>
                     @foreach($reviews as $review)
                         <tr>
-                            <td>{{ $review->no }}</td>
+                            <td>{{ $review->id }}</td>
                             <td>{{ $review->content }}</td>
                             <td><a class="uk-button uk-button-danger" href="/review/del/{{ $review->id }}">削除</a></td>
                         </tr>
