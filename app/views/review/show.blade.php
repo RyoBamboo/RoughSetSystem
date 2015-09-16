@@ -13,7 +13,7 @@
                         <tr>
                             <th>No.</th>
                             <th>内容</th>
-                            <th>作成日時</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -21,7 +21,7 @@
                         <tr>
                             <td>{{ $review->no }}</td>
                             <td>{{ $review->content }}</td>
-                            <td>{{ $review->created_at }}</td>
+                            <td><a class="uk-button uk-button-danger" href="/review/del/{{ $review->id }}">削除</a></td>
                         </tr>
                     @endforeach
                     </tbody>
