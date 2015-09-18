@@ -176,9 +176,9 @@ function loadContent() {
 
 function setReview(reviews) {
 	for(key in reviews) {
-		//$("#reviews ul").append('<li id="rev' + reviews[key]['id']  + '"' +"><p><h4><総評></h4>"  + reviews[key]['souhyou'] + "</p><p><h4><長所></h4>" + reviews[key]['chousho'] + "</p><p><h4><総評></h4>" + reviews[key]['tansho'] + "</p><p><h4><要点></h4>" + reviews[key]['points'] + "</p></li>");
-        //$("#reviews ul").append('<li id="rev' + reviews[key][0]['id']  + '"' +"><p><h4>レビュー・要点</h4>"  + reviews[key][0]['content'] + "</li>");
-		//$("#reviews ul").append('<li id="rev' + reviews[key]['id']  + '">' + reviews[key]['review'] + "</li>");
+		$("#reviews ul").append('<li id="rev' + reviews[key]['id']  + '"' +"><p><h4><総評></h4>"  + reviews[key]['souhyou'] + "</p><p><h4><長所></h4>" + reviews[key]['chousho'] + "</p><p><h4><総評></h4>" + reviews[key]['tansho'] + "</p><p><h4><要点></h4>" + reviews[key]['points'] + "</p></li>");
+        $("#reviews ul").append('<li id="rev' + reviews[key][0]['id']  + '"' +"><p><h4>レビュー・要点</h4>"  + reviews[key][0]['content'] + "</li>");
+		$("#reviews ul").append('<li id="rev' + reviews[key]['id']  + '">' + reviews[key]['review'] + "</li>");
 	}
 }
 
