@@ -162,7 +162,7 @@ function loadContent() {
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
 				ATTRS = json['ATTRS'][TYPE];
-				setReview(json['REVIEWS'][TYPE]);
+				//setReview(json['REVIEWS'][TYPE]);
 				$("#DR").html(json['DR_TEXT']);
 				$("#DRH").html(json['DRH_TEXT']);
 				$("#ATTR").html(json['ATTR_TEXT']);
