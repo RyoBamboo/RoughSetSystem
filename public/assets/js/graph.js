@@ -103,7 +103,7 @@ function update() {
 
     var nodeEnter = node.enter().append("svg:g")
     .attr("id", function(n) { return "n_" +  n.id; })
-    .attr("class", function(n) { if(isset(n.params)) { return  "node " + "r" + n.params.rayer +  " attr_" + n.attrid; } else { return "node chunk attr_" + n.attrid; }})
+    .attr("class", function(n) { if(isset(n.params)) { return  "node attr " + "r" + n.params.rayer +  " attr_" + n.attrid; } else { return "node chunk attr_" + n.attrid; }})
     .attr("attr_id", function(n) { return n.attrid })
     .attr("review_id", function(n) { if(isset(n.review_id)) { return  n.review_id ; }})
     .call(force.drag); //ノードをドラッグできるように設定
@@ -115,7 +115,7 @@ function update() {
     .attr("x", "-16px")
     .attr("y", "-16px")
     .attr("width", "32px")
-    .attr("height", "32px");
+    .attr("height", "32px")
 
     nodeEnter.append("svg:text")
     .attr("class", "nodetext")
@@ -297,6 +297,12 @@ function setEvent() {
 			d3.select("#menu_hidedr").attr("val", id);
 		}
 	});
+
+    d3.selectAll(".attr").on("click", function() {
+        var attr_id = $(this).attr("attr_id");
+        $(".chunk.attr_" + attr_id).toggle();
+        $(".lchunk.attr_" + attr_id).toggle();
+    });
 }
 
 var on_ctl_key = false;
@@ -406,6 +412,7 @@ d3.select("#menu_negaposi").on("click", function() {
           return r;
       }
    );
+
 });
 
 d3.select("#rayer1").on("click",function() {
@@ -486,7 +493,9 @@ d3.select("#rayer3").on("click",function() {
 d3.select("#rayer4").on("click",function() {
     d3.selectAll("line.link").style("display", "block");
     d3.selectAll("g.node").style("display", "block");
-    d3.selectAll(".r1").style("display","block"); 
-    d3.selectAll(".r2").style("display","block"); 
+    d3.selectAll(".r1").style("display","block");
+    d3.selectAll(".r2").style("display","block");
     d3.selectAll(".r3").attr("display","block");
 });
+
+
