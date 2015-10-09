@@ -100,7 +100,6 @@ function update() {
 
     var node = STAGE.selectAll("g.node")
     .data(nodes, function(d) { return d.dpid;});//nodesデータを要素にバインド
-    console.log(node);
 
     var nodeEnter = node.enter().append("svg:g")
     .attr("id", function(n) { return "n_" +  n.id; })
@@ -169,9 +168,16 @@ function loadContent() {
 				hideFilter();
 				draw();
 				update();
+                hideAllChunk();
 			}
 		}
 	});
+
+}
+
+function hideAllChunk() {
+    d3.selectAll(".chunk").style("display", "none");
+    d3.selectAll(".lchunk").style("display", "none");
 }
 
 function setReview(reviews) {
