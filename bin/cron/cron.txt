@@ -1,1 +1,1 @@
-*/5 * * * * /usr/bin/php /usr/local/www/rst.prodrb.com/bin/scripts/getReviewScript.php
+* * * * */1 /usr/bin/php /usr/local/www/okame.prodrb.com/index.php
