@@ -36,13 +36,16 @@ force.on("tick", function() {
 			var r = "";
 			switch(d.params.rayer) {
 				case 1:
-					r = "translate(" + d.x + ", " + d.y + ") scale( 1.2, 1.2)";
+					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.2, 1.2)";
+                    r = "translate(" + d.x + ", " + 800 + ") scale( 1.2, 1.2)";
 				break;
 				case 2:
-					r = "translate(" + d.x + ", " + d.y + ") scale( 1.4, 1.4)";
+					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.4, 1.4)";
+                    r = "translate(" + d.x + ", " + 500 + ") scale( 1.4, 1.4)";
 				break;
 				case 3:
-					r = "translate(" + d.x + ", " + d.y + ") scale( 1.7, 1.7)";
+					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.7, 1.7)";
+                    r = "translate(" + d.x + ", " + 200 + ") scale( 1.7, 1.7)";
 				break;
 			}
 			return r;
@@ -53,9 +56,19 @@ force.on("tick", function() {
 
     var link = STAGE.selectAll("line.link").data(links, function(d) { return d.source.id + ',' + d.target.id});
     link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
+        .attr("y1", function(d) {
+            return getHeightByRayer(d.source.params.rayer);
+            //return d.source.y;
+        })
         .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; })
+        .attr("y2", function(d) {
+            if (d.dr) {
+                if (d.target.params.rayer) {
+                    return getHeightByRayer(d.target.params.rayer);
+                }
+            }
+            return d.target.y;
+        })
 	.attr("id", function(d) { return d.dr; })
 	.style("stroke", function(d) {if(isset(d.params)) { return d.params.color;} return "#BABABA"; })
 	.attr("stroke-width", function(d) {if(isset(d.matching)) { return parseInt(d.matching.kl); } return d.params.width; })//線の太さ
@@ -497,5 +510,21 @@ d3.select("#rayer4").on("click",function() {
     d3.selectAll(".r2").style("display","block");
     d3.selectAll(".r3").attr("display","block");
 });
+
+function getHeightByRayer(rayerId) {
+    switch(rayerId) {
+        case 1:
+            return 800;
+            break;
+        case 2:
+            return 500;
+            break;
+        case 3:
+            return 200;
+            break;
+        default:
+            return 0;
+    }
+}
 
 
