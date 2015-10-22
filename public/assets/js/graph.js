@@ -311,6 +311,25 @@ function setEvent() {
 		}
 	});
 
+    d3.selectAll("line.link").on("mouseover", function() {
+        var id = "#" + d3.select(this).attr("id");
+        if(d3.select(id).style("display") != "none") {
+            d3.selectAll("line.link").style("opacity", 0.2);
+            d3.selectAll("line.lchunk").style("opacity", 1);
+            d3.selectAll(id)
+                .attr("id", function(l) {
+                    var s_attrid = ".attr_" + (l.source.attrid);
+                    var t_attrid = ".attr_" + (l.target.attrid);
+                    //d3.selectAll(s_attrid).style("display", "block");
+                    //d3.selectAll(t_attrid).style("display", "block");
+                })
+                .style("opacity", 1);
+        }
+    });
+
+
+
+    // 評価句の表示/非表示切り替え
     d3.selectAll(".attr").on("click", function() {
         var attr_id = $(this).attr("attr_id");
         $(".chunk.attr_" + attr_id).toggle();
