@@ -13,7 +13,7 @@ var TYPE = 1;//1:buy,2:not buy
 var force = self.force = d3.layout.force()
     .nodes(nodes)
     .links(links)
-    .gravity(.05) //重力
+    .gravity(0.05) //重力
     //.distance(500) //ノード間の距離
     .linkDistance(350)
     .charge(-150) //各ノードの引き合うor反発しあう力

@@ -11,31 +11,40 @@
 @stop
 
 @section('content')
-    <div class="uk-container uk-container-center">
-        <div class="uk-grid">
+        <div class="uk-grid uk-grid-divider">
             {{--<div class="tm-sidebar uk-width-2-10">--}}
                 {{--@include('graph.sidebar')--}}
             {{--</div>--}}
-            <div class="tm-main uk-width-1-1">
-                <div id="header">
-                    <div id="navimenu">
-                        <h4>表示条件指定</h4>
-                        <ul class="menu cf">
-                            <li class="box" id="rayer1">形態要素に関するルール表示</li>
-                            <li class="box" id="rayer2">認知に関するルール表示</li>
-                            <li class="box" id="rayer3">イメージに関するルール表示</li>
-                            <li class="box" id="rayer4">全ての表示する</li>
-                            <li class="box" id="menu_hidedr" style="display:none;">全てのルールを表示する</li>
-                        </ul>
-                        <br />
-                        <ul class="menu">
-                            <li class="box" id="menu_chunk">評価句表示/非表示切り替え</li>
-                            <li class="box" id="menu_negaposi">評価句のみ表示</li>
-                            <li class="box" id="menu_posi">ポジティブな評価句のみ表示</li>
-                            <li class="box" id="menu_nega">ネガティブな評価句のみ表示</li>
-                        </ul>
-                    </div>
+            <div class="uk-width-2-10">
+                <div class="uk-container">
+                    <dl>
+                        <dt>アイテム名</dt>
+                        <dd>赤霧島</dd>
+                        <dt>レビュー件数</dt>
+                        <dd>245件</dd>
+                    </dl>
                 </div>
+            </div>
+            <div class="tm-main uk-width-8-10">
+                {{--<div id="header">--}}
+                    {{--<div id="navimenu">--}}
+                        {{--<h4>表示条件指定</h4>--}}
+                        {{--<ul class="menu cf">--}}
+                            {{--<li class="box" id="rayer1">形態要素に関するルール表示</li>--}}
+                            {{--<li class="box" id="rayer2">認知に関するルール表示</li>--}}
+                            {{--<li class="box" id="rayer3">イメージに関するルール表示</li>--}}
+                            {{--<li class="box" id="rayer4">全ての表示する</li>--}}
+                            {{--<li class="box" id="menu_hidedr" style="display:none;">全てのルールを表示する</li>--}}
+                        {{--</ul>--}}
+                        {{--<br />--}}
+                        {{--<ul class="menu">--}}
+                            {{--<li class="box" id="menu_chunk">評価句表示/非表示切り替え</li>--}}
+                            {{--<li class="box" id="menu_negaposi">評価句のみ表示</li>--}}
+                            {{--<li class="box" id="menu_posi">ポジティブな評価句のみ表示</li>--}}
+                            {{--<li class="box" id="menu_nega">ネガティブな評価句のみ表示</li>--}}
+                        {{--</ul>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
                 <div id="main">
                     <div id="graph"></div>
                     <div id="review" class="infotext" style="display:none;"></div>
@@ -60,7 +69,6 @@
                 </div>
             </div>
         </div>
-    </div>
 @stop
 
 
