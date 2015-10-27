@@ -8,6 +8,7 @@
     <script src="/assets/js/d3.v2.js"></script>
     <script src="/assets/js/util.js"></script>
     <script src="/assets/js/graph.js"></script>
+    <script src="/assets/js/lib/uikit/components/accordion.min.js"></script>
 @stop
 
 @section('content')
@@ -16,13 +17,30 @@
                 {{--@include('graph.sidebar')--}}
             {{--</div>--}}
             <div class="uk-width-2-10">
-                <div class="uk-container">
-                    <dl>
-                        <dt>アイテム名</dt>
-                        <dd>赤霧島</dd>
-                        <dt>レビュー件数</dt>
-                        <dd>245件</dd>
-                    </dl>
+                <div class="uk-grid uk-container">
+                    <div class="uk-width-1-2">
+                        <img src="{{$item->img_url}}">
+                    </div>
+                    <div class="uk-width-1-2">
+                        <dl>
+                            <dt>アイテム名</dt>
+                            <dd>{{ $item->name }}</dd>
+                            <dt>レビュー件数</dt>
+                            <dd>{{ $item->review_count }}件</dd>
+                        </dl>
+                    </div>
+                    <div class="uk-width-1-1">
+                        <form class="uk-form">
+                            <select>
+                                <option>全てのルールを表示</option>
+                                <option>知覚に関するルールを表示</option>
+                                <option>認知に関するルールを表示</option>
+                                <option>認識に関するルールを表示</option>
+                            </select>
+                        </form>
+                        <div class="accordion-list">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="tm-main uk-width-8-10">

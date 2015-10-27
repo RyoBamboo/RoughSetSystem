@@ -170,11 +170,12 @@ function loadContent() {
 		success: function(res){
 			if(res){
 				json = $.parseJSON(res);
+                console.log(json);
 				//TODO:DCで分類するロジック
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
 				ATTRS = json['ATTRS'][TYPE];
-				//setReview(json['REVIEWS'][TYPE]);
+				setReview(json['REVIEWS'][TYPE]);
 				$("#DR").html(json['DR_TEXT']);
 				$("#DRH").html(json['DRH_TEXT']);
 				$("#ATTR").html(json['ATTR_TEXT']);
@@ -194,6 +195,7 @@ function hideAllChunk() {
 }
 
 function setReview(reviews) {
+    console.log(reviews);
 	for(key in reviews) {
 		$("#reviews ul").append('<li id="rev' + reviews[key]['id']  + '"' +"><p><h4><総評></h4>"  + reviews[key]['souhyou'] + "</p><p><h4><長所></h4>" + reviews[key]['chousho'] + "</p><p><h4><総評></h4>" + reviews[key]['tansho'] + "</p><p><h4><要点></h4>" + reviews[key]['points'] + "</p></li>");
         $("#reviews ul").append('<li id="rev' + reviews[key][0]['id']  + '"' +"><p><h4>レビュー・要点</h4>"  + reviews[key][0]['content'] + "</li>");
@@ -332,6 +334,8 @@ function setEvent() {
     // 評価句の表示/非表示切り替え
     d3.selectAll(".attr").on("click", function() {
         var attr_id = $(this).attr("attr_id");
+        var attr_text = $(this).text();
+
         $(".chunk.attr_" + attr_id).toggle();
         $(".lchunk.attr_" + attr_id).toggle();
     });
