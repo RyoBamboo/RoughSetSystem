@@ -36,6 +36,7 @@
             </ul>
         </div>
     </nav>
+    @include('layout.breadcrumb')
     <div class="tm-middle">
         @if (Session::has('message'))
             <div class="uk-alert uk-alert-success">{{ Session::get('message') }}</div>
