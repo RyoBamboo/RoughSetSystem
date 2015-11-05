@@ -38,7 +38,6 @@
     </nav>
     <div class="tm-middle">
         @if (Session::has('message'))
-            {{ var_dump('Test'); }}
             <div class="uk-alert uk-alert-success">{{ Session::get('message') }}</div>
         @endif
         @yield('content')
