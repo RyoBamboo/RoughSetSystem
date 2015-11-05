@@ -2,6 +2,7 @@
 
 @section('css')
     <link rel="stylesheet" type="text/css" href="/assets/css/graph.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/lib/circliful/circliful.css">
 @stop
 
 @section('js')
@@ -9,6 +10,7 @@
     <script src="/assets/js/util.js"></script>
     <script src="/assets/js/graph.js"></script>
     <script src="/assets/js/lib/uikit/components/accordion.min.js"></script>
+    <script src="/assets/js/lib/circliful/circliful.min.js"></script>
 @stop
 
 @section('content')
@@ -53,6 +55,12 @@
             </div>
         </div>
     </div>
+    <div id="myStat" data-dimension="200" data-text="50%" data-info="New Clients" data-width="5" data-fontsize="25" data-percent="50" data-fgcolor="#A9E7D0" data-bgcolor="#eee" data-total="100" data-part="50" data-icon="fa-long-arrow-up" data-icon-size="28" data-icon-color="#fff"></div>
+    <script>
+        $( document ).ready(function() {
+            $('#myStat').circliful();
+        });
+    </script>
 @stop
 
 
