@@ -82,6 +82,22 @@ body, h1, h2, h3, h4, h5, h6,
  =============================================================*/
 
 /**
+ * Breadcrumb
+ */
+.tm-breadcrumb {
+    background: #ffffff;
+    margin: 0;
+    padding: 10px;
+}
+
+.tm-box-breadcrumb {
+    box-shadow: 0px 0px 1px 1px #c7c7c7;
+    position:relative;
+    z-index:2;
+}
+
+
+/**
  * Navbar
  */
 .tm-navbar {
