@@ -17,6 +17,12 @@ body, h1, h2, h3, h4, h5, h6,
     /*background: #252525;*/
 }
 
+.wrapper {
+    position: relative;
+    left: 0;
+    overflow-x: hidden;
+}
+
 /**
  * Blocks
  */
@@ -144,4 +150,13 @@ body, h1, h2, h3, h4, h5, h6,
 .tm-nav > li.uk-active > a  {
     background: #F5F5F5;
     color: #444;
+}
+
+#slide_menu{
+    position: fixed;
+    top: 72px;
+    left: -240px;
+    width: 240px;
+    height: 100%;
+    background: #E87272;
 }

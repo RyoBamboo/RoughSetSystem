@@ -36,17 +36,20 @@
             </ul>
         </div>
     </nav>
-    @include('layout.breadcrumb')
-    <div class="tm-middle">
-        @if (Session::has('message'))
-            <div class="uk-alert uk-alert-success">{{ Session::get('message') }}</div>
-        @endif
-        @yield('content')
-    </div>
-    <div class="tm-footer">
-        <div class="uk-container uk-container-center uk-text-center">
-            <div class="uk-panel">
-                <p>Made by Ryo Takenoshita <br>Licensed under Design System Lab.</p>
+    <div class="wrapper">
+        @include('layout.breadcrumb')
+        @include('layout.slidemenu')
+        <div class="tm-middle">
+            @if (Session::has('message'))
+                <div class="uk-alert uk-alert-success">{{ Session::get('message') }}</div>
+            @endif
+            @yield('content')
+        </div>
+        <div class="tm-footer">
+            <div class="uk-container uk-container-center uk-text-center">
+                <div class="uk-panel">
+                    <p>Made by Ryo Takenoshita <br>Licensed under Design System Lab.</p>
+                </div>
             </div>
         </div>
     </div>

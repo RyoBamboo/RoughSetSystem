@@ -36,6 +36,8 @@
     <div id="main">
         <div id="graph"></div>
         <div id="review" class="infotext" style="display:none;"></div>
+
+
         <div id="DR" class="infotext" style="display:none;"></div>
         <div id="DRH" class="infotext" style="display:none;"></div>
         <div id="ATTR" class="infotext" style="display:none;"></div>
