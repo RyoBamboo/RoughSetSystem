@@ -239,7 +239,7 @@ $(function() {
     });
 
 
-    var menu = $('#slide_menu'), // スライドインするメニューを指定
+    var menu = $('.slide_menu'), // スライドインするメニューを指定
         menuBtn = $('#button'), // メニューボタンを指定
         body = $(".wrapper"),
         menuWidth = menu.outerWidth();
