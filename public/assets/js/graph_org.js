@@ -13,7 +13,7 @@ var TYPE = 1;//1:buy,2:not buy
 var force = self.force = d3.layout.force()
     .nodes(nodes)
     .links(links)
-    .gravity(0.05) //重力
+    .gravity(.05) //重力
     //.distance(500) //ノード間の距離
     .linkDistance(350)
     .charge(-150) //各ノードの引き合うor反発しあう力
@@ -27,26 +27,22 @@ function init() {
 }
 
 //グラフにアニメーションイベントを設置
-force.on("tick", function(e) {
+force.on("tick", function() {
     var node = STAGE.selectAll("g.node").data(nodes, function(d) { return d.id;} );
         //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ") scale(1.0, 1.0)"; });
-	node
-  .attr("transform", function(d) {
+	node.attr("transform", function(d) {
 		//階層毎にNodeの大きさを分ける
 		if(isset(d.params)){
 			var r = "";
 			switch(d.params.rayer) {
 				case 1:
-					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.2, 1.2)";
-                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.2, 1.2)";
+					r = "translate(" + d.x + ", " + d.y + ") scale( 1.2, 1.2)";
 				break;
 				case 2:
-					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.4, 1.4)";
-                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.4, 1.4)";
+					r = "translate(" + d.x + ", " + d.y + ") scale( 1.4, 1.4)";
 				break;
 				case 3:
-					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.7, 1.7)";
-                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.7, 1.7)";
+					r = "translate(" + d.x + ", " + d.y + ") scale( 1.7, 1.7)";
 				break;
 			}
 			return r;
@@ -57,55 +53,24 @@ force.on("tick", function(e) {
 
     var link = STAGE.selectAll("line.link").data(links, function(d) { return d.source.id + ',' + d.target.id});
     link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) {
-          console.log(d);
-            return d.source._y; 
-            // return getHeightByRayer(d.source.params.rayer);
-            //return d.source.y;
-        })
+        .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { 
-          if (d.dr) return d.target._y;
-            // return getHeightByRayer(d.source.params.rayer);
-          return d.target.y; 
-        })
+        .attr("y2", function(d) { return d.target.y; })
 	.attr("id", function(d) { return d.dr; })
 	.style("stroke", function(d) {if(isset(d.params)) { return d.params.color;} return "#BABABA"; })
 	.attr("stroke-width", function(d) {if(isset(d.matching)) { return parseInt(d.matching.kl); } return d.params.width; })//線の太さ
 	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; });//破線
 });
 
-// Move nodes toward cluster focus.
-function gravity(alpha) {
-  console.log('in_gravity');
-  return function(d) {
-    d.y += (d.cy - d.y) * alpha;
-    d.x += (d.cx - d.x) * alpha;
-  };
-}
-
 function draw() {
     //ATTRS描画
     for(var key in ATTRS) {
-     var _y;
-     switch(ATTRS[key].params.rayer) {
-          case 1:
-            _y =  Math.floor( Math.random() * 150) + 650;
-            break;
-          case 2:
-            _y =  Math.floor( Math.random() * 150) + 350;
-            break;
-          case 3:
-            _y =  Math.floor( Math.random() * 150) + 50;
-            break;
-     } 
-     ATTRS[key]['_y'] = _y;
-    	nodes.push(ATTRS[key]);
-      for(var k in ATTRS[key]['chunks']) {
-          if(ATTRS[key]['chunks'][k]['dc'] != TYPE) continue;
-          nodes.push(ATTRS[key]['chunks'][k]);
-          links.push({ source:ATTRS[key], target: ATTRS[key]['chunks'][k], params:ATTRS[key]['params'] });
-      }
+	nodes.push(ATTRS[key]);
+        for(var k in ATTRS[key]['chunks']) {
+            if(ATTRS[key]['chunks'][k]['dc'] != TYPE) continue;
+            nodes.push(ATTRS[key]['chunks'][k]);
+            links.push({ source:ATTRS[key], target: ATTRS[key]['chunks'][k], params:ATTRS[key]['params'] });
+        }
     }
     //DR描画
     for(var key in DR) {
@@ -135,9 +100,11 @@ function update() {
 
     var node = STAGE.selectAll("g.node")
     .data(nodes, function(d) { return d.dpid;});//nodesデータを要素にバインド
+    console.log(node);
+
     var nodeEnter = node.enter().append("svg:g")
     .attr("id", function(n) { return "n_" +  n.id; })
-    .attr("class", function(n) { if(isset(n.params)) { return  "node attr " + "r" + n.params.rayer +  " attr_" + n.attrid; } else { return "node chunk attr_" + n.attrid; }})
+    .attr("class", function(n) { if(isset(n.params)) { return  "node " + "r" + n.params.rayer +  " attr_" + n.attrid; } else { return "node chunk attr_" + n.attrid; }})
     .attr("attr_id", function(n) { return n.attrid })
     .attr("review_id", function(n) { if(isset(n.review_id)) { return  n.review_id ; }})
     .call(force.drag); //ノードをドラッグできるように設定
@@ -149,7 +116,7 @@ function update() {
     .attr("x", "-16px")
     .attr("y", "-16px")
     .attr("width", "32px")
-    .attr("height", "32px")
+    .attr("height", "32px");
 
     nodeEnter.append("svg:text")
     .attr("class", "nodetext")
@@ -195,23 +162,16 @@ function loadContent() {
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
 				ATTRS = json['ATTRS'][TYPE];
-				setReview(json['REVIEWS'][TYPE]);
+				//setReview(json['REVIEWS'][TYPE]);
 				$("#DR").html(json['DR_TEXT']);
 				$("#DRH").html(json['DRH_TEXT']);
 				$("#ATTR").html(json['ATTR_TEXT']);
 				hideFilter();
 				draw();
 				update();
-                hideAllChunk();
 			}
 		}
 	});
-
-}
-
-function hideAllChunk() {
-    d3.selectAll(".chunk").style("display", "none");
-    d3.selectAll(".lchunk").style("display", "none");
 }
 
 function setReview(reviews) {
@@ -331,33 +291,6 @@ function setEvent() {
 			d3.select("#menu_hidedr").attr("val", id);
 		}
 	});
-
-    d3.selectAll("line.link").on("mouseover", function() {
-        var id = "#" + d3.select(this).attr("id");
-        if(d3.select(id).style("display") != "none") {
-            d3.selectAll("line.link").style("opacity", 0.2);
-            d3.selectAll("line.lchunk").style("opacity", 1);
-            d3.selectAll(id)
-                .attr("id", function(l) {
-                    var s_attrid = ".attr_" + (l.source.attrid);
-                    var t_attrid = ".attr_" + (l.target.attrid);
-                    //d3.selectAll(s_attrid).style("display", "block");
-                    //d3.selectAll(t_attrid).style("display", "block");
-                })
-                .style("opacity", 1);
-        }
-    });
-
-
-
-    // 評価句の表示/非表示切り替え
-    d3.selectAll(".attr").on("click", function() {
-        var attr_id = $(this).attr("attr_id");
-        var attr_text = $(this).text();
-
-        $(".chunk.attr_" + attr_id).toggle();
-        $(".lchunk.attr_" + attr_id).toggle();
-    });
 }
 
 var on_ctl_key = false;
@@ -467,7 +400,6 @@ d3.select("#menu_negaposi").on("click", function() {
           return r;
       }
    );
-
 });
 
 d3.select("#rayer1").on("click",function() {
@@ -548,23 +480,7 @@ d3.select("#rayer3").on("click",function() {
 d3.select("#rayer4").on("click",function() {
     d3.selectAll("line.link").style("display", "block");
     d3.selectAll("g.node").style("display", "block");
-    d3.selectAll(".r1").style("display","block");
-    d3.selectAll(".r2").style("display","block");
+    d3.selectAll(".r1").style("display","block"); 
+    d3.selectAll(".r2").style("display","block"); 
     d3.selectAll(".r3").attr("display","block");
 });
-
-function getHeightByRayer(rayerId) {
-    switch(rayerId) {
-        case 1:
-            return 800;
-            break;
-        case 2:
-            return 500;
-            break;
-        case 3:
-            return 200;
-            break;
-        default:
-            return 0;
-    }
-}
