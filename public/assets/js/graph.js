@@ -27,25 +27,26 @@ function init() {
 }
 
 //グラフにアニメーションイベントを設置
-force.on("tick", function() {
+force.on("tick", function(e) {
     var node = STAGE.selectAll("g.node").data(nodes, function(d) { return d.id;} );
         //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ") scale(1.0, 1.0)"; });
-	node.attr("transform", function(d) {
+	node
+  .attr("transform", function(d) {
 		//階層毎にNodeの大きさを分ける
 		if(isset(d.params)){
 			var r = "";
 			switch(d.params.rayer) {
 				case 1:
 					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.2, 1.2)";
-                    r = "translate(" + d.x + ", " + 800 + ") scale( 1.2, 1.2)";
+                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.2, 1.2)";
 				break;
 				case 2:
 					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.4, 1.4)";
-                    r = "translate(" + d.x + ", " + 500 + ") scale( 1.4, 1.4)";
+                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.4, 1.4)";
 				break;
 				case 3:
 					//r = "translate(" + d.x + ", " + d.y + ") scale( 1.7, 1.7)";
-                    r = "translate(" + d.x + ", " + 200 + ") scale( 1.7, 1.7)";
+                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.7, 1.7)";
 				break;
 			}
 			return r;
@@ -57,17 +58,16 @@ force.on("tick", function() {
     var link = STAGE.selectAll("line.link").data(links, function(d) { return d.source.id + ',' + d.target.id});
     link.attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) {
-            return getHeightByRayer(d.source.params.rayer);
+          console.log(d);
+            return d.source._y; 
+            // return getHeightByRayer(d.source.params.rayer);
             //return d.source.y;
         })
         .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) {
-            if (d.dr) {
-                if (d.target.params.rayer) {
-                    return getHeightByRayer(d.target.params.rayer);
-                }
-            }
-            return d.target.y;
+        .attr("y2", function(d) { 
+          if (d.dr) return d.target._y;
+            // return getHeightByRayer(d.source.params.rayer);
+          return d.target.y; 
         })
 	.attr("id", function(d) { return d.dr; })
 	.style("stroke", function(d) {if(isset(d.params)) { return d.params.color;} return "#BABABA"; })
@@ -75,15 +75,37 @@ force.on("tick", function() {
 	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; });//破線
 });
 
+// Move nodes toward cluster focus.
+function gravity(alpha) {
+  console.log('in_gravity');
+  return function(d) {
+    d.y += (d.cy - d.y) * alpha;
+    d.x += (d.cx - d.x) * alpha;
+  };
+}
+
 function draw() {
     //ATTRS描画
     for(var key in ATTRS) {
-	nodes.push(ATTRS[key]);
-        for(var k in ATTRS[key]['chunks']) {
-            if(ATTRS[key]['chunks'][k]['dc'] != TYPE) continue;
-            nodes.push(ATTRS[key]['chunks'][k]);
-            links.push({ source:ATTRS[key], target: ATTRS[key]['chunks'][k], params:ATTRS[key]['params'] });
-        }
+     var _y;
+     switch(ATTRS[key].params.rayer) {
+          case 1:
+            _y =  Math.floor( Math.random() * 150) + 650;
+            break;
+          case 2:
+            _y =  Math.floor( Math.random() * 150) + 350;
+            break;
+          case 3:
+            _y =  Math.floor( Math.random() * 150) + 50;
+            break;
+     } 
+     ATTRS[key]['_y'] = _y;
+    	nodes.push(ATTRS[key]);
+      for(var k in ATTRS[key]['chunks']) {
+          if(ATTRS[key]['chunks'][k]['dc'] != TYPE) continue;
+          nodes.push(ATTRS[key]['chunks'][k]);
+          links.push({ source:ATTRS[key], target: ATTRS[key]['chunks'][k], params:ATTRS[key]['params'] });
+      }
     }
     //DR描画
     for(var key in DR) {
@@ -113,7 +135,6 @@ function update() {
 
     var node = STAGE.selectAll("g.node")
     .data(nodes, function(d) { return d.dpid;});//nodesデータを要素にバインド
-
     var nodeEnter = node.enter().append("svg:g")
     .attr("id", function(n) { return "n_" +  n.id; })
     .attr("class", function(n) { if(isset(n.params)) { return  "node attr " + "r" + n.params.rayer +  " attr_" + n.attrid; } else { return "node chunk attr_" + n.attrid; }})
@@ -170,7 +191,6 @@ function loadContent() {
 		success: function(res){
 			if(res){
 				json = $.parseJSON(res);
-                console.log(json);
 				//TODO:DCで分類するロジック
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
@@ -195,7 +215,6 @@ function hideAllChunk() {
 }
 
 function setReview(reviews) {
-    console.log(reviews);
 	for(key in reviews) {
 		$("#reviews ul").append('<li id="rev' + reviews[key]['id']  + '"' +"><p><h4><総評></h4>"  + reviews[key]['souhyou'] + "</p><p><h4><長所></h4>" + reviews[key]['chousho'] + "</p><p><h4><総評></h4>" + reviews[key]['tansho'] + "</p><p><h4><要点></h4>" + reviews[key]['points'] + "</p></li>");
         $("#reviews ul").append('<li id="rev' + reviews[key][0]['id']  + '"' +"><p><h4>レビュー・要点</h4>"  + reviews[key][0]['content'] + "</li>");
@@ -549,5 +568,3 @@ function getHeightByRayer(rayerId) {
             return 0;
     }
 }
-
-
