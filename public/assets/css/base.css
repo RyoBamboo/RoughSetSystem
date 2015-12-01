@@ -23,7 +23,6 @@ body, h1, h2, h3, h4, h5, h6,
  */
 .tm-header {
     height: 40px;
-    background-color: #112935;
 }
 
 
@@ -117,8 +116,29 @@ body, h1, h2, h3, h4, h5, h6,
 
 
 /**
- * Navbar
+ * Nav
  */
+.tm-nav {
+    background: #262a33;
+    color: #bfbfbf;
+}
+
+.tm-nav-header {
+    background: #06a0fd;
+    height: 40px;
+    padding: 10px;
+}
+
+.tm-nav-active {
+    background: #1b1d24;
+    color: #ffffff;
+    border-left: 4px solid #06a0fd;
+}
+
+.icon-nav {
+    width: 25px;
+    margin-right: 10px;
+}
 /*.tm-navbar {*/
     /*padding: 15px 0;*/
     /*background: #222222;*/
