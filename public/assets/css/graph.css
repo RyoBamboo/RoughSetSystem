@@ -103,12 +103,12 @@ body {
 	position: absolute;
 	top: 10%;
 	left: 20%;
-	padding: 50px;
+	padding: 30px;
 	overflow:auto;
-	width: 900px;
+	width: 1000px;
 	background-color: #FFFFFF;
 	z-index: 5;
-	height: 300px;
+	height: 100px;
 	box-shadow:0 0 2px #555;
 }
 

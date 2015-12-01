@@ -30,7 +30,12 @@ class GraphController extends BaseController
 
     public function view($id)
     {
+        $item = $this->item_gestion->find($id);
+        $review_count = $this->review_gestion->where('item_id', '=', $id)->count();
+        $item->review_count = $review_count;
+
         $this->data['pageaction'] = 'view';
+        $this->data['item'] = $item;
         return View::make('graph.view', $this->data);
     }
 
@@ -131,6 +136,7 @@ class GraphController extends BaseController
                             if(trim($val) === "*") continue;
                             $_val = preg_split("/:/u", $val);
                             $_a = $_val[0];
+                            $_review['attr_id'] = $_a; // reviewに感性ワードIDを持たせる
                             $__val = preg_split("/,/u", $_val[1]);
                             foreach($__val as $k =>  $v) {
                                 $_v = preg_split("/;/u", $v);
@@ -205,7 +211,6 @@ class GraphController extends BaseController
             for($i = 1; $i <= count($DR); $i++) {
 
                 for($j = 0; $j < count($DR[$i]); $j++) {
-                    Log::debug($j);
                     $DR[$i][$j]['params']['color'] = "#000000";
                     if($DR[$i][$j]['params']['width'] > $_border[$i]) {
                         $DR[$i][$j]['params']['color'] = "red";

@@ -14,7 +14,26 @@ body, h1, h2, h3, h4, h5, h6,
 /* Layout
  =============================================================*/
 .tm-background {
-    background: #252525;
+    /*background: #252525;*/
+}
+
+
+/**
+ * Header
+ */
+.tm-header {
+    height: 40px;
+    background-color: #112935;
+}
+
+
+/*
+ * TODO:サイドメニュー実装のために必要
+ */
+.wrapper {
+    position: relative;
+    left: 0;
+    overflow-x: hidden;
 }
 
 /**
@@ -31,7 +50,7 @@ body, h1, h2, h3, h4, h5, h6,
  * Middle
  */
 .tm-middle {
-    background: #FFFFFF;
+    background: #f8f8f8;
 }
 
 .tm-sidebar {
@@ -82,50 +101,91 @@ body, h1, h2, h3, h4, h5, h6,
  =============================================================*/
 
 /**
- * Navbar
+ * Breadcrumb
  */
-.tm-navbar {
-    padding: 15px 0;
-    background: #222222;
+.tm-breadcrumb {
+    background: #ffffff;
+    margin: 0;
+    padding: 10px;
 }
 
-.tm-navbar .uk-navbar-nav > li {
-    margin-left: 20px;
+.tm-box-breadcrumb {
+    box-shadow: 0px 0px 1px 1px #c7c7c7;
+    position:relative;
+    z-index:2;
 }
-.tm-navbar .uk-navbar-nav > li > a {
-    border: none;
-    border-radius: 3px !important;
-    font-size: 15px;
-    text-shadow: none;
-}
-
-/* Hover */
-.tm-navbar .uk-navbar-nav > li:hover > a {
-    border: none;
-    color: #FFFFFF;
-}
-
-/* Active */
-.tm-navbar .uk-navbar-nav > li.uk-active > a {
-    background-color: #2BA3D4;
-    color: #FFFFFF;
-}
-
-/* Onclick */
-.tm-navbar .uk-navbar-nav > li > a:active { background-color: transparent; }
 
 
 /**
- * Nav
+ * Navbar
  */
-.tm-nav > li > a {
-    color: #777777;
+/*.tm-navbar {*/
+    /*padding: 15px 0;*/
+    /*background: #222222;*/
+/*}*/
+
+/*.tm-navbar .uk-navbar-nav > li {*/
+    /*margin-left: 20px;*/
+/*}*/
+/*.tm-navbar .uk-navbar-nav > li > a {*/
+    /*border: none;*/
+    /*border-radius: 3px !important;*/
+    /*font-size: 15px;*/
+    /*text-shadow: none;*/
+/*}*/
+
+/*/!* Hover *!/*/
+/*.tm-navbar .uk-navbar-nav > li:hover > a {*/
+    /*border: none;*/
+    /*color: #FFFFFF;*/
+/*}*/
+
+/*/!* Active *!/*/
+/*.tm-navbar .uk-navbar-nav > li.uk-active > a {*/
+    /*background-color: #2BA3D4;*/
+    /*color: #FFFFFF;*/
+/*}*/
+
+/*/!* Onclick *!/*/
+/*.tm-navbar .uk-navbar-nav > li > a:active { background-color: transparent; }*/
+
+
+/*/!***/
+ /** Nav*/
+ /**!/*/
+/*.tm-nav > li > a {*/
+    /*color: #777777;*/
+/*}*/
+
+/*/!* Hover *!/*/
+/*.tm-nav > li > a:hover,*/
+/*.tm-nav > li > a:focus,*/
+/*.tm-nav > li.uk-active > a  {*/
+    /*background: #F5F5F5;*/
+    /*color: #444;*/
+/*}*/
+.tm-navbar {
+
 }
 
-/* Hover */
-.tm-nav > li > a:hover,
-.tm-nav > li > a:focus,
-.tm-nav > li.uk-active > a  {
-    background: #F5F5F5;
-    color: #444;
+.tm-navbar > li {
+    margin-top: 30px;
 }
+
+.tm-navbar > li > a {
+    color: #fdfdfd;
+    padding-left: 30px;
+}
+
+/**
+ * SlideMenu
+ */
+.slide_menu{
+    position: fixed;
+    top: 40px;
+    left: -240px;
+    width: 240px;
+    height: 100%;
+    background: #13333E;
+}
+
