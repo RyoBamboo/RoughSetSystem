@@ -1,11 +1,11 @@
 @extends('base')
 
 @section('content')
+    <div class="tm-menubar uk-width-1-1">
+        @include('thesaurus.menubar')
+    </div>
     <div class="uk-container uk-container-center">
         <div class="uk-grid">
-            <div class="tm-sidebar uk-width-2-10">
-                @include('thesaurus.sidebar')
-            </div>
             <div class="tm-main uk-width-8-10">
                 <h1 class="uk-article-title">Thesauru</h1>
                 <form class="uk-form" method="post" action="/thesaurus/store/" enctype="multipart/form-data">
