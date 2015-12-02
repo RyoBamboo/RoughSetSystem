@@ -1,5 +1,9 @@
 @extends('base')
+
 @section('content')
+    <div class="tm-menubar uk-width-1-1">
+        @include('review.menubar')
+    </div>
     <div class="uk-container uk-container-center">
         <div class="uk-grid">
             <div class="tm-sidebar uk-width-2-10">
