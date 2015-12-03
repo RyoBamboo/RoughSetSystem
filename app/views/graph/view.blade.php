@@ -14,6 +14,9 @@
 @stop
 
 @section('content')
+    <div class="tm-menubar uk-width-1-1">
+        @include('graph.menubar')
+    </div>
     <div id="header">
         <div id="navimenu">
             <h4>表示条件指定</h4>
