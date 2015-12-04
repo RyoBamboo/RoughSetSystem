@@ -145,6 +145,14 @@ Route::group(['prefix'=>'setting'], function() {
     ]);
 });
 
+
+/* Tutorial */
+Route::group(['prefix'=>'tutorial'], function() {
+    Route::get('', [
+        'as'=>'tutorial',
+        'uses'=>'TutorialController@index'
+    ]);
+});
 /* API */
 Route::post('/api/twitter/get', 'ReviewController@twitter');
 

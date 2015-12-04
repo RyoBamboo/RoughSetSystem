@@ -35,20 +35,20 @@
         <div class="tm-nav-header">
         </div>
         <ul>
-            @if ($pagename == 'graph')
-                <li class="tm-nav tm-nav-active"><img class="icon-nav" src="/assets/img/icon_graph_active.png">階層グラフ</li>
+            @if ($pagename == 'review')
+                <li class="tm-nav tm-nav-active"><img class="icon-nav" src="/assets/img/icon_review_active.png">レビュー</li>
             @else
-                <li><a href="graph"><img class="icon-nav" src="/assets/img/icon_graph.png">階層グラフ</a></li>
+                <li><a href="/review"><img class="icon-nav" src="/assets/img/icon_review.png">レビュー</a></li>
             @endif
             @if ($pagename == 'thesaurus')
                 <li class="tm-nav tm-nav-active"><img class="icon-nav" src="/assets/img/icon_dictionary_active.png">感性ワード</li>
             @else
                 <li><a href="/thesaurus"><img class="icon-nav" src="/assets/img/icon_dictionary.png">感性ワード</a></li>
             @endif
-            @if ($pagename == 'review')
-                <li class="tm-nav tm-nav-active"><img class="icon-nav" src="/assets/img/icon_review_active.png">レビュー</li>
+            @if ($pagename == 'graph')
+                <li class="tm-nav tm-nav-active"><img class="icon-nav" src="/assets/img/icon_graph_active.png">階層グラフ</li>
             @else
-                <li><a href="/review"><img class="icon-nav" src="/assets/img/icon_review.png">レビュー</a></li>
+                <li><a href="/graph"><img class="icon-nav" src="/assets/img/icon_graph.png">階層グラフ</a></li>
             @endif
             @if ($pagename == 'setting')
                 <li class="tm-nav tm-nav-active"><img class="icon-nav" src="/assets/img/icon_setting_active.png">設定</li>
@@ -59,6 +59,11 @@
                 <li class="tm-nav tm-nav-active"><img class="icon-nav" src="/assets/img/icon_help_active.png">ヘルプ</li>
             @else
                 <li><a href="/faq"><img class="icon-nav" src="/assets/img/icon_help.png">ヘルプ</a></li>
+            @endif
+            @if ($pagename == 'help')
+                <li class="tm-nav tm-nav-active"><img class="icon-nav" src="/assets/img/icon_help_active.png">ヘルプ</li>
+            @else
+                <li><a href="/tutorial"><img class="icon-nav" src="/assets/img/icon_tutorial.png">チュートリアル</a></li>
             @endif
         </ul>
     </nav>
