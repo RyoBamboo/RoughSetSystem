@@ -23,7 +23,6 @@ body, h1, h2, h3, h4, h5, h6,
  */
 .tm-header {
     height: 40px;
-    background-color: #112935;
 }
 
 
@@ -42,7 +41,7 @@ body, h1, h2, h3, h4, h5, h6,
 
 .tm-middle,
 .tm-footer {
-    padding: 90px 0;
+    padding: 63px 0;
 }
 
 
@@ -117,8 +116,29 @@ body, h1, h2, h3, h4, h5, h6,
 
 
 /**
- * Navbar
+ * Nav
  */
+.tm-nav {
+    background: #262a33;
+    color: #bfbfbf;
+}
+
+.tm-nav-header {
+    background: #06a0fd;
+    height: 40px;
+    padding: 10px;
+}
+
+.tm-nav-active {
+    background: #1b1d24;
+    color: #ffffff;
+    border-left: 4px solid #06a0fd;
+}
+
+.icon-nav {
+    width: 25px;
+    margin-right: 10px;
+}
 /*.tm-navbar {*/
     /*padding: 15px 0;*/
     /*background: #222222;*/
@@ -189,3 +209,53 @@ body, h1, h2, h3, h4, h5, h6,
     background: #13333E;
 }
 
+/**
+ * Menubar
+ */
+.tm-menubar {
+    background: #ffffff;
+    padding: 20px 20px 0px 30px;
+    color: #3c3c3c;
+    box-shadow: 0 1px 2px #c0c0c0;
+    margin-bottom: 50px;
+}
+
+.tm-menubar ul {
+    list-style: none;
+    padding-left: 50px;
+    margin: 20px 0 0 0;
+}
+
+.tm-menubar li {
+    display: inline-block;
+    padding-bottom: 8px;
+    margin-right: 30px;
+}
+
+.tm-menubar a {
+    color: #909090;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.tm-menubar ul .active {
+    border-bottom: 3px solid #06a0fd;
+}
+
+.tm-menubar ul .active a {
+    color: #3c3c3c;
+}
+
+
+.tm-menubar-title img {
+    width: 40px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.tm-menubar-title h2{
+    font-size: 27px;
+    font-weight: bold;
+    display: inline;
+    vertical-align: middle;
+}

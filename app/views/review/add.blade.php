@@ -2,14 +2,21 @@
 
 @section('css')
     <link rel="stylesheet" type="text/css" href={{asset("/assets/lib/uikit/css/components/progress.gradient.css")}}>
+    <link rel="stylesheet" type="text/css" href={{asset("/assets/lib/uikit/css/components/slideshow.css")}}>
 @endsection
 
+@section('js')
+        <script src="/assets/js/lib/uikit/components/slideshow.min.js"></script>
+@endsection
+
+
 @section('content')
+    @if (isset($_COOKIE['is_tutorial'])) @include('review.tutorial_modal') @endif <!-- チュートリアル -->
+    <div class="tm-menubar uk-width-1-1">
+        @include('review.menubar')
+    </div>
     <div class="uk-container uk-container-center">
         <div class="uk-grid">
-            <div class="tm-sidebar uk-width-2-10">
-                @include('review.sidebar')
-            </div>
             <div class="tm-main uk-width-8-10">
                 <h1 class="uk-article-title">Review</h1><br>
                 {{ Form::open(array('class'=>'uk-form uk-form-horizontal')) }}
