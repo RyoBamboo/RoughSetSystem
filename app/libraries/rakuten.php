@@ -40,7 +40,12 @@ class Rakuten
                 $html = Html::getHtml($item['itemUrl']);
 
                 //TODO:: ここ一行にできないか
-                preg_match_all('|<a href=".*" class="see">レビューを見る\（([0-9]*.*[0-9]*)\）|U', $html, $match);
+                preg_match_all('|<a href=".*" class=".*">レビューを見る\（([0-9]*.*[0-9]*)\）|U', $html, $match);
+                if (count($match[1]) == 0) {
+//                    preg_match_all('|<a href=".*">すべてのレビューを見る\（([0-9]*,*[0-9]*)\）|msU', $html, $match);
+                    preg_match_all('|<a href=".*">すべてのレビューを見る\（([0-9]*,*[0-9]*)|', $html, $match);
+                }
+
                 foreach ($match[1] as $key => $value) {
                     if (str_replace(',', '', $value) == $item['reviewCount']) {
                         preg_match('|([0-9]*_[0-9]*)|', $match[0][$key], $match2);
@@ -56,6 +61,7 @@ class Rakuten
                 );
             }
 
+Log::debug($results);
             return $results;
         }
 

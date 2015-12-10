@@ -13,7 +13,7 @@ class Review extends Eloquent {
         ini_set("max_execution_time", 0);
 
         // 取得するレビュー数
-        $count = 1252;
+        $count = 6000;
         $now = 0; // 現在の取得数
         //for ($i = 1; $i < $count/15 + 1; $i++) {
         for ($i = 1; $now < $count + 1; $i++) {

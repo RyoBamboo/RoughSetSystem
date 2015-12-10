@@ -100,6 +100,11 @@ Route::group(['prefix'=>'thesaurus'], function() {
         'as'=>'upload',
         'uses'=>'ThesaurusController@upload'
     ]);
+
+    Route::get('csv', [
+        'as'=>'csv',
+        'uses'=>'ThesaurusController@csv'
+    ]);
 });
 
 

@@ -144,7 +144,7 @@ class ThesaurusController extends BaseController {
     }
 
     // TODO:のちにajax化
-    public function getCsv()
+    public function csv()
     {
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=thesaurus.csv");
