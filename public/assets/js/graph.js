@@ -74,7 +74,7 @@ force.on("tick", function(e) {
           if(isset(d.matching) && d.matching.kl >= 1) { 
                return parseInt(d.matching.kl); 
           } 
-          return d.params.width; 
+          return (d.params.width > 10) ? 10 : d.params.width; 
       })//線の太さ
 	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; });//破線
 });
