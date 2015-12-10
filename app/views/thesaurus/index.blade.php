@@ -15,6 +15,7 @@
                             <th>類義語</th>
                             <th>分類</th>
                             <th>操作</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -22,9 +23,12 @@
                         <tr>
                             <td>{{ $thesaurus->text }}</td>
                             <td>{{ $thesaurus->synonym }}</td>
-                            <td>{{ $thesaurus->rayer }}</td>
+                            <td id="{{ $thesaurus->id}}">{{ $thesaurus->rayer }}</td>
                             <td>
-                                <button data-uk-modal="{target:'#my-id'}" data-id="{{ $thesaurus->id }}" class="modal-delete uk-button uk-button-danger">削除</button>
+                                <button data-uk-modal="{target:'#update'}" data-id="{{ $thesaurus->id }}" class="modal-update uk-button uk-button-primary">変更</button>
+                            </td>
+                            <td>
+                                <button data-uk-modal="{target:'#delete'}" data-id="{{ $thesaurus->id }}" class="modal-delete uk-button uk-button-danger">削除</button>
                             </td>
                         </tr>
                     @endforeach
@@ -34,4 +38,5 @@
         </div>
     </div>
     @include('thesaurus.delete_modal')
+    @include('thesaurus.update_modal')
 @endsection

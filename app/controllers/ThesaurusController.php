@@ -143,6 +143,14 @@ class ThesaurusController extends BaseController {
         }
     }
 
+    // 一つだけ更新
+    public function update() {
+        $id = Input::get('id');
+        $rayer = Input::get('rayer');
+
+        $this->thesaurus_gestion->where('id', '=', $id)->update(array('rayer'=>$rayer));
+    }
+
     // TODO:のちにajax化
     public function csv()
     {
