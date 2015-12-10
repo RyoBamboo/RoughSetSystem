@@ -64,7 +64,7 @@ class ReviewController extends \BaseController {
             }
         }
 
-        $response = array('status'=>'ok');
+        $response = array('status'=>'ok', 'id'=>$item->id);
         return json_encode($response);
     }
 

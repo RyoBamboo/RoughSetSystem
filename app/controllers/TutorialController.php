@@ -10,7 +10,7 @@ class TutorialController extends \BaseController {
 
     public function index()
     {
-        return Redirect::to('/review');
+        return Redirect::to('/review/add');
     }
 
 

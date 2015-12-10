@@ -14,6 +14,7 @@
 @stop
 
 @section('content')
+    @if (isset($_COOKIE['is_tutorial'])) @include('graph.tutorial_modal') @endif
     <div class="tm-menubar uk-width-1-1">
         @include('graph.menubar')
     </div>
