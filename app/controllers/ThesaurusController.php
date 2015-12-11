@@ -147,8 +147,9 @@ class ThesaurusController extends BaseController {
     public function update() {
         $id = Input::get('id');
         $rayer = Input::get('rayer');
+        $synonym = Input::get('synonym');
 
-        $this->thesaurus_gestion->where('id', '=', $id)->update(array('rayer'=>$rayer));
+        $this->thesaurus_gestion->where('id', '=', $id)->update(array('synonym'=>$synonym, 'rayer'=>$rayer));
     }
 
     // TODO:のちにajax化

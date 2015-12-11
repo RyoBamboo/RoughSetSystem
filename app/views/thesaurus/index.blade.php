@@ -22,7 +22,7 @@
                     @foreach ($thesauruses as $thesaurus)
                         <tr>
                             <td>{{ $thesaurus->text }}</td>
-                            <td>{{ $thesaurus->synonym }}</td>
+                            <td id="_{{ $thesaurus->id}}">{{ $thesaurus->synonym }}</td>
                             <td id="{{ $thesaurus->id}}">{{ $thesaurus->rayer }}</td>
                             <td>
                                 <button data-uk-modal="{target:'#update'}" data-id="{{ $thesaurus->id }}" class="modal-update uk-button uk-button-primary">変更</button>

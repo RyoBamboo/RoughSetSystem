@@ -5,6 +5,9 @@
         </div>
         <div class="uk-container uk-container-center">
             <form class="uk-form">
+                <textarea name="synonym">
+                    a
+                </textarea>
                 <select name="rayer">
                     <option value=2>認識</option>
                     <option value=1>認知</option>
@@ -20,15 +23,19 @@
 </div>
 
 <script>
-    $('.modal-update').on('click', function() {
+    $('.modal-update').on('click', function() { 
         var id = $(this).data('id');
         $('.update-button').data('id', id);
+
+        var synonym = $("#_" + id).text();
+        $('.uk-form [name=synonym]').val(synonym);
     });
 
     $('.update-button').on('click', function() {
         var params = {
             "id": $(this).data('id'),
-            "rayer": $('.uk-form [name=rayer]').val()
+            "rayer": $('.uk-form [name=rayer]').val(),
+            "synonym": $('.uk-form [name=synonym]').val()
         }
 
         $.ajax({
@@ -48,6 +55,10 @@
                     rayerText = '知覚';
                     break;
             }
+
+            $("#" + params.id).text(rayerText);
+            $("#_" + params.id).text(params.synonym);
+
         }).fail(function(data, status, errorThrown) {
             console.log(data);
         });
