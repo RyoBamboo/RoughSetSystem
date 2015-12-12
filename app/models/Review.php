@@ -67,7 +67,6 @@ class Review extends Eloquent {
         $page = 1;
         while(true) {
             $url = 'http://www.amazon.co.jp/product-reviews/' .$item_code .'/ref=cm_cr_dp_see_all_summary?ie=UTF8&sortBy=byRankDescending&showViewpoints=0&pageNumber='. $page;
-            Log::debug($url);
             $page++;
 
             $curl = curl_init($url);
@@ -82,7 +81,9 @@ class Review extends Eloquent {
             if ($m[1] == false) {
                 break;
             }
-            preg_match_all('/<span class="a-icon-alt">([0-5])<\/span>/', $html, $stars);
+
+            // preg_match_all('/<span class="a-icon-alt">([0-5])<\/span>/', $html, $stars);
+            preg_match_all('/<i class="a-icon a-icon-star a-star-([0-5]) review-rating">/', $html, $stars);
             $i = 0;
             foreach ($m[1] as $review) {
 //                $review = mb_convert_encoding($review, 'UTF-8', 'SJIS');
