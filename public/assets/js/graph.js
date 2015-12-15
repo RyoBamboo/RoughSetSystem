@@ -117,9 +117,6 @@ function draw() {
             if(k2 >= count(DR[key]['attrs'])) { break; }
             var atr1 = DR[key]['attrs'][k]; 
             var atr2 = DR[key]['attrs'][k2];
-            console.log('--------------------------------------------');
-            console.log(atr1);
-            console.log(atr2);
             links.push({dr:DR[key]['dr'], source: ATTRS[atr1], target: ATTRS[atr2], params: DR[key]['params'], matching: MATCHING[atr1 + "-" + atr2] });
         }
     }
@@ -198,7 +195,6 @@ function loadContent() {
 		success: function(res){
 			if(res){
 				json = $.parseJSON(res);
-        console.log(json);
 				//TODO:DCで分類するロジック
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
@@ -210,7 +206,8 @@ function loadContent() {
 				hideFilter();
 				draw();
 				update();
-                hideAllChunk();
+                      hideAttr();
+                      hideAllChunk();
 			}
 		}
 	});
@@ -220,6 +217,22 @@ function loadContent() {
 function hideAllChunk() {
     d3.selectAll(".chunk").style("display", "none");
     d3.selectAll(".lchunk").style("display", "none");
+}
+
+function hideAttr() {
+  d3.selectAll(".attr").style("display", function(n) {
+    if (n.text.indexOf("^") != -1) {
+      return "none";
+    }
+  });
+
+  d3.selectAll(".link").style("display", function(n) {
+    if (n.dr) {
+      if (n.dr.indexOf("2") != -1) {
+        return "none";
+      }
+    }
+  });
 }
 
 function setReview(reviews) {
@@ -354,6 +367,7 @@ function setEvent() {
                 })
                 .style("opacity", 1);
         }
+
     });
 
 
@@ -503,6 +517,9 @@ d3.select("#rayer1").on("click",function() {
     d3.selectAll(".lchunk").style("display", "none");
 });
 
+d3.select("#rayer1").on("click", function() {
+})
+
 d3.select("#rayer2").on("click",function() {
     d3.selectAll(".r1").style("display", "none"); 
     d3.selectAll(".r2").style("display", "block"); 
@@ -560,6 +577,7 @@ d3.select("#rayer4").on("click",function() {
     d3.selectAll(".r2").style("display","block");
     d3.selectAll(".r3").attr("display","block");
 });
+
 
 function getHeightByRayer(rayerId) {
     switch(rayerId) {

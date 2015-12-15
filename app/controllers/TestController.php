@@ -15,14 +15,95 @@ class TestController extends BaseController {
     // インデックス
     public function getIndex()
     {
-        $url = "http://review.rakuten.co.jp/item/1/224826_10000622/1.1/ev2/?l2-id=review_PC_il_iteminfo_02";
-        $html = Html::getHtml($url);
-        $review = Html::splitHtml($html, '<dd class="revRvwUserEntryCmt description">', "</dd>");
-        $review = preg_replace('/(?:\n|\r|\r\n)/', '', $review );
+        // 酒のレビューを取得。現在はサンプルのレビューを使用。
+        $reviews = Review::where('item_id', 101)->get();
 
-        Review::insert(
-            array('item_id'=> 2, 'content' => $review, 'is_bought'=>1, 'created_at' => time(), 'updated_at'=>time())
-        );
+        $last_result = array();
+        /*-----------------------------------------
+         * 形態素解析, 係受け構文解析
+         *---------------------------------------*/
+        foreach ($reviews as $review) {
+
+            $params = array(
+                'type'=>'chunk',
+                'text'=>$review->content
+            );
+
+            $yahoo_result = YahooApi::fetch($params);
+            if ($yahoo_result === false) continue;
+
+            $last_result = Chunk::getChunks($yahoo_result, $review->content, $review, $last_result, $review->is_bought);
+        }
+
+
+        /*-----------------------------------------
+         * 類義語検索
+         *---------------------------------------*/
+        foreach ($last_result as $key => $value) {
+            $s = explode(',', $value['info']);
+            // 名詞が形容詞にかかっている場合
+            if (preg_match('/.*?(名詞)/u', $s[2]) && preg_match('/.*?(形容|動詞)/u', $s[6])) {
+                $adje = explode('-', $s[6]); // 品詞
+                $pos = explode('-', $s[5]);  // 単語
+
+
+                $_adje = explode('-', $s[2]); // 品詞
+                $_pos = explode('-', $s[1]); // 単語
+
+                // if ($s[0] == '飲み') {
+                //     for ($i = 0; $i < count($_adje); $i++) {
+                //         if (preg_match('/.*?(動詞)/u', $_adje[$i])) {
+                //             $syno = Thesaurus::checkThesaurus($s[0]. $s[4]);
+                //             var_dump($syno);exit;
+                //         }
+                //     }
+                // }
+
+                // for ($i = 0; $i < count($_adje); $i++) {
+                //     if (preg_match('/.*?(名詞|動詞)/u', $_adje[$i])) {
+                //         $syno = Thesaurus::checkThesaurus($_pos[$i]);
+                //         if ($syno == false) {
+                //             $syno = Thesaurus::checkThesaurus($s[0]. $s[4]);
+                //         }
+
+                //         $_ll_result = array();
+                //         if ($syno) {
+                //             $_ll_result['text'] = $syno['text'];
+                //             $_ll_result['rayer'] = $syno['rayer'];
+                //             $_ll_result['info'] = $value['info'];
+                //             $ll_result[trim($syno['text'])][] = $_ll_result;
+                //         }
+                //     }
+                // }
+
+
+
+                for ($i = 0; $i < count($adje); $i++) {
+                    if (preg_match('/^(形容|動詞)/u', $adje[$i], $match)) { // 形容詞が含まれていれば
+                        if ($match[0] == '形容') {
+                            $syno = Thesaurus::checkThesaurus($pos[$i]);
+                        } else if ($match[0] == '動詞') {
+                            $_syno = Thesaurus::checkThesaurus($pos[$i]);
+                            if ($_syno) {
+                               if (in_array($pos[$i], explode(',', $_syno->synonym))) {
+                                    $syno = $_syno;
+                               }
+                            }
+                        }
+                        if (!isset($syno)) break;
+                        $_ll_result = array();
+                        // もし同じような形容詞があれば１つにまとめていく
+                        if ($syno) {
+                            $_ll_result['text']  = $syno['text'];
+
+                            $_ll_result['rayer'] = $syno['rayer'];
+                            $_ll_result['info']  = $value['info'];
+                            $ll_result[trim($syno['text'])][] = $_ll_result;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // 追加フォームの表示

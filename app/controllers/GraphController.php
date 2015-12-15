@@ -283,13 +283,40 @@ class GraphController extends BaseController
         foreach ($last_result as $key => $value) {
             $s = explode(',', $value['info']);
             // 名詞が形容詞にかかっている場合
-            if (preg_match('/.*?(名詞)/u', $s[2]) && preg_match('/.*?(形容)/u', $s[6])) {
+            if (preg_match('/.*?(名詞)/u', $s[2]) && preg_match('/.*?(形容|動詞)/u', $s[6])) {
                 $adje = explode('-', $s[6]); // 品詞
                 $pos = explode('-', $s[5]);  // 単語
 
+                $_adje = explode('-', $s[2]); // 品詞
+                $_pos = explode('-', $s[1]); // 単語
+
+                for ($i = 0; $i < count($_adje); $i++) {
+                    if (preg_match('/.*?(名詞)/u', $_adje[$i])) {
+                        $syno = Thesaurus::checkThesaurus($_pos[$i]);
+                        $_ll_result = array();
+                        if ($syno) {
+                            $_ll_result['text'] = $syno['text'];
+                            $_ll_result['rayer'] = $syno['rayer'];
+                            $_ll_result['info'] = $value['info'];
+                            $ll_result[trim($syno['text'])][] = $_ll_result;
+                        }
+                    }
+                }
                 for ($i = 0; $i < count($adje); $i++) {
-                    if (preg_match('/.*?(形容)/u', $adje[$i])) { // 形容詞が含まれていれば
-                        $syno = Thesaurus::checkThesaurus($pos[$i]);
+                    if (preg_match('/^(形容|動詞)/u', $adje[$i], $match)) { // 形容詞が含まれていれば
+
+                        if ($match[0] == '形容') {
+                            $syno = Thesaurus::checkThesaurus($pos[$i]);
+                        } else if ($match[0] == '動詞') {
+                            $_syno = Thesaurus::checkThesaurus($pos[$i]);
+                            if ($_syno) {
+                               if (in_array($pos[$i], explode(',', $_syno->synonym))) {
+                                    $syno = $_syno;
+                               }
+                            }
+                        } 
+                        if (!isset($syno)) break;
+
                         $_ll_result = array();
                         // もし同じような形容詞があれば１つにまとめていく
                         if ($syno) {
@@ -301,8 +328,62 @@ class GraphController extends BaseController
                         }
                     }
                 }
+
+                // for ($i = 0; $i < count($adje); $i++) {
+                //     if (preg_match('/.*?(形容)/u', $adje[$i], $match)) { // 形容詞が含まれていれば
+                //         $syno = Thesaurus::checkThesaurus($pos[$i]);
+                //         $_ll_result = array();
+                //         // もし同じような形容詞があれば１つにまとめていく
+                //         if ($syno) {
+                //             $_ll_result['text']  = $syno['text'];
+
+                //             $_ll_result['rayer'] = $syno['rayer'];
+                //             $_ll_result['info']  = $value['info'];
+                //             $ll_result[trim($syno['text'])][] = $_ll_result;
+                //         }
+                //     }
+                // }
             }
         }
+
+        // foreach ($last_result as $key => $value) {
+        //     $s = explode(',', $value['info']);
+        //     // 名詞が形容詞にかかっている場合
+        //     if (preg_match('/.*?(名詞)/u', $s[2]) && preg_match('/.*?(形容)/u', $s[6])) {
+        //         $adje = explode('-', $s[6]); // 品詞
+        //         $pos = explode('-', $s[5]);  // 単語
+
+        //         $_adje = explode('-', $s[2]); // 品詞
+        //         $_pos = explode('-', $s[1]); // 単語
+        //         for ($i = 0; $i < count($_adje); $i++) {
+        //             if (preg_match('/.*?(名詞)/u', $_adje[$i])) {
+        //                 $syno = Thesaurus::checkThesaurus($_pos[$i]);
+        //                 $_ll_result = array();
+        //                 if ($syno) {
+        //                     $_ll_result['text'] = $syno['text'];
+        //                     $_ll_result['rayer'] = $syno['rayer'];
+        //                     $_ll_result['info'] = $value['info'];
+        //                     $ll_result[trim($syno['text'])][] = $_ll_result;
+        //                 }
+        //             }
+        //         }
+
+        //         for ($i = 0; $i < count($adje); $i++) {
+        //             if (preg_match('/.*?(形容)/u', $adje[$i])) { // 形容詞が含まれていれば
+        //                 $syno = Thesaurus::checkThesaurus($pos[$i]);
+        //                 $_ll_result = array();
+        //                 // もし同じような形容詞があれば１つにまとめていく
+        //                 if ($syno) {
+        //                     $_ll_result['text']  = $syno['text'];
+
+        //                     $_ll_result['rayer'] = $syno['rayer'];
+        //                     $_ll_result['info']  = $value['info'];
+        //                     $ll_result[trim($syno['text'])][] = $_ll_result;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         /*-----------------------------------------
          * 感性ワードの出現率を検索する
