@@ -13,6 +13,7 @@
                         <tr>
                             <th>No.</th>
                             <th>内容</th>
+                            <th>評価</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -21,6 +22,8 @@
                         <tr>
                             <td>{{ $review->id }}</td>
                             <td>{{ $review->content }}</td>
+                            <td>{{ $review->is_bought }}</td>
+                            <td><a class="uk-button uk-button-danger" href="/review/del/{{ $review->id }}">削除</a></td>
                             <td><a class="uk-button uk-button-danger" href="/review/del/{{ $review->id }}">削除</a></td>
                         </tr>
                     @endforeach

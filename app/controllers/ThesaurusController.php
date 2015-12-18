@@ -143,8 +143,17 @@ class ThesaurusController extends BaseController {
         }
     }
 
+    // 一つだけ更新
+    public function update() {
+        $id = Input::get('id');
+        $rayer = Input::get('rayer');
+        $synonym = Input::get('synonym');
+
+        $this->thesaurus_gestion->where('id', '=', $id)->update(array('synonym'=>$synonym, 'rayer'=>$rayer));
+    }
+
     // TODO:のちにajax化
-    public function getCsv()
+    public function csv()
     {
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=thesaurus.csv");

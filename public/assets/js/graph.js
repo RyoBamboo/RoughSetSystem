@@ -15,7 +15,7 @@ var force = self.force = d3.layout.force()
     .links(links)
     .gravity(0.05) //重力
     //.distance(500) //ノード間の距離
-    .linkDistance(350)
+    .linkDistance(200)
     .charge(-150) //各ノードの引き合うor反発しあう力
     .size([WIDTH, HEIGHT]); //図のサイズ
 
@@ -58,7 +58,6 @@ force.on("tick", function(e) {
     var link = STAGE.selectAll("line.link").data(links, function(d) { return d.source.id + ',' + d.target.id});
     link.attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) {
-          console.log(d);
             return d.source._y; 
             // return getHeightByRayer(d.source.params.rayer);
             //return d.source.y;
@@ -71,13 +70,17 @@ force.on("tick", function(e) {
         })
 	.attr("id", function(d) { return d.dr; })
 	.style("stroke", function(d) {if(isset(d.params)) { return d.params.color;} return "#BABABA"; })
-	.attr("stroke-width", function(d) {if(isset(d.matching)) { return parseInt(d.matching.kl); } return d.params.width; })//線の太さ
+	.attr("stroke-width", function(d) {
+          if(isset(d.matching) && d.matching.kl >= 1) { 
+               return parseInt(d.matching.kl); 
+          } 
+          return (d.params.width > 10) ? 10 : d.params.width; 
+      })//線の太さ
 	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; });//破線
 });
 
 // Move nodes toward cluster focus.
 function gravity(alpha) {
-  console.log('in_gravity');
   return function(d) {
     d.y += (d.cy - d.y) * alpha;
     d.x += (d.cx - d.x) * alpha;
@@ -112,7 +115,8 @@ function draw() {
         for(var k in DR[key]['attrs']) {
             var k2 = parseInt(k)+1;
             if(k2 >= count(DR[key]['attrs'])) { break; }
-                var atr1 = DR[key]['attrs'][k]; var atr2 = DR[key]['attrs'][k2];
+            var atr1 = DR[key]['attrs'][k]; 
+            var atr2 = DR[key]['attrs'][k2];
             links.push({dr:DR[key]['dr'], source: ATTRS[atr1], target: ATTRS[atr2], params: DR[key]['params'], matching: MATCHING[atr1 + "-" + atr2] });
         }
     }
@@ -202,7 +206,8 @@ function loadContent() {
 				hideFilter();
 				draw();
 				update();
-                hideAllChunk();
+                      hideAttr();
+                      hideAllChunk();
 			}
 		}
 	});
@@ -212,6 +217,22 @@ function loadContent() {
 function hideAllChunk() {
     d3.selectAll(".chunk").style("display", "none");
     d3.selectAll(".lchunk").style("display", "none");
+}
+
+function hideAttr() {
+  d3.selectAll(".attr").style("display", function(n) {
+    if (n.text.indexOf("^") != -1) {
+      return "none";
+    }
+  });
+
+  d3.selectAll(".link").style("display", function(n) {
+    if (n.dr) {
+      if (n.dr.indexOf("2") != -1) {
+        return "none";
+      }
+    }
+  });
 }
 
 function setReview(reviews) {
@@ -346,6 +367,7 @@ function setEvent() {
                 })
                 .style("opacity", 1);
         }
+
     });
 
 
@@ -495,6 +517,9 @@ d3.select("#rayer1").on("click",function() {
     d3.selectAll(".lchunk").style("display", "none");
 });
 
+d3.select("#rayer1").on("click", function() {
+})
+
 d3.select("#rayer2").on("click",function() {
     d3.selectAll(".r1").style("display", "none"); 
     d3.selectAll(".r2").style("display", "block"); 
@@ -552,6 +577,7 @@ d3.select("#rayer4").on("click",function() {
     d3.selectAll(".r2").style("display","block");
     d3.selectAll(".r3").attr("display","block");
 });
+
 
 function getHeightByRayer(rayerId) {
     switch(rayerId) {
