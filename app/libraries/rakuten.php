@@ -37,7 +37,7 @@ class Rakuten
 
             foreach ($response as $item) {
 
-                $html = Html::getHtml($item['itemUrl']);
+                $html = Html::getHtml2($item['itemUrl']);
                 //TODO:: ここ一行にできないか
                 preg_match_all('|<a href=".*" class=".*">レビューを見る\（([0-9]*.*[0-9]*)\）|U', $html, $match);
                 if (count($match[1]) == 0) {

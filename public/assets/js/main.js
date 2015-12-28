@@ -107,6 +107,18 @@ $(function() {
                 var str = "<tr><th><input type='checkbox'></th><th>商品名</th><th>レビュー数</th><th></th></tr>";
 
                 $.each(data, function(i, value) {
+
+
+                    // 実験用の設定（実験終了後に削除）
+                    console.log(value.reviewCode);
+                    if (value.reviewCode == '221245_10000180') return true;
+                    if (value.reviewCode == '237671_10000244') return true;
+                    if (value.reviewCode == '199275_10000509') return true;
+                    if (value.reviewCode == '225961_10000213') return true;
+                    if (value.reviewCode == '212428_10000075') return true;
+                    // 実験用の設定ここまで（実験終了後に削除）
+
+
                     str += '<tr>' +
                     '<td><input class="add-item" type="checkbox" data-name="'+ value.itemName +'" data-code="'+ value.reviewCode +'" data-count="'+ value.reviewCount +'" data-from="'+ value.from +'">' +
                         '<img src=' + value.itemImageUrl + '>' +
