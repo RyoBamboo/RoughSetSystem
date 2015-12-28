@@ -110,12 +110,13 @@ $(function() {
 
 
                     // 実験用の設定（実験終了後に削除）
-                    console.log(value.reviewCode);
+                    console.log(value);
                     if (value.reviewCode == '221245_10000180') return true;
                     if (value.reviewCode == '237671_10000244') return true;
                     if (value.reviewCode == '199275_10000509') return true;
                     if (value.reviewCode == '225961_10000213') return true;
                     if (value.reviewCode == '212428_10000075') return true;
+                    if (value.from !== 'rakuten') return true;
                     // 実験用の設定ここまで（実験終了後に削除）
 
 
