@@ -18,6 +18,28 @@ Route::controller('review', 'ReviewController');
 /* Surfacec */
 Route::controller('surface', 'SurfaceController');
 
+/* Item */
+Route::group(['prefix'=>'item'], function() {
+    Route::get('', [
+        'as'=>'item',
+        'uses'=>'ItemController@index'
+    ]);
+
+    Route::get('detail/{id?}', [
+        'as'=>'item.detail',
+        'uses'=>'ItemController@detail'
+    ]);
+});
+
+/* Analysis */
+Route::group(['prefix'=>'analysis'], function() {
+
+    Route::post('syntactic', [
+        'as'=>'analysis.syntactic',
+        'uses'=>'AnalysisController@syntactic'
+    ]);
+});
+
 
 /* Graph */
 Route::group(['prefix'=>'graph'], function() {
