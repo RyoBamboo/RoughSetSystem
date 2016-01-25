@@ -43,6 +43,11 @@ Route::group(['prefix'=>'analysis'], function() {
         'as'=>'analysis.synonym',
         'uses'=>'AnalysisController@synonym'
     ]);
+
+    Route::post('decision', [
+        'as'=>'analysis.decision',
+        'uses'=>'AnalysisController@decision'
+    ]);
 });
 
 

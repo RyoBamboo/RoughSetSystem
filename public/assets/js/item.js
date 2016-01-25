@@ -11,7 +11,8 @@ $(function() {
 		$.ajax({
 			'type': 'POST',
 			//'url': '/analysis/syntactic',
-			'url': '/analysis/synonym',
+			//'url': '/analysis/synonym',
+			'url': '/analysis/decision',
 			'data': data
 		}).done(function(data) {
 			console.log(data);
