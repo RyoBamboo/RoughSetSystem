@@ -38,6 +38,11 @@ Route::group(['prefix'=>'analysis'], function() {
         'as'=>'analysis.syntactic',
         'uses'=>'AnalysisController@syntactic'
     ]);
+
+    Route::post('synonym', [
+        'as'=>'analysis.synonym',
+        'uses'=>'AnalysisController@synonym'
+    ]);
 });
 
 

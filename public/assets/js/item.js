@@ -10,11 +10,13 @@ $(function() {
 		}
 		$.ajax({
 			'type': 'POST',
-			'url': '/analysis/syntactic',
+			//'url': '/analysis/syntactic',
+			'url': '/analysis/synonym',
 			'data': data
 		}).done(function(data) {
 			console.log(data);
-		}).fail(function(xhr, textStatus, errorThrown) {
+		}).fail(function(data) {
+			console.log(data);
 		});
     });
 
