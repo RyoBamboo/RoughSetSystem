@@ -5,20 +5,22 @@ $(function() {
 	 */
 	$("#startAnalysis").on('click', function() {
 		console.log('分析開始');
-		var data = {
-			'itemId': $(this).data('item-id')
-		}
+		 var itemId = $(this).data('item-id');
+		 var result = analysis(itemId, 'syntactic');
+    });
+
+	function analysis(itemId, method) {
 		$.ajax({
 			'type': 'POST',
 			//'url': '/analysis/syntactic',
 			//'url': '/analysis/synonym',
-			'url': '/analysis/decision',
-			'data': data
+			'url': '/analysis/' + method,
+			'data': { 'itemId': itemId }
 		}).done(function(data) {
 			console.log(data);
 		}).fail(function(data) {
 			console.log(data);
 		});
-    });
 
+	}
 });
