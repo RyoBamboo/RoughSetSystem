@@ -8,6 +8,19 @@ var item2;
 var NODES = []; // ノードを格納する配列
 var LINKS = []; // ノード間のリンク情報を納める配列
 
+var test = {
+    "6-10": [
+        {text:"test1"},
+        {text:"test2"},
+        {text:"test3"}
+    ],
+    "6-4": [
+        {text:"test4"},
+        {text:"test5"},
+        {text:"test6"}
+    ]
+};
+
 init();
 
 // グラフの初期設定
@@ -62,7 +75,7 @@ function loadContent() {
                 json = $.parseJSON(res);
                 ATTRS = json['ATTRS'];
                 ITEMS = json['ITEMS'];
-                draw();
+                draw(json);
                 update();
                 setEvent();
             }
@@ -71,32 +84,55 @@ function loadContent() {
 }
 
 
-function draw() {
-    // ITEMS描画
-    for (var key in ITEMS) {
-        NODES.push(ITEMS[key]);
+function draw(json) {
+    var item1;
+    for (var key in json) {
+        var item = json[key];
+
+        console.log(item);
+        NODES.push(item);
+        $.each(item['attrs'], function(a, b) {
+            NODES.push(b);
+            LINKS.push({ source:item, target:b});
+        });
     }
 
-    // ATTRS描画
-    for (var key in ATTRS) {
-        NODES.push(ATTRS[key]);
-        for (var _key in ATTRS[key]['chunks']) {
-            NODES.push(ATTRS[key]['chunks'][_key]);
-            LINKS.push({ source: ATTRS[key], target: ATTRS[key]['chunks'][_key]});
+    for (var key in test) {
+        var aaa = key.split('-');
+        for (_key in test[key]) {
+            NODES.push(test[key][_key]);
+            for (__key in aaa) {
+                LINKS.push({ source:json[aaa[__key]], target:test[key][_key]});
+            }
         }
     }
-
-    for (key in NODES) {
-        // 共通の評価句のリンク追加
-        if(NODES[key].belong == 0) {
-            LINKS.push({source: 0, target: NODES[key]});
-            LINKS.push({source: 1, target: NODES[key]});
-        } else if (NODES[key].belong == item1) {
-            LINKS.push({source: 0, target: NODES[key]});
-        } else if (NODES[key].belong == item2) {
-            LINKS.push({source: 1, target: NODES[key]});
-        }
-    }
+    console.log(NODES);
+    //// ITEMS描画
+    //for (var key in ITEMS) {
+    //    NODES.push(ITEMS[key]);
+    //}
+    //
+    //// ATTRS描画
+    //for (var key in ATTRS) {
+    //    NODES.push(ATTRS[key]);
+    //    for (var _key in ATTRS[key]['chunks']) {
+    //        NODES.push(ATTRS[key]['chunks'][_key]);
+    //        LINKS.push({ source: ATTRS[key], target: ATTRS[key]['chunks'][_key]});
+    //    }
+    //}
+    //
+    //
+    //for (key in NODES) {
+    //    // 共通の評価句のリンク追加
+    //    if(NODES[key].belong == 0) {
+    //        LINKS.push({source: 0, target: NODES[key]});
+    //        LINKS.push({source: 1, target: NODES[key]});
+    //    } else if (NODES[key].belong == item1) {
+    //        LINKS.push({source: 0, target: NODES[key]});
+    //    } else if (NODES[key].belong == item2) {
+    //        LINKS.push({source: 1, target: NODES[key]});
+    //    }
+    //}
 }
 
 function update() {
