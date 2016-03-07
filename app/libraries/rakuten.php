@@ -37,15 +37,31 @@ class Rakuten
 
             foreach ($response as $item) {
 
-                $html = Html::getHtml($item['itemUrl']);
-
+                $html = Html::getHtml2($item['itemUrl']);
                 //TODO:: ここ一行にできないか
-                preg_match_all('|<a href=".*" class="see">レビューを見る\（([0-9]*.*[0-9]*)\）|U', $html, $match);
-                foreach ($match[1] as $key => $value) {
-                    if (str_replace(',', '', $value) == $item['reviewCount']) {
-                        preg_match('|([0-9]*_[0-9]*)|', $match[0][$key], $match2);
-                    }
+                preg_match_all('|<a href=".*" class=".*">レビューを見る\（([0-9]*.*[0-9]*)\）|U', $html, $match);
+                if (count($match[1]) == 0) {
+//                    preg_match_all('|<a href=".*">すべてのレビューを見る\（([0-9]*,*[0-9]*)\）|msU', $html, $match);
+                    preg_match_all('|<a href=".*">すべてのレビューを見る\（([0-9]*,*[0-9]*)|', $html, $match);
                 }
+
+                if (!$match[0]) {
+                    preg_match_all('|http://review.rakuten.co.jp/item/[0-9]/([0-9]*_[0-9]*)|', $html, $match);
+                }
+
+
+                if (isset($match[0][0])) {
+                    preg_match('|([0-9]*_[0-9]*)|', $match[0][0], $match2);
+                }
+
+                // foreach ($match[1] as $key => $value) {
+                //     Log::debug($item['reviewCount']);
+                //     Log::debug($match[1]);
+                //     if (str_replace(',', '', $value) == $item['reviewCount']) {
+
+                //         preg_match('|([0-9]*_[0-9]*)|', $match[0][$key], $match2);
+                //     }
+                // }
 
                 $results[] = array(
                     'itemName'=> $item['itemName'],

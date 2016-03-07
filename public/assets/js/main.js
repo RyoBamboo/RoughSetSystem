@@ -107,6 +107,19 @@ $(function() {
                 var str = "<tr><th><input type='checkbox'></th><th>商品名</th><th>レビュー数</th><th></th></tr>";
 
                 $.each(data, function(i, value) {
+
+
+                    // 実験用の設定（実験終了後に削除）
+                    console.log(value);
+                    if (value.reviewCode == '221245_10000180') return true;
+                    if (value.reviewCode == '237671_10000244') return true;
+                    if (value.reviewCode == '199275_10000509') return true;
+                    if (value.reviewCode == '225961_10000213') return true;
+                    if (value.reviewCode == '212428_10000075') return true;
+                    if (value.from !== 'rakuten') return true;
+                    // 実験用の設定ここまで（実験終了後に削除）
+
+
                     str += '<tr>' +
                     '<td><input class="add-item" type="checkbox" data-name="'+ value.itemName +'" data-code="'+ value.reviewCode +'" data-count="'+ value.reviewCount +'" data-from="'+ value.from +'">' +
                         '<img src=' + value.itemImageUrl + '>' +
@@ -185,6 +198,9 @@ $(function() {
         });
     });
 
+    /*------------------------------------------------
+     * グラフの作成
+     *----------------------------------------------*/
     $(document).on('click', '#make-modal', function() {
         var id = $(this).data('id')
 
@@ -235,6 +251,30 @@ $(function() {
                         $('tbody').append("<tr><td>"+ text +"</td><td>"+ synonyms +"</td><td>"+ rayer +"</td></tr>");
                     });
             });
+        }
+    });
+
+
+    var menu = $('.slide_menu'), // スライドインするメニューを指定
+        menuBtn = $('#button'), // メニューボタンを指定
+        body = $(".wrapper"),
+        menuWidth = menu.outerWidth();
+        body.toggleClass('open');
+        body.css('left', menuWidth);
+        menu.css('left', 0);
+
+    // メニューボタンをクリックした時の動き
+    menuBtn.on('click', function(){
+        // body に open クラスを付与する
+        body.toggleClass('open');
+        if(body.hasClass('open')){
+            // open クラスが body についていたらメニューをスライドインする
+            body.animate({'left' : menuWidth }, 300);
+            menu.animate({'left' : 0 }, 300);
+        } else {
+            // open クラスが body についていなかったらスライドアウトする
+            menu.animate({'left' : -menuWidth }, 300);
+            body.animate({'left' : 0 }, 300);
         }
     });
 });

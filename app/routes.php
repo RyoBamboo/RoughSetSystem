@@ -100,6 +100,16 @@ Route::group(['prefix'=>'thesaurus'], function() {
         'as'=>'upload',
         'uses'=>'ThesaurusController@upload'
     ]);
+
+    Route::post('update', [
+        'as'=>'update',
+        'uses'=>'ThesaurusController@update'
+    ]);
+
+    Route::get('csv', [
+        'as'=>'csv',
+        'uses'=>'ThesaurusController@csv'
+    ]);
 });
 
 
@@ -145,6 +155,14 @@ Route::group(['prefix'=>'setting'], function() {
     ]);
 });
 
+
+/* Tutorial */
+Route::group(['prefix'=>'tutorial'], function() {
+    Route::get('', [
+        'as'=>'tutorial',
+        'uses'=>'TutorialController@index'
+    ]);
+});
 /* API */
 Route::post('/api/twitter/get', 'ReviewController@twitter');
 

@@ -28,6 +28,19 @@ class Html {
         return $html;
     }
 
+    // htmlを取得して返す（楽天でgetHtmlが使用できないのでこちらで代用）
+    public static function getHtml2($url) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $html =  curl_exec($ch);
+        $html = mb_convert_encoding($html, 'UTF-8', 'EUC-JP');
+        curl_close($ch); //終了
+
+        return $html;
+    }
+
+
     /**
      * 与えられたhtmlから1部分を抜き出す
      *

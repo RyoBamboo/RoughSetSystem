@@ -1,4 +1,4 @@
-<div id="my-id" class="uk-modal">
+<div id="delete" class="uk-modal">
     <div class="uk-modal-dialog">
         <div class="uk-modal-header">
             感性ワードを削除してもよろしいですか
