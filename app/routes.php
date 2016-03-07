@@ -125,6 +125,11 @@ Route::group(['prefix'=>'chunk'], function() {
         'uses'=>'ChunkController@add'
     ]);
 
+    Route::get('make', [
+        'as'=>'chunk.make',
+        'uses'=>'ChunkController@make'
+    ]);
+
     Route::post('store', [
         'as'=>'chunk.store',
         'uses'=>'ChunkController@store'

@@ -92,11 +92,11 @@ class Chunk extends Eloquent {
         $chunks = Chunk::all();
         $result = null;
         foreach($chunks as $chunk) {
-            $_from = $chunk['from']; $_to = $chunk['to'];
-            if(preg_match("/$_from/u", $from) && preg_match("/$_to/u", $to)) {
-                $result = trim($chunk['nega_posi']);
-                break;
-            }
+//            $_from = $chunk['from']; $_to = $chunk['to'];
+//            if(preg_match("/$_from/u", $from) && preg_match("/$_to/u", $to)) {
+//                $result = trim($chunk['nega_posi']);
+//                break;
+//            }
         }
 
 
