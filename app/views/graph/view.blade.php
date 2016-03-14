@@ -61,7 +61,8 @@
             </div>
         </div>
     </div>
-    <div id="myStat" data-dimension="200" data-text="50%" data-info="New Clients" data-width="5" data-fontsize="25" data-percent="50" data-fgcolor="#A9E7D0" data-bgcolor="#eee" data-total="100" data-part="50" data-icon="fa-long-arrow-up" data-icon-size="28" data-icon-color="#fff"></div>
+    {{--<div id="myStat" data-dimension="200" data-text="50%" data-info="New Clients" data-width="5" data-fontsize="25" data-percent="50" data-fgcolor="#A9E7D0" data-bgcolor="#eee" data-total="100" data-part="50" data-icon="fa-long-arrow-up" data-icon-size="28" data-icon-color="#fff"></div>--}}
+    <a href="/graph/view/{{$item->id}}?dr={{$dr}}">決定ルールの切り替え</a>
     <script>
         $( document ).ready(function() {
             $('#myStat').circliful();

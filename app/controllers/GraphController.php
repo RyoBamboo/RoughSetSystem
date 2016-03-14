@@ -34,6 +34,7 @@ class GraphController extends BaseController
         $review_count = $this->review_gestion->where('item_id', '=', $id)->count();
         $item->review_count = $review_count;
 
+        $this->data['dr'] = (isset($_GET['dr']) && $_GET['dr']==1) ? 0 : 1;
         $this->data['pageaction'] = 'view';
         $this->data['item'] = $item;
         return View::make('graph.view', $this->data);
