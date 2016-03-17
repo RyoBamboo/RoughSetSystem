@@ -174,10 +174,17 @@ function update() {
 function loadContent() {
 	showFilter();
 	var ret = location.href.split("/");
-    var item_id = ret[ret.length - 1];
+    var params = ret[ret.length - 1].split('?');
     var data = {
-        "item_id": item_id
+        "item_id": params[0]
+    };
+    if (params.length > 1) {
+        var tmp = params[1].split('=');
+        console.log(params[1]);
+        console.log(tmp);
+        TYPE = params[1].split('=')[1];
     }
+    console.log(TYPE);
 
 	//var sendData = "";
     //if(count(ret) != 0) {
@@ -195,6 +202,7 @@ function loadContent() {
 		success: function(res){
 			if(res){
 				json = $.parseJSON(res);
+                console.log(json);
 				//TODO:DCで分類するロジック
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
@@ -206,8 +214,8 @@ function loadContent() {
 				hideFilter();
 				draw();
 				update();
-                      hideAttr();
-                      hideAllChunk();
+                hideAttr();
+                hideAllChunk();
 			}
 		}
 	});
