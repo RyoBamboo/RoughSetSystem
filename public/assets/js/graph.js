@@ -74,8 +74,8 @@ force.on("tick", function(e) {
 	.attr("stroke-width", function(d) {
           if(isset(d.matching) && d.matching.kl >= 1) { 
                return parseInt(d.matching.kl); 
-          } 
-          return (d.params.width > 10) ? 10 : d.params.width; 
+          }
+          return ( d.params.width < 10) ? d.params.width : 10;
       })//線の太さ
 	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; });//破線
 });
@@ -142,24 +142,25 @@ function draw2() {
         nodes.push(ALL_ATTRS[key]);
         for (var c_key in ALL_ATTRS[key]['chunks']) {
             nodes.push(ALL_ATTRS[key]['chunks'][c_key]);
+            links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key], params: ALL_ATTRS[key]['params']});
         }
     }
 }
 
 //アップデート
 function update() {
-    //var link = STAGE.selectAll("line.link")
-    //.data(links, function(l) { return l.source.id + '-' + l.target.id; }); //linksデータを要素にバインド
-    //
-    //link.enter().append("svg:line")
-    //.attr("class",function(d) { if(isset(d.dr)) { return "link " + d.dr; } return "link lchunk attr_" + d.source.attrid; } )
-    //.attr("attr_id",function(d) { if(isset(d.dr)) { return null; } return d.source.attrid; } )
-    //.attr("x1", function(d) { return d.source.x; })
-    //.attr("y1", function(d) { return d.source.y; })
-    //.attr("x2", function(d) { return d.target.x; })
-    //.attr("y2", function(d) { return d.target.y; });
-    //
-    //link.exit().remove(); //要らなくなった要素を削除
+    var link = STAGE.selectAll("line.link")
+    .data(links, function(l) { return l.source.id + '-' + l.target.id; }); //linksデータを要素にバインド
+
+    link.enter().append("svg:line")
+    .attr("class",function(d) { if(isset(d.dr)) { return "link " + d.dr; } return "link lchunk attr_" + d.source.attrid; } )
+    .attr("attr_id",function(d) { if(isset(d.dr)) { return null; } return d.source.attrid; } )
+    .attr("x1", function(d) { return d.source.x; })
+    .attr("y1", function(d) { return d.source.y; })
+    .attr("x2", function(d) { return d.target.x; })
+    .attr("y2", function(d) { return d.target.y; });
+
+    link.exit().remove(); //要らなくなった要素を削除
 
     var node = STAGE.selectAll("g.node")
     .data(nodes, function(d) { return d.dpid;});//nodesデータを要素にバインド
