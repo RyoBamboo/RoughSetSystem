@@ -140,10 +140,10 @@ function draw2() {
         }
         ALL_ATTRS[key]['_y'] = _y;
         nodes.push(ALL_ATTRS[key]);
-        //for (var c_key in ALL_ATTRS[key]['chunks']) {
-        //    nodes.push(ALL_ATTRS[key]['chunks'][c_key]);
-        //    links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key], params: ALL_ATTRS[key]['params']});
-        //}
+        for (var c_key in ALL_ATTRS[key]['chunks']) {
+            nodes.push(ALL_ATTRS[key]['chunks'][c_key]);
+            links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key], params: ALL_ATTRS[key]['params']});
+        }
     }
 
     //DR描画
@@ -158,9 +158,8 @@ function draw2() {
     }
 
     // 共起強度を描画するように修正
-    var i = 0;
     for (var m_key in MATCHING) {
-        if (MATCHING[m_key].j > 0.01 && m_key.search(/2/) == -1) {
+        if (MATCHING[m_key].j > 0.1 && m_key.search(/2/) == -1) {
             var match_attrs = m_key.split('-');
             links.push({ type: 'match', source: ALL_ATTRS[match_attrs[0]], target: ALL_ATTRS[match_attrs[1]], params: {width: MATCHING[m_key].j * 100} });
         }
@@ -630,19 +629,3 @@ d3.select("#rayer4").on("click",function() {
     d3.selectAll(".r3").attr("display","block");
 });
 
-
-function getHeightByRayer(rayerId) {
-    switch(rayerId) {
-        case 1:
-            return 800;
-            break;
-        case 2:
-            return 500;
-            break;
-        case 3:
-            return 200;
-            break;
-        default:
-            return 0;
-    }
-}
