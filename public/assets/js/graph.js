@@ -5,6 +5,7 @@ var nodes = [],    //ノードを収める配列
     links = [];    //ノード間のリンク情報を収める配列
 
 var ATTRS = {};
+var ALL_ATTRS = {};
 var DR = {};
 var TYPE = 1;//1:buy,2:not buy
 
@@ -64,7 +65,7 @@ force.on("tick", function(e) {
         })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { 
-          if (d.dr) return d.target._y;
+          if (d.dr || d.type == 'match') return d.target._y;
             // return getHeightByRayer(d.source.params.rayer);
           return d.target.y; 
         })
@@ -73,10 +74,11 @@ force.on("tick", function(e) {
 	.attr("stroke-width", function(d) {
           if(isset(d.matching) && d.matching.kl >= 1) { 
                return parseInt(d.matching.kl); 
-          } 
-          return (d.params.width > 10) ? 10 : d.params.width; 
+          }
+          return ( d.params.width < 10) ? d.params.width : 10;
       })//線の太さ
-	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; });//破線
+	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; })//破線
+    .attr("match", function(d) { if (isset(d.params.match)) { return d.params.match; }}) ;
 });
 
 // Move nodes toward cluster focus.
@@ -122,13 +124,56 @@ function draw() {
     }
 }
 
+function draw2() {
+    // すべてのATTRSを描画
+    for (var key in ALL_ATTRS) {
+        var _y;
+        switch(ALL_ATTRS[key].params.rayer) {
+        case 1:
+            _y =  Math.floor( Math.random() * 150) + 650;
+            break;
+        case 2:
+            _y =  Math.floor( Math.random() * 150) + 350;
+            break;
+        case 3:
+            _y =  Math.floor( Math.random() * 150) + 50;
+            break;
+        }
+        ALL_ATTRS[key]['_y'] = _y;
+        nodes.push(ALL_ATTRS[key]);
+        for (var c_key in ALL_ATTRS[key]['chunks']) {
+            nodes.push(ALL_ATTRS[key]['chunks'][c_key]);
+            links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key], params: ALL_ATTRS[key]['params']});
+        }
+    }
+
+    //DR描画
+    for(var key in DR) {
+        for(var k in DR[key]['attrs']) {
+            var k2 = parseInt(k)+1;
+            if(k2 >= count(DR[key]['attrs'])) { break; }
+            var atr1 = DR[key]['attrs'][k];
+            var atr2 = DR[key]['attrs'][k2];
+            links.push({dr:DR[key]['dr'], source: ALL_ATTRS[atr1], target: ALL_ATTRS[atr2], params: DR[key]['params'], matching: MATCHING[atr1 + "-" + atr2] });
+        }
+    }
+
+    // 共起強度を描画するように修正
+    for (var m_key in MATCHING) {
+        if (MATCHING[m_key].j > 0.01 && m_key.search(/2/) == -1) {
+            var match_attrs = m_key.split('-');
+            links.push({ type: 'match', source: ALL_ATTRS[match_attrs[0]], target: ALL_ATTRS[match_attrs[1]], params: {width: MATCHING[m_key].j * 100, match: MATCHING[m_key].j} });
+        }
+    }
+}
+
 //アップデート
 function update() {
     var link = STAGE.selectAll("line.link")
     .data(links, function(l) { return l.source.id + '-' + l.target.id; }); //linksデータを要素にバインド
 
     link.enter().append("svg:line")
-    .attr("class",function(d) { if(isset(d.dr)) { return "link " + d.dr; } return "link lchunk attr_" + d.source.attrid; } )
+    .attr("class",function(d) { if(isset(d.dr)) { return "link dr " + d.dr; } if(isset(d.type)) { return "link match"; } return "link lchunk attr_" + d.source.attrid; } )
     .attr("attr_id",function(d) { if(isset(d.dr)) { return null; } return d.source.attrid; } )
     .attr("x1", function(d) { return d.source.x; })
     .attr("y1", function(d) { return d.source.y; })
@@ -180,11 +225,8 @@ function loadContent() {
     };
     if (params.length > 1) {
         var tmp = params[1].split('=');
-        console.log(params[1]);
-        console.log(tmp);
         TYPE = params[1].split('=')[1];
     }
-    console.log(TYPE);
 
 	//var sendData = "";
     //if(count(ret) != 0) {
@@ -207,14 +249,16 @@ function loadContent() {
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
 				ATTRS = json['ATTRS'][TYPE];
+                ALL_ATTRS = json['ALL_ATTRS'];
 				setReview(json['REVIEWS'][TYPE]);
 				$("#DR").html(json['DR_TEXT']);
 				$("#DRH").html(json['DRH_TEXT']);
 				$("#ATTR").html(json['ATTR_TEXT']);
 				hideFilter();
-				draw();
+				//draw();
+                draw2();
 				update();
-                hideAttr();
+                //hideAttr();
                 hideAllChunk();
 			}
 		}
@@ -388,6 +432,7 @@ function setEvent() {
         $(".chunk.attr_" + attr_id).toggle();
         $(".lchunk.attr_" + attr_id).toggle();
     });
+
 }
 
 var on_ctl_key = false;
@@ -586,19 +631,30 @@ d3.select("#rayer4").on("click",function() {
     d3.selectAll(".r3").attr("display","block");
 });
 
+// 共起率の表示/非表示切り替え
+d3.select("#match-rate").on("click", function() {
+    $(".link.match").toggle();
+});
 
-function getHeightByRayer(rayerId) {
-    switch(rayerId) {
-        case 1:
-            return 800;
-            break;
-        case 2:
-            return 500;
-            break;
-        case 3:
-            return 200;
-            break;
-        default:
-            return 0;
-    }
+d3.select("#match-rate-threshold").on("change", function() {
+    hideMatchingLines(this.value);
+});
+
+// 決定ルールの表示/非表示切り替え
+d3.select("#dr-show").on("click", function() {
+    $(".link.dr").toggle();
+});
+
+/**
+ * 与えらえた数値以下の共起率を非表示にする
+ */
+function hideMatchingLines(threshold) {
+    $(".link.match").each(function() {
+        if ($(this).attr('match') > threshold){
+            $(this).css("display", "block");
+        } else {
+            $(this).css("display", "none");
+        }
+    });
 }
+

@@ -52,7 +52,7 @@ class GraphController extends BaseController
         $lines = @file($filename);
 
         $loadFlg = array('ATTRS' => false, 'INFOATTRS' => false, 'DR' => false, 'DRH' => false, 'MATCHING' => false);
-        $DR_TEXT = ""; $DRH_TEXT = ""; $ATTR_TEXT = "";
+        $DR_TEXT = ""; $DRH_TEXT = ""; $ATTR_TEXT = ""; $ALL_ATTRS = "";
         //$dbname = 'experiment_' . $car . '_121230';
         $dbname = 'reviews';
         $REVIES = array();
@@ -114,6 +114,7 @@ class GraphController extends BaseController
                     $ATTR_TEXT .= "属性値:" . $_str[1] . "　テキスト:" . $_str[0] . "　階層:" . ($_str[2] + 1) . "<br />";
                 }
             }
+
 
             if($loadFlg['DRH']) {
                 if(preg_match("/^#/u", $str)) { $loadFlg['DRH'] = false; } else {
@@ -195,7 +196,32 @@ class GraphController extends BaseController
             }
         }
 
-        //TODO:要修正
+        /*------------------------------------------
+        * すべての感性ワードを格納した配列を作成
+        * (決定ルールに関係しない^のつく感性ワードは除外）
+        *------------------------------------------*/
+        // 決定ルールに関係する^がつく感性ワードのリストを作成
+        $attrs_list = array_merge(array_keys($ATTRS[0]), array_keys($ATTRS[1])); // 決定ルールに関係する感性ワードのリスト
+        foreach ($attrs_list as $key => $attr) {
+            // ^がつく感性ワードだけを残す
+            if (strpos($attr, '2') === false) {
+                unset($attrs_list[$key]);
+            }
+        }
+
+        // すべての感性ワードを含む配列を作成
+        $attr_id = 0;
+        foreach($_attrs as $key => $val) {
+            // ^がつかない感性ワードはすべて格納
+            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => $_chunks[$key], 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+
+            // ^がつく感性ワードは作成したリストに載っているものだけ格納
+            if (in_array($key . 2, $attrs_list)) {
+                $ALL_ATTRS[$key . 2] = array('id' => ++$attr_id, 'text' => "^" . $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array(), 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+            }
+        }
+
+
         try {
         foreach($DR as $dc => $_DR) {
 
@@ -227,6 +253,7 @@ class GraphController extends BaseController
         $CONTENT['DR_TEXT'] = $DR_TEXT;
         $CONTENT['DRH_TEXT'] = $DRH_TEXT;
         $CONTENT['ATTRS'] = $ATTRS;
+        $CONTENT['ALL_ATTRS'] = $ALL_ATTRS;
         $CONTENT['ATTR_TEXT'] = $ATTR_TEXT;
         $CONTENT['REVIEWS'] = $REVIEWS;
         $CONTENT['MATCHING'] = $MATCHING;
