@@ -145,6 +145,17 @@ function draw2() {
             links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key], params: ALL_ATTRS[key]['params']});
         }
     }
+
+    //DR描画
+    for(var key in DR) {
+        for(var k in DR[key]['attrs']) {
+            var k2 = parseInt(k)+1;
+            if(k2 >= count(DR[key]['attrs'])) { break; }
+            var atr1 = DR[key]['attrs'][k];
+            var atr2 = DR[key]['attrs'][k2];
+            links.push({dr:DR[key]['dr'], source: ALL_ATTRS[atr1], target: ALL_ATTRS[atr2], params: DR[key]['params'], matching: MATCHING[atr1 + "-" + atr2] });
+        }
+    }
 }
 
 //アップデート
