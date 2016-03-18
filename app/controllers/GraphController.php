@@ -201,7 +201,9 @@ class GraphController extends BaseController
         * (決定ルールに関係しない^のつく感性ワードは除外）
         *------------------------------------------*/
         // 決定ルールに関係する^がつく感性ワードのリストを作成
-        $attrs_list = array_merge(array_keys($ATTRS[0]), array_keys($ATTRS[1])); // 決定ルールに関係する感性ワードのリスト
+        $key_list0 = isset($ATTRS[0]) ? array_keys($ATTRS[0]) : array(); // 結論が低評価(0)のリスト
+        $key_list1 = isset($ATTRS[1]) ? array_keys($ATTRS[1]) : array(); // 結論が高評価(1)のリスト
+        $attrs_list = array_merge($key_list0, $key_list1); // 決定ルールに関係する感性ワードのリスト
         foreach ($attrs_list as $key => $attr) {
             // ^がつく感性ワードだけを残す
             if (strpos($attr, '2') === false) {
