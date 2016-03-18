@@ -36,6 +36,22 @@
                 <li class="box" id="menu_nega">ネガティブな評価句のみ表示</li>
             </ul>
         </div>
+        <div class="graph-nav uk-container">
+            <form class="uk-form uk-form-stacked">
+                <div class="uk-form-row">
+                    <div class="uk-form-controls">
+                        <input type="checkbox" id="match-rate" checked>
+                        <label for="match-rate">共起強度のon/off</label>
+                    </div>
+                </div>
+                <div class="uk-form-row">
+                    <div class="uk-form-controls">
+                        <input type="checkbox" id="dr-show" checked>
+                        <label for="dr-show">決定ルールのon/off</label>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
     <div id="main">
         <div id="graph"></div>

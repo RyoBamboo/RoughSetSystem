@@ -172,7 +172,7 @@ function update() {
     .data(links, function(l) { return l.source.id + '-' + l.target.id; }); //linksデータを要素にバインド
 
     link.enter().append("svg:line")
-    .attr("class",function(d) { if(isset(d.dr)) { return "link " + d.dr; } return "link lchunk attr_" + d.source.attrid; } )
+    .attr("class",function(d) { if(isset(d.dr)) { return "link dr " + d.dr; } if(isset(d.type)) { return "link match"; } return "link lchunk attr_" + d.source.attrid; } )
     .attr("attr_id",function(d) { if(isset(d.dr)) { return null; } return d.source.attrid; } )
     .attr("x1", function(d) { return d.source.x; })
     .attr("y1", function(d) { return d.source.y; })
@@ -431,6 +431,7 @@ function setEvent() {
         $(".chunk.attr_" + attr_id).toggle();
         $(".lchunk.attr_" + attr_id).toggle();
     });
+
 }
 
 var on_ctl_key = false;
@@ -627,5 +628,15 @@ d3.select("#rayer4").on("click",function() {
     d3.selectAll(".r1").style("display","block");
     d3.selectAll(".r2").style("display","block");
     d3.selectAll(".r3").attr("display","block");
+});
+
+// 共起率の表示/非表示切り替え
+d3.select("#match-rate").on("click", function() {
+    $(".link.match").toggle();
+});
+
+// 決定ルールの表示/非表示切り替え
+d3.select("#dr-show").on("click", function() {
+    $(".link.dr").toggle();
 });
 
