@@ -42,6 +42,9 @@
                     <div class="uk-form-controls">
                         <input type="checkbox" id="match-rate" checked>
                         <label for="match-rate">共起強度のon/off</label>
+                        <input type="number" id="match-rate-threshold" value="0.5">
+                        <label for="match-rate-threshold">共起強度の閾値</label>
+                        <input type="number" name="dummy" style="display:none;"> <!-- Enterキーで画面遷移しないためのダミーフォーム -->
                     </div>
                 </div>
                 <div class="uk-form-row">

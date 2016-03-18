@@ -77,7 +77,8 @@ force.on("tick", function(e) {
           }
           return ( d.params.width < 10) ? d.params.width : 10;
       })//線の太さ
-	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; });//破線
+	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; })//破線
+    .attr("match", function(d) { if (isset(d.params.match)) { return d.params.match; }}) ;
 });
 
 // Move nodes toward cluster focus.
@@ -159,9 +160,9 @@ function draw2() {
 
     // 共起強度を描画するように修正
     for (var m_key in MATCHING) {
-        if (MATCHING[m_key].j > 0.1 && m_key.search(/2/) == -1) {
+        if (MATCHING[m_key].j > 0.01 && m_key.search(/2/) == -1) {
             var match_attrs = m_key.split('-');
-            links.push({ type: 'match', source: ALL_ATTRS[match_attrs[0]], target: ALL_ATTRS[match_attrs[1]], params: {width: MATCHING[m_key].j * 100} });
+            links.push({ type: 'match', source: ALL_ATTRS[match_attrs[0]], target: ALL_ATTRS[match_attrs[1]], params: {width: MATCHING[m_key].j * 100, match: MATCHING[m_key].j} });
         }
     }
 }
@@ -635,8 +636,25 @@ d3.select("#match-rate").on("click", function() {
     $(".link.match").toggle();
 });
 
+d3.select("#match-rate-threshold").on("change", function() {
+    hideMatchingLines(this.value);
+});
+
 // 決定ルールの表示/非表示切り替え
 d3.select("#dr-show").on("click", function() {
     $(".link.dr").toggle();
 });
+
+/**
+ * 与えらえた数値以下の共起率を非表示にする
+ */
+function hideMatchingLines(threshold) {
+    $(".link.match").each(function() {
+        if ($(this).attr('match') > threshold){
+            $(this).css("display", "block");
+        } else {
+            $(this).css("display", "none");
+        }
+    });
+}
 
