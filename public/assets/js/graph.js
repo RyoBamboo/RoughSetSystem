@@ -75,6 +75,7 @@ force.on("tick", function(e) {
           if(isset(d.matching) && d.matching.kl >= 1) { 
                return parseInt(d.matching.kl); 
           }
+            console.log(d.params.width);
           return ( d.params.width < 10) ? d.params.width : 10;
       })//線の太さ
 	.attr("stroke-dasharray", function(d) { if(isset(d.dr)){ return "0";} return "0"; });//破線
@@ -147,13 +148,22 @@ function draw2() {
     }
 
     //DR描画
-    for(var key in DR) {
-        for(var k in DR[key]['attrs']) {
-            var k2 = parseInt(k)+1;
-            if(k2 >= count(DR[key]['attrs'])) { break; }
-            var atr1 = DR[key]['attrs'][k];
-            var atr2 = DR[key]['attrs'][k2];
-            links.push({dr:DR[key]['dr'], source: ALL_ATTRS[atr1], target: ALL_ATTRS[atr2], params: DR[key]['params'], matching: MATCHING[atr1 + "-" + atr2] });
+    //for(var key in DR) {
+    //    for(var k in DR[key]['attrs']) {
+    //        var k2 = parseInt(k)+1;
+    //        if(k2 >= count(DR[key]['attrs'])) { break; }
+    //        var atr1 = DR[key]['attrs'][k];
+    //        var atr2 = DR[key]['attrs'][k2];
+    //        links.push({dr:DR[key]['dr'], source: ALL_ATTRS[atr1], target: ALL_ATTRS[atr2], params: DR[key]['params'], matching: MATCHING[atr1 + "-" + atr2] });
+    //    }
+    //}
+
+    // 共起強度を描画するように修正
+    var i = 0;
+    for (var m_key in MATCHING) {
+        if (MATCHING[m_key].j > 10) {
+            var match_attrs = m_key.split('-');
+            links.push({ source: ALL_ATTRS[match_attrs[0]], target: ALL_ATTRS[match_attrs[1]], params: {width: MATCHING[m_key].j} });
         }
     }
 }
