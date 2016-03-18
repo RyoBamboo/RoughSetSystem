@@ -52,7 +52,7 @@ class GraphController extends BaseController
         $lines = @file($filename);
 
         $loadFlg = array('ATTRS' => false, 'INFOATTRS' => false, 'DR' => false, 'DRH' => false, 'MATCHING' => false);
-        $DR_TEXT = ""; $DRH_TEXT = ""; $ATTR_TEXT = "";
+        $DR_TEXT = ""; $DRH_TEXT = ""; $ATTR_TEXT = ""; $ALL_ATTRS = "";
         //$dbname = 'experiment_' . $car . '_121230';
         $dbname = 'reviews';
         $REVIES = array();
@@ -114,6 +114,7 @@ class GraphController extends BaseController
                     $ATTR_TEXT .= "属性値:" . $_str[1] . "　テキスト:" . $_str[0] . "　階層:" . ($_str[2] + 1) . "<br />";
                 }
             }
+
 
             if($loadFlg['DRH']) {
                 if(preg_match("/^#/u", $str)) { $loadFlg['DRH'] = false; } else {
@@ -195,7 +196,14 @@ class GraphController extends BaseController
             }
         }
 
-        //TODO:要修正
+        // すべての感性ワードを格納した配列を作成
+        $attr_id = 0;
+        foreach($_attrs as $key => $val) {
+            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => $_chunks[$key], 'paramas' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+            $ALL_ATTRS[$key . 2] = array('id' => ++$attr_id, 'text' => "^" . $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array(), 'paramas' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+        }
+
+
         try {
         foreach($DR as $dc => $_DR) {
 
@@ -227,6 +235,7 @@ class GraphController extends BaseController
         $CONTENT['DR_TEXT'] = $DR_TEXT;
         $CONTENT['DRH_TEXT'] = $DRH_TEXT;
         $CONTENT['ATTRS'] = $ATTRS;
+        $CONTENT['ALL_ATTRS'] = $ALL_ATTRS;
         $CONTENT['ATTR_TEXT'] = $ATTR_TEXT;
         $CONTENT['REVIEWS'] = $REVIEWS;
         $CONTENT['MATCHING'] = $MATCHING;

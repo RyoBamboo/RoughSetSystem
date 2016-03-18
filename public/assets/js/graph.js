@@ -180,11 +180,8 @@ function loadContent() {
     };
     if (params.length > 1) {
         var tmp = params[1].split('=');
-        console.log(params[1]);
-        console.log(tmp);
         TYPE = params[1].split('=')[1];
     }
-    console.log(TYPE);
 
 	//var sendData = "";
     //if(count(ret) != 0) {
