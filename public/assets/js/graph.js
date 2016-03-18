@@ -140,6 +140,9 @@ function draw2() {
         }
         ALL_ATTRS[key]['_y'] = _y;
         nodes.push(ALL_ATTRS[key]);
+        for (var c_key in ALL_ATTRS[key]['chunks']) {
+            nodes.push(ALL_ATTRS[key]['chunks'][c_key]);
+        }
     }
 }
 
