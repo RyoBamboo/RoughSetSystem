@@ -199,8 +199,8 @@ class GraphController extends BaseController
         // すべての感性ワードを格納した配列を作成
         $attr_id = 0;
         foreach($_attrs as $key => $val) {
-            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => $_chunks[$key], 'paramas' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
-            $ALL_ATTRS[$key . 2] = array('id' => ++$attr_id, 'text' => "^" . $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array(), 'paramas' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => $_chunks[$key], 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+            $ALL_ATTRS[$key . 2] = array('id' => ++$attr_id, 'text' => "^" . $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array(), 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
         }
 
 

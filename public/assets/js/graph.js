@@ -5,6 +5,7 @@ var nodes = [],    //ノードを収める配列
     links = [];    //ノード間のリンク情報を収める配列
 
 var ATTRS = {};
+var ALL_ATTRS = {};
 var DR = {};
 var TYPE = 1;//1:buy,2:not buy
 
@@ -122,20 +123,40 @@ function draw() {
     }
 }
 
+function draw2() {
+    // すべてのATTRSを描画
+    for (var key in ALL_ATTRS) {
+        var _y;
+        switch(ALL_ATTRS[key].params.rayer) {
+        case 1:
+            _y =  Math.floor( Math.random() * 150) + 650;
+            break;
+        case 2:
+            _y =  Math.floor( Math.random() * 150) + 350;
+            break;
+        case 3:
+            _y =  Math.floor( Math.random() * 150) + 50;
+            break;
+        }
+        ALL_ATTRS[key]['_y'] = _y;
+        nodes.push(ALL_ATTRS[key]);
+    }
+}
+
 //アップデート
 function update() {
-    var link = STAGE.selectAll("line.link")
-    .data(links, function(l) { return l.source.id + '-' + l.target.id; }); //linksデータを要素にバインド
-
-    link.enter().append("svg:line")
-    .attr("class",function(d) { if(isset(d.dr)) { return "link " + d.dr; } return "link lchunk attr_" + d.source.attrid; } )
-    .attr("attr_id",function(d) { if(isset(d.dr)) { return null; } return d.source.attrid; } )
-    .attr("x1", function(d) { return d.source.x; })
-    .attr("y1", function(d) { return d.source.y; })
-    .attr("x2", function(d) { return d.target.x; })
-    .attr("y2", function(d) { return d.target.y; });
-
-    link.exit().remove(); //要らなくなった要素を削除
+    //var link = STAGE.selectAll("line.link")
+    //.data(links, function(l) { return l.source.id + '-' + l.target.id; }); //linksデータを要素にバインド
+    //
+    //link.enter().append("svg:line")
+    //.attr("class",function(d) { if(isset(d.dr)) { return "link " + d.dr; } return "link lchunk attr_" + d.source.attrid; } )
+    //.attr("attr_id",function(d) { if(isset(d.dr)) { return null; } return d.source.attrid; } )
+    //.attr("x1", function(d) { return d.source.x; })
+    //.attr("y1", function(d) { return d.source.y; })
+    //.attr("x2", function(d) { return d.target.x; })
+    //.attr("y2", function(d) { return d.target.y; });
+    //
+    //link.exit().remove(); //要らなくなった要素を削除
 
     var node = STAGE.selectAll("g.node")
     .data(nodes, function(d) { return d.dpid;});//nodesデータを要素にバインド
@@ -204,15 +225,17 @@ function loadContent() {
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
 				ATTRS = json['ATTRS'][TYPE];
+                ALL_ATTRS = json['ALL_ATTRS'];
 				setReview(json['REVIEWS'][TYPE]);
 				$("#DR").html(json['DR_TEXT']);
 				$("#DRH").html(json['DRH_TEXT']);
 				$("#ATTR").html(json['ATTR_TEXT']);
 				hideFilter();
-				draw();
+				//draw();
+                draw2();
 				update();
-                hideAttr();
-                hideAllChunk();
+                //hideAttr();
+                //hideAllChunk();
 			}
 		}
 	});
