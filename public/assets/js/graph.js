@@ -239,7 +239,7 @@ function loadContent() {
                 draw2();
 				update();
                 //hideAttr();
-                //hideAllChunk();
+                hideAllChunk();
 			}
 		}
 	});
