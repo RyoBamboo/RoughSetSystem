@@ -214,6 +214,8 @@ class GraphController extends BaseController
         // すべての感性ワードを含む配列を作成
         $attr_id = 0;
         foreach($_attrs as $key => $val) {
+            if (!isset($_chunks[$key])) $_chunks[$key] = array(); // TODO: 決定表のレビューが抜け落ちている可能性があり，エラー回避のための応急処理，要調査（issue番号 #102）
+
             // ^がつかない感性ワードはすべて格納
             $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => $_chunks[$key], 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
 
@@ -222,7 +224,6 @@ class GraphController extends BaseController
                 $ALL_ATTRS[$key . 2] = array('id' => ++$attr_id, 'text' => "^" . $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array(), 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
             }
         }
-
 
         try {
         foreach($DR as $dc => $_DR) {
