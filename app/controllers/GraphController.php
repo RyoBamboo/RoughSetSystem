@@ -211,18 +211,37 @@ class GraphController extends BaseController
             }
         }
 
+
         // すべての感性ワードを含む配列を作成
         $attr_id = 0;
         foreach($_attrs as $key => $val) {
-            // ^がつかない感性ワードはすべて格納
-            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => $_chunks[$key], 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+            if (!isset($_chunks[$key])) $_chunks[$key] = array(); // TODO: 決定表のレビューが抜け落ちている可能性があり，エラー回避のための応急処理，要調査（issue番号 #102）
 
-            // ^がつく感性ワードは作成したリストに載っているものだけ格納
+            // どの結論に属する感性ワードかを判別（0 => 低評価, 1 => 高評価, 2 => 両方, -1 => どちらにも属さない）
+            $dc_rel = '';
+            for ($i=1; $i<=2; $i++) {
+                // a1, a2の両方をforで回して確認($i = 1, 2）
+                $dc0 = in_array($key . $i, $key_list0) ? true : false;
+                $dc1 = in_array($key . $i, $key_list1) ? true : false;
+                if ($dc0 === true && $dc1 === true) {
+                    $dc_rel[$i] = 2; // 両方の結論に属する感性ワード
+                } else if ($dc1 === true) {
+                    $dc_rel[$i] = 1; // 高評価だけに属する感性ワード
+                } else if ($dc0 === true) {
+                    $dc_rel[$i] = 0; // 低評価だけに属する感性ワード
+                } else {
+                    $dc_rel[$i] = -1; //どちらにも属さない感性ワード（共起率の視覚化で利用）
+                }
+            }
+
+            // ^がつかない感性ワードはすべて格納
+            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'dcrel' => $dc_rel[1], 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array($_chunks[$key]), 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+
+            // ^がつく感性ワードは作成したリスト（決定ルールの条件部）に載っているものだけ格納
             if (in_array($key . 2, $attrs_list)) {
-                $ALL_ATTRS[$key . 2] = array('id' => ++$attr_id, 'text' => "^" . $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array(), 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+                $ALL_ATTRS[$key . 2] = array('id' => ++$attr_id, 'dcrel' => $dc_rel[2], 'text' => "^" . $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array(), 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
             }
         }
-
 
         try {
         foreach($DR as $dc => $_DR) {
@@ -282,6 +301,7 @@ class GraphController extends BaseController
 
         // TODO: ファイル作成する部分。ファイル以外で実現したい
         //$file_name = 'drh.dat';
+
         $file_name = $id .'.dat';
         $fp = fopen('assets/dat/'.$file_name, 'w');
 

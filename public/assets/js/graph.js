@@ -125,25 +125,43 @@ function draw() {
 }
 
 function draw2() {
-    // すべてのATTRSを描画
+    // すべてのATTRSを描画（^がつくものは決定ルールの条件部に含まれるものだけ表示）
     for (var key in ALL_ATTRS) {
         var _y;
         switch(ALL_ATTRS[key].params.rayer) {
-        case 1:
-            _y =  Math.floor( Math.random() * 150) + 650;
-            break;
-        case 2:
-            _y =  Math.floor( Math.random() * 150) + 350;
-            break;
-        case 3:
-            _y =  Math.floor( Math.random() * 150) + 50;
-            break;
+            case 1:
+                _y =  Math.floor( Math.random() * 150) + 650;
+                break;
+            case 2:
+                _y =  Math.floor( Math.random() * 150) + 350;
+                break;
+            case 3:
+                _y =  Math.floor( Math.random() * 150) + 50;
+                break;
         }
         ALL_ATTRS[key]['_y'] = _y;
+
+        // １つもレビューを含まない感性ワードはnodesに追加せず描画しない
+        if (ALL_ATTRS[key]['chunks'].length > 0 && ALL_ATTRS[key]['chunks'][0].length < 1) {
+            // 共起率も表示しないため，データを削除する
+            for (var m_key in MATCHING) {
+                if (m_key.indexOf(key) != -1) {
+                    delete MATCHING[m_key];
+                }
+            }
+            continue;
+        }
+
         nodes.push(ALL_ATTRS[key]);
+        // チャンクの描画
         for (var c_key in ALL_ATTRS[key]['chunks']) {
-            nodes.push(ALL_ATTRS[key]['chunks'][c_key]);
-            links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key], params: ALL_ATTRS[key]['params']});
+            for (var index in ALL_ATTRS[key]['chunks'][c_key]) {
+                // 結論が正しいチャンクノードを描画
+                if (ALL_ATTRS[key]['chunks'][c_key][index]['dc'] == TYPE) {
+                    nodes.push(ALL_ATTRS[key]['chunks'][c_key][index]);
+                    links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key][index], params: ALL_ATTRS[key]['params']});
+                }
+            }
         }
     }
 
@@ -160,7 +178,7 @@ function draw2() {
 
     // 共起強度を描画するように修正
     for (var m_key in MATCHING) {
-        if (MATCHING[m_key].j > 0.01 && m_key.search(/2/) == -1) {
+        if (MATCHING[m_key].j > 0 && m_key.search(/2/) == -1) {
             var match_attrs = m_key.split('-');
             links.push({ type: 'match', source: ALL_ATTRS[match_attrs[0]], target: ALL_ATTRS[match_attrs[1]], params: {width: MATCHING[m_key].j * 100, match: MATCHING[m_key].j} });
         }
@@ -189,6 +207,7 @@ function update() {
     .attr("class", function(n) { if(isset(n.params)) { return  "node attr " + "r" + n.params.rayer +  " attr_" + n.attrid; } else { return "node chunk attr_" + n.attrid; }})
     .attr("attr_id", function(n) { return n.attrid })
     .attr("review_id", function(n) { if(isset(n.review_id)) { return  n.review_id ; }})
+    .attr("dcrel", function(n) { if(isset(n.dcrel)) { return n.dcrel; }})
     .call(force.drag); //ノードをドラッグできるように設定
 
     nodeEnter.append("svg:image")
@@ -260,6 +279,7 @@ function loadContent() {
 				update();
                 //hideAttr();
                 hideAllChunk();
+                hideUnRelateAttr();
 			}
 		}
 	});
@@ -654,6 +674,20 @@ function hideMatchingLines(threshold) {
             $(this).css("display", "block");
         } else {
             $(this).css("display", "none");
+        }
+    });
+}
+
+/**
+ * ルール条件部に含まれていない^のついた感性ワードを非表示にする
+ */
+function hideUnRelateAttr() {
+    $('.node.attr').each(function() {
+        if ($(this).attr('dcrel') != TYPE) {
+            var attrText = $(this).children('text').text();
+            if (attrText.indexOf('^') != -1) {
+                $(this).css('display', 'none');
+            }
         }
     });
 }
