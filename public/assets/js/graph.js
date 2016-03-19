@@ -140,6 +140,18 @@ function draw2() {
                 break;
         }
         ALL_ATTRS[key]['_y'] = _y;
+
+        // １つもレビューを含まない感性ワードはnodesに追加せず描画しない
+        if (ALL_ATTRS[key]['chunks'].length > 0 && ALL_ATTRS[key]['chunks'][0].length < 1) {
+            // 共起率も表示しないため，データを削除する
+            for (var m_key in MATCHING) {
+                if (m_key.indexOf(key) != -1) {
+                    delete MATCHING[m_key];
+                }
+            }
+            continue;
+        }
+
         nodes.push(ALL_ATTRS[key]);
         // チャンクの描画
         for (var c_key in ALL_ATTRS[key]['chunks']) {
@@ -166,7 +178,7 @@ function draw2() {
 
     // 共起強度を描画するように修正
     for (var m_key in MATCHING) {
-        if (MATCHING[m_key].j > 0.01 && m_key.search(/2/) == -1) {
+        if (MATCHING[m_key].j > 0 && m_key.search(/2/) == -1) {
             var match_attrs = m_key.split('-');
             links.push({ type: 'match', source: ALL_ATTRS[match_attrs[0]], target: ALL_ATTRS[match_attrs[1]], params: {width: MATCHING[m_key].j * 100, match: MATCHING[m_key].j} });
         }
@@ -677,11 +689,6 @@ function hideUnRelateAttr() {
                 $(this).css('display', 'none');
             }
         }
-        //if (dcrel == TYPE || dcrel == 2 || dcrel == -1) {
-        //    $(this).css('display', 'block');
-        //} else {
-        //    $(this).css('display', 'none');
-        //}
     });
 }
 
