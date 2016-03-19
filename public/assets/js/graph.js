@@ -125,25 +125,31 @@ function draw() {
 }
 
 function draw2() {
-    // すべてのATTRSを描画
+    // すべてのATTRSを描画（^がつくものは決定ルールの条件部に含まれるものだけ表示）
     for (var key in ALL_ATTRS) {
         var _y;
         switch(ALL_ATTRS[key].params.rayer) {
-        case 1:
-            _y =  Math.floor( Math.random() * 150) + 650;
-            break;
-        case 2:
-            _y =  Math.floor( Math.random() * 150) + 350;
-            break;
-        case 3:
-            _y =  Math.floor( Math.random() * 150) + 50;
-            break;
+            case 1:
+                _y =  Math.floor( Math.random() * 150) + 650;
+                break;
+            case 2:
+                _y =  Math.floor( Math.random() * 150) + 350;
+                break;
+            case 3:
+                _y =  Math.floor( Math.random() * 150) + 50;
+                break;
         }
         ALL_ATTRS[key]['_y'] = _y;
         nodes.push(ALL_ATTRS[key]);
+        // チャンクの描画
         for (var c_key in ALL_ATTRS[key]['chunks']) {
-            nodes.push(ALL_ATTRS[key]['chunks'][c_key]);
-            links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key], params: ALL_ATTRS[key]['params']});
+            for (var index in ALL_ATTRS[key]['chunks'][c_key]) {
+                // 結論が正しいチャンクノードを描画
+                if (ALL_ATTRS[key]['chunks'][c_key][index]['dc'] == TYPE) {
+                    nodes.push(ALL_ATTRS[key]['chunks'][c_key][index]);
+                    links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key][index], params: ALL_ATTRS[key]['params']});
+                }
+            }
         }
     }
 
@@ -189,6 +195,7 @@ function update() {
     .attr("class", function(n) { if(isset(n.params)) { return  "node attr " + "r" + n.params.rayer +  " attr_" + n.attrid; } else { return "node chunk attr_" + n.attrid; }})
     .attr("attr_id", function(n) { return n.attrid })
     .attr("review_id", function(n) { if(isset(n.review_id)) { return  n.review_id ; }})
+    .attr("dcrel", function(n) { if(isset(n.dcrel)) { return n.dcrel; }})
     .call(force.drag); //ノードをドラッグできるように設定
 
     nodeEnter.append("svg:image")
@@ -260,6 +267,7 @@ function loadContent() {
 				update();
                 //hideAttr();
                 hideAllChunk();
+                hideUnRelateAttr();
 			}
 		}
 	});
@@ -655,6 +663,25 @@ function hideMatchingLines(threshold) {
         } else {
             $(this).css("display", "none");
         }
+    });
+}
+
+/**
+ * ルール条件部に含まれていない^のついた感性ワードを非表示にする
+ */
+function hideUnRelateAttr() {
+    $('.node.attr').each(function() {
+        if ($(this).attr('dcrel') != TYPE) {
+            var attrText = $(this).children('text').text();
+            if (attrText.indexOf('^') != -1) {
+                $(this).css('display', 'none');
+            }
+        }
+        //if (dcrel == TYPE || dcrel == 2 || dcrel == -1) {
+        //    $(this).css('display', 'block');
+        //} else {
+        //    $(this).css('display', 'none');
+        //}
     });
 }
 
