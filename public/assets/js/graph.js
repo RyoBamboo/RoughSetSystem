@@ -141,26 +141,32 @@ function draw2() {
         }
         ALL_ATTRS[key]['_y'] = _y;
 
+        if(ALL_ATTRS[key]['text'].indexOf("^") != -1) {
+            console.log(ALL_ATTRS[key]);
+        }
         // １つもレビューを含まない感性ワードはnodesに追加せず描画しない
-        if (ALL_ATTRS[key]['chunks'].length > 0 && ALL_ATTRS[key]['chunks'][0].length < 1) {
-            // 共起率も表示しないため，データを削除する
-            for (var m_key in MATCHING) {
-                if (m_key.indexOf(key) != -1) {
-                    delete MATCHING[m_key];
+        if (!isset(ALL_ATTRS[key]['chunks'][TYPE])) {
+            // もしそれが^を含む感性ワードであれば決定ルールに関係するので描画するのでifを抜ける
+            if (ALL_ATTRS[key]['text'].indexOf("^") == -1) {
+                // 共起率も表示しないため，データを削除する
+                for (var m_key in MATCHING) {
+                    if (m_key.indexOf(key) != -1) {
+                        delete MATCHING[m_key];
+                    }
                 }
+                continue;
             }
-            continue;
         }
 
         nodes.push(ALL_ATTRS[key]);
-        // チャンクの描画
-        for (var c_key in ALL_ATTRS[key]['chunks']) {
-            for (var index in ALL_ATTRS[key]['chunks'][c_key]) {
-                // 結論が正しいチャンクノードを描画
-                if (ALL_ATTRS[key]['chunks'][c_key][index]['dc'] == TYPE) {
-                    nodes.push(ALL_ATTRS[key]['chunks'][c_key][index]);
-                    links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][c_key][index], params: ALL_ATTRS[key]['params']});
-                }
+
+        for (var dc_type in ALL_ATTRS[key]['chunks']) {
+            if (dc_type != TYPE) continue; // もし結論と異なる評価句であれば無視
+
+            // 結論と一致するチャンクであれば描画
+            for (var index in ALL_ATTRS[key]['chunks'][dc_type]) {
+                nodes.push(ALL_ATTRS[key]['chunks'][dc_type][index]);
+                links.push({ source: ALL_ATTRS[key], target: ALL_ATTRS[key]['chunks'][dc_type][index], params: ALL_ATTRS[key]['params']});
             }
         }
     }
@@ -263,7 +269,6 @@ function loadContent() {
 		success: function(res){
 			if(res){
 				json = $.parseJSON(res);
-                console.log(json);
 				//TODO:DCで分類するロジック
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
