@@ -141,21 +141,22 @@ function draw2() {
         }
         ALL_ATTRS[key]['_y'] = _y;
 
-        // １つもレビューを含まない感性ワードはnodesに追加せず描画しない
-        if (ALL_ATTRS[key]['chunks'].length < 1) {
+        if(ALL_ATTRS[key]['text'].indexOf("^") != -1) {
             console.log(ALL_ATTRS[key]);
         }
-        if (ALL_ATTRS[key]['chunks'].length > 0 && ALL_ATTRS[key]['chunks'][0].length < 1) {
-            // 共起率も表示しないため，データを削除する
-            for (var m_key in MATCHING) {
-                if (m_key.indexOf(key) != -1) {
-                    delete MATCHING[m_key];
+        // １つもレビューを含まない感性ワードはnodesに追加せず描画しない
+        if (!isset(ALL_ATTRS[key]['chunks'][TYPE])) {
+            // もしそれが^を含む感性ワードであれば決定ルールに関係するので描画するのでifを抜ける
+            if (ALL_ATTRS[key]['text'].indexOf("^") == -1) {
+                // 共起率も表示しないため，データを削除する
+                for (var m_key in MATCHING) {
+                    if (m_key.indexOf(key) != -1) {
+                        delete MATCHING[m_key];
+                    }
                 }
+                continue;
             }
-            continue;
         }
-
-
 
         nodes.push(ALL_ATTRS[key]);
 
