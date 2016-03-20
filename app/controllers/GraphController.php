@@ -53,7 +53,10 @@ class GraphController extends BaseController
 
         $loadFlg = array('ATTRS' => false, 'INFOATTRS' => false, 'DR' => false, 'DRH' => false, 'MATCHING' => false);
         $DR_TEXT = ""; $DRH_TEXT = ""; $ATTR_TEXT = ""; $ALL_ATTRS = "";
-        //$dbname = 'experiment_' . $car . '_121230';
+        $ATTR_COUNT = array(
+            'total'=>array('0'=>0, '1'=>0)
+        ); // 感性ワードの出現数(total[0][1], attr_id[0][1])
+
         $dbname = 'reviews';
         $REVIES = array();
         $_chunks = array();
@@ -112,6 +115,8 @@ class GraphController extends BaseController
                     $_str = preg_split("/ /u", $str);
                     $_attrs[$_str[1]] = array('text' => $_str[0], 'rayer' => $_str[2] + 1);
                     $ATTR_TEXT .= "属性値:" . $_str[1] . "　テキスト:" . $_str[0] . "　階層:" . ($_str[2] + 1) . "<br />";
+                    $ATTR_COUNT[$_str[1].'1'][0] = 0; // 属性値カウントの初期化 $ATTR_COUNT['a1'][0] = 0 （結論が定評か）
+                    $ATTR_COUNT[$_str[1].'1'][1] = 0; // 属性値カウントの初期化 $ATTR_COUNT['a1'][1] = 0 （結論が高評価）
                 }
             }
 
@@ -134,12 +139,14 @@ class GraphController extends BaseController
                         $dc = 0;
                         $dc = array_pop($_str);//一番後ろの要素がDC
                         $replace_chunks = array();
+                        $ATTR_COUNT['total'][$dc]++; // 感性ワードの出現数をカウント（すべての）
                         foreach($_str as $val) {
                             if(trim($val) === "*") continue;
                             $_val = preg_split("/:/u", $val);
                             $_a = $_val[0];
                             $_review['attr_id'] = $_a; // reviewに感性ワードIDを持たせる
                             $__val = preg_split("/,/u", $_val[1]);
+                            $ATTR_COUNT[$_a . 1][$dc]++;// その結論に含まれる感性ワードの出現数をカウント $ATTR_COUNT['a1'][1]++
                             foreach($__val as $k =>  $v) {
                                 $_v = preg_split("/;/u", $v);
                                 $_chunks[$_a][] = array('id' => $_a . '-' . $_id . '-' . $k  , 'attrid' => $_a , 'text' => $_v[0], 'negaposi' => $_v[1], 'review_id' => $_review_id, 'dc' => $dc);
@@ -245,11 +252,26 @@ class GraphController extends BaseController
             }
 
             // ^がつかない感性ワードはすべて格納
-            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'dcrel' => $dc_rel[1], 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => $chunks, 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+            $ALL_ATTRS[$key . 1] = array(
+                'id' => ++$attr_id,
+                'dcrel' => $dc_rel[1],
+                'text' => $_attrs[$key]['text'],
+                'attrid' => $key,
+                'chunks' => $chunks,
+                'attr_count'=>array('0'=>$ATTR_COUNT[$key . 1][0]/$ATTR_COUNT['total'][0], '1'=>$ATTR_COUNT[$key . 1][1]/$ATTR_COUNT['total'][1]),
+                'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer'])
+            );
 
             // ^がつく感性ワードは作成したリスト（決定ルールの条件部）に載っているものだけ格納
             if (in_array($key . 2, $attrs_list)) {
-                $ALL_ATTRS[$key . 2] = array('id' => ++$attr_id, 'dcrel' => $dc_rel[2], 'text' => "^" . $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array(), 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+                $ALL_ATTRS[$key . 2] = array(
+                    'id' => ++$attr_id,
+                    'dcrel' => $dc_rel[2],
+                    'text' => "^" . $_attrs[$key]['text'],
+                    'attrid' => $key,
+                    'chunks' => array(),
+                    'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer'])
+                );
             }
         }
 
@@ -288,6 +310,7 @@ class GraphController extends BaseController
         $CONTENT['ATTR_TEXT'] = $ATTR_TEXT;
         $CONTENT['REVIEWS'] = $REVIEWS;
         $CONTENT['MATCHING'] = $MATCHING;
+        $CONTENT['ATTR_COUNT'] = $ATTR_COUNT;
 
         $json = json_encode($CONTENT);
 

@@ -141,9 +141,6 @@ function draw2() {
         }
         ALL_ATTRS[key]['_y'] = _y;
 
-        if(ALL_ATTRS[key]['text'].indexOf("^") != -1) {
-            console.log(ALL_ATTRS[key]);
-        }
         // １つもレビューを含まない感性ワードはnodesに追加せず描画しない
         if (!isset(ALL_ATTRS[key]['chunks'][TYPE])) {
             // もしそれが^を含む感性ワードであれば決定ルールに関係するので描画するのでifを抜ける
@@ -229,7 +226,14 @@ function update() {
     .attr("class", "nodetext")
     .attr("dx", 18)
     .attr("dy", ".37em")
-    .text(function(d) { return d.text });
+    .text(function(d) {
+            if (isset(d.attr_count)) {
+                var _pow = Math.pow(10, 1);
+                var percentStr = Math.floor(d.attr_count[TYPE] *_pow * 100)/_pow; // Javascriptでは指定した小数点以下の切り捨てがないのでここで実装
+                return d.text + "(" + percentStr + "%)";
+            }
+            return d.text
+        });
 
     node.exit().remove(); //要らなくなった要素を削除
 
@@ -269,6 +273,7 @@ function loadContent() {
 		success: function(res){
 			if(res){
 				json = $.parseJSON(res);
+                console.log(json);
 				//TODO:DCで分類するロジック
 				DR = json['DR'][TYPE];
 				MATCHING = json['MATCHING'][TYPE];
