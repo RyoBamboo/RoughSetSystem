@@ -234,8 +234,18 @@ class GraphController extends BaseController
                 }
             }
 
+            // 評価句の分別（低評価に関係するもの，高評価に関係するものに分ける）
+            $chunks = array();
+            foreach ($_chunks[$key] as $chunk) {
+                if ($chunk['dc'] == 1) {
+                    $chunks[1][] = $chunk;
+                } else {
+                    $chunks[0][] = $chunk;
+                }
+            }
+
             // ^がつかない感性ワードはすべて格納
-            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'dcrel' => $dc_rel[1], 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => array($_chunks[$key]), 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
+            $ALL_ATTRS[$key . 1] = array('id' => ++$attr_id, 'dcrel' => $dc_rel[1], 'text' => $_attrs[$key]['text'], 'attrid' => $key, 'chunks' => $chunks, 'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer']));
 
             // ^がつく感性ワードは作成したリスト（決定ルールの条件部）に載っているものだけ格納
             if (in_array($key . 2, $attrs_list)) {
