@@ -2,6 +2,15 @@ body {
 	margin: 0;
 	padding: 0;
 }
+
+/*-------------------------------------------
+ * GraphSettingPanel
+ *-----------------------------------------*/
+.graph-nav {
+	background: #fff;
+}
+
+
 /* For modern browsers//------------------ */
 .cf:before,
 .cf:after {

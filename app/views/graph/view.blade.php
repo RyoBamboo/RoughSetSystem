@@ -19,6 +19,7 @@
         @include('graph.menubar')
     </div>
     <div id="header">
+        <!--
         <div id="navimenu">
             <h4>表示条件指定</h4>
             <ul class="menu cf">
@@ -36,7 +37,8 @@
                 <li class="box" id="menu_nega">ネガティブな評価句のみ表示</li>
             </ul>
         </div>
-        <div class="graph-nav uk-container">
+        -->
+        <div class="graph-nav tm-middle uk-container">
             <form class="uk-form uk-form-stacked">
                 <div class="uk-form-row">
                     <div class="uk-form-controls">
