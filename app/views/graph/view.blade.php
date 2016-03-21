@@ -38,11 +38,6 @@
             </ul>
         </div>
         -->
-        <div class="uk-button-group">
-            <a class="uk-button" href="">...</a>
-            <button class="uk-button">...</button>
-            <button class="uk-button">...</button>
-        </div>
         <div class="graph-nav uk-grid uk-grid-divider">
             <div class="uk-width-1-3">
                 <div class="uk-button-group" data-uk-switcher="{connect:'#button-group-content'}">
