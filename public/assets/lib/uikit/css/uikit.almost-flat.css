@@ -3589,7 +3589,7 @@ select.uk-form-width-mini {
   /* 2 */
   position: relative;
   /* 3 */
-  font-size: 0.001px;
+  font-size: 0.000px;
   /* 4 */
   white-space: nowrap;
 }

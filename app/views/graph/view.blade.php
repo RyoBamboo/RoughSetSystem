@@ -38,9 +38,42 @@
             </ul>
         </div>
         -->
-        <div class="graph-nav tm-middle uk-container">
-            <form class="uk-form uk-form-stacked">
+        <div class="uk-button-group">
+            <a class="uk-button" href="">...</a>
+            <button class="uk-button">...</button>
+            <button class="uk-button">...</button>
+        </div>
+        <div class="graph-nav uk-grid uk-grid-divider">
+            <div class="uk-width-1-3">
+                <div class="uk-button-group" data-uk-switcher="{connect:'#button-group-content'}">
+                    <button class="uk-button" type="button" aria-expanded="false">ON</button>
+                    <button class="uk-button" type="button" aria-expanded="true">OFF</button>
+                </div>
+                <div class="uk-form-row ">
+                    <div class="uk-form-controls">
+                        <input type="checkbox" id="match-rate" checked>
+                        <label for="match-rate">共起強度のon/off</label>
+                        <input type="number" id="match-rate-threshold" value="0.5">
+                        <label for="match-rate-threshold">共起強度の閾値</label>
+                        <input type="number" name="dummy" style="display:none;"> <!-- Enterキーで画面遷移しないためのダミーフォーム -->
+                    </div>
+                </div>
+            </div>
+            <div class="uk-width-1-3">
                 <div class="uk-form-row">
+                    <div class="uk-form-controls">
+                        <input type="checkbox" id="dr-show" checked>
+                        <label for="dr-show">決定ルールのon/off</label>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-width-1-3">
+                test
+            </div>
+        </div>
+        <div class="graph-nav uk-width-1-1 uk-grid-divider">
+            <form class="uk-form uk-form-stacked">
+                <div class="uk-form-row ">
                     <div class="uk-form-controls">
                         <input type="checkbox" id="match-rate" checked>
                         <label for="match-rate">共起強度のon/off</label>
