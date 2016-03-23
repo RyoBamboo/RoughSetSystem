@@ -702,3 +702,21 @@ function hideUnRelateAttr() {
     });
 }
 
+$('[data-uk-switcher]').on('show.uk.switcher', function(event, area){
+    var switchType = $(area).parent('div').data('switch-type');
+    var state = $(area).text() == 'ON' ? "block" : "none";
+    $(".link."+switchType).css("display", state);
+});
+
+$("#match-slider").slider({
+    max:0.1, //最大値
+    min: 0, //最小値
+    value: 0.05, //初期値
+    step: 0.01, //幅
+    //orientation: "vertical", //縦設置か横設置か
+
+    slide: function( event, ui ) {
+        hideMatchingLines(ui.value);
+    }
+});
+
