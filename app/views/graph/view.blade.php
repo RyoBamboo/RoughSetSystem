@@ -40,9 +40,9 @@
         -->
         <div class="graph-nav uk-grid uk-grid-divider">
             <div class="uk-width-1-3">
-                <div class="uk-button-group" data-uk-switcher="{connect:'#button-group-content'}">
-                    <button class="uk-button" type="button" aria-expanded="false">ON</button>
-                    <button class="uk-button" type="button" aria-expanded="true">OFF</button>
+                <div class="uk-button-group" data-uk-switcher="{active:0}">
+                    <button class="uk-button" type="button" >ON</button>
+                    <button class="uk-button" type="button" >OFF</button>
                 </div>
                 <div class="uk-form-row ">
                     <div class="uk-form-controls">
