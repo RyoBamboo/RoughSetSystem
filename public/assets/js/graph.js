@@ -1,5 +1,5 @@
 /*var WIDTH = 2500, HEIGHT = 1500;*/
-var WIDTH = 1800, HEIGHT = 1000;
+var WIDTH = 1350, HEIGHT = 900;
 var STAGE;
 var nodes = [],    //ノードを収める配列
     links = [];    //ノード間のリンク情報を収める配列
@@ -17,7 +17,7 @@ var force = self.force = d3.layout.force()
     .gravity(0.05) //重力
     //.distance(500) //ノード間の距離
     .linkDistance(200)
-    .charge(-150) //各ノードの引き合うor反発しあう力
+    .charge(-80) //各ノードの引き合うor反発しあう力
     .size([WIDTH, HEIGHT]); //図のサイズ
 
 function init() {
@@ -101,7 +101,7 @@ function draw() {
             _y =  Math.floor( Math.random() * 150) + 350;
             break;
           case 3:
-            _y =  Math.floor( Math.random() * 150) + 50;
+            _y =  Math.floor( Math.random() * 150) + 100;
             break;
      } 
      ATTRS[key]['_y'] = _y;
@@ -133,10 +133,10 @@ function draw2() {
                 _y =  Math.floor( Math.random() * 150) + 650;
                 break;
             case 2:
-                _y =  Math.floor( Math.random() * 150) + 350;
+                _y =  Math.floor( Math.random() * 150) + 400;
                 break;
             case 3:
-                _y =  Math.floor( Math.random() * 150) + 50;
+                _y =  Math.floor( Math.random() * 150) + 150;
                 break;
         }
         ALL_ATTRS[key]['_y'] = _y;
