@@ -1,5 +1,9 @@
 /*var WIDTH = 2500, HEIGHT = 1500;*/
 var WIDTH = 1350, HEIGHT = 900;
+var vbox_x = 0;
+var vbox_y = 0;
+var vbox_default_width = vbox_width = 1350;
+var vbox_default_height = vbox_height = 900;
 var STAGE;
 var nodes = [],    //ノードを収める配列
     links = [];    //ノード間のリンク情報を収める配列
@@ -8,6 +12,13 @@ var ATTRS = {};
 var ALL_ATTRS = {};
 var DR = {};
 var TYPE = 1;//1:buy,2:not buy
+
+// ドラッグの設定
+drag = d3.behavior.drag().on("drag", function(d) {
+    vbox_x -= d3.event.dx;
+    vbox_y -= d3.event.dy;
+    return STAGE.attr("viewBox", "" + vbox_x + " " + vbox_y + " " + vbox_width + " " + vbox_height);  //svgタグのviewBox属性を更新
+});
 
 
 //グラフの初期設定
@@ -22,10 +33,17 @@ var force = self.force = d3.layout.force()
 
 function init() {
     //グラフを描画するステージ（svgタグ）を追加
-    STAGE = d3.select("div#graph").append("svg:svg").attr("width", WIDTH).attr("height", HEIGHT);
+    STAGE = d3.select("div#graph")
+        .append("svg:svg")
+        .attr("width", WIDTH)
+        .attr("height", HEIGHT)
+        .attr("viewBox", "" + vbox_x + " " + vbox_y + " " + vbox_width + " " + vbox_height);
 
     loadContent();
+    STAGE.call(drag);
 }
+
+
 
 //グラフにアニメーションイベントを設置
 force.on("tick", function(e) {
