@@ -3,10 +3,12 @@
 @section('css')
     <link rel="stylesheet" type="text/css" href="/assets/css/graph.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/lib/circliful/circliful.css">
+    <link rel="stylesheet" type="text/css" href="/assets/lib/jquery-ui/jquery-ui.min.css">
 @stop
 
 @section('js')
     <script src="/assets/js/d3.v2.js"></script>
+    <script src="/assets/lib/jquery-ui/jquery-ui.min.js"></script>
     <script src="/assets/js/util.js"></script>
     <script src="/assets/js/graph.js"></script>
     <script src="/assets/js/lib/uikit/components/accordion.min.js"></script>
@@ -19,6 +21,7 @@
         @include('graph.menubar')
     </div>
     <div id="header">
+        <!--
         <div id="navimenu">
             <h4>表示条件指定</h4>
             <ul class="menu cf">
@@ -36,28 +39,57 @@
                 <li class="box" id="menu_nega">ネガティブな評価句のみ表示</li>
             </ul>
         </div>
-        <div class="graph-nav uk-container">
-            <form class="uk-form uk-form-stacked">
-                <div class="uk-form-row">
-                    <div class="uk-form-controls">
-                        <input type="checkbox" id="match-rate" checked>
-                        <label for="match-rate">共起強度のon/off</label>
-                        <input type="number" id="match-rate-threshold" value="0.5">
-                        <label for="match-rate-threshold">共起強度の閾値</label>
-                        <input type="number" name="dummy" style="display:none;"> <!-- Enterキーで画面遷移しないためのダミーフォーム -->
+        -->
+        <div class="tm-pannel uk-grid">
+            <div class="tm-pannel-header">
+                グラフ操作パネル
+            </div>
+            <div class="uk-width-1-10">
+                <form class="uk-form uk-form-stacked">
+                    <h3 class="tm-article-subtitle">決定ルール</h3>
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">表示切り替え</label>
+                        <div class="uk-form-controls">
+                            <div class="uk-button-group" data-uk-button-radio data-uk-switcher="{active:0}" data-switch-type="dr">
+                                <button class="uk-button" type="button" >ON</button>
+                                <button class="uk-button" type="button" >OFF</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="uk-form-row">
-                    <div class="uk-form-controls">
-                        <input type="checkbox" id="dr-show" checked>
-                        <label for="dr-show">決定ルールのon/off</label>
+                    <h3 class="tm-article-subtitle">共起強度</h3>
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">表示切り替え</label>
+                        <div class="uk-form-controls">
+                            <div class="uk-button-group" data-uk-button-radio data-uk-switcher="{active:0}" data-switch-type="match">
+                                <button class="uk-button" type="button" >ON</button>
+                                <button class="uk-button" type="button" >OFF</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </form>
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">閾値</label>
+                        <div id="match-slider"></div>
+                    </div>
+                    <h3 class="tm-article-subtitle">評価句</h3>
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">表示切り替え</label>
+                        <div class="uk-form-controls">
+                            <div class="uk-button-group" data-uk-button-radio data-uk-switcher="{active:0}" data-switch-type="match">
+                                <button class="uk-button" type="button" >ON</button>
+                                <button class="uk-button" type="button" >OFF</button>
+                            </div>
+                        </div>
+                    </div>
+                    <h3>結論の切り替え</h3>
+                    <a class="uk-button uk-button-primary" href="/graph/view/{{$item->id}}?dr={{$dr}}">低評価の決定ルールを表示する</a>
+                </form>
+            </div>
+            <div class="uk-width-8-10">
+                <div id="graph"></div>
+            </div>
         </div>
     </div>
     <div id="main">
-        <div id="graph"></div>
         <div id="review" class="infotext" style="display:none;"></div>
 
 
@@ -81,7 +113,6 @@
         </div>
     </div>
     {{--<div id="myStat" data-dimension="200" data-text="50%" data-info="New Clients" data-width="5" data-fontsize="25" data-percent="50" data-fgcolor="#A9E7D0" data-bgcolor="#eee" data-total="100" data-part="50" data-icon="fa-long-arrow-up" data-icon-size="28" data-icon-color="#fff"></div>--}}
-    <a href="/graph/view/{{$item->id}}?dr={{$dr}}">決定ルールの切り替え</a>
     <script>
         $( document ).ready(function() {
             $('#myStat').circliful();

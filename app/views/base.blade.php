@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <!-- include CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href={{asset("/assets/lib/uikit/css/uikit.gradient.css")}}>
+    <link rel="stylesheet" type="text/css" href={{asset("/assets/lib/uikit/css/uikit.almost-flat.css")}}>
     <link rel="stylesheet" type="text/css" href={{asset("/assets/css/base.css")}}>
     <link rel="stylesheet" type="text/css" href={{asset("/assets/lib/hamburger/hamburger.css")}}>
     @yield('css')
