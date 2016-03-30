@@ -325,6 +325,80 @@ class GraphController extends BaseController
 
     /* TODO: グラフ表示に使うdatファイルを作成する関数。これ自体も関数化すること検討 */
     public function make() {
+        /*
+        $test = array(
+            0 => '爽やかで',
+            1 => '爽やか-で',
+            2 => '名詞-助詞',
+            3 => '名形-格助詞',
+            4 => '美味しいです♪',
+            5 => '美味しい-です-♪',
+            6 => '形容詞-助動詞-特殊',
+            7 => '形容ゅう-助動詞です-単漢',
+            8 => '35915',
+            9 => '1',
+            10 => 'f'
+        );
+        if (preg_match('/.*?(名詞)/u', $test[2]) && preg_match('/.*?(形容|動詞)/u', $test[6])) {
+            $adje = explode('-', $test[6]); // 品詞
+            $pos = explode('-', $test[5]);  // 単語
+
+            $_adje = explode('-', $test[2]); // 品詞
+            $_pos = explode('-', $test[1]); // 単語
+            if ($syno =Thesaurus::checkThesaurus($_pos[0])) {
+                $_ll_result = array();
+                // もし同じような形容詞があれば１つにまとめていく
+                if ($syno) {
+                    $_ll_result['text']  = $syno['text'];
+
+                    $_ll_result['rayer'] = $syno['rayer'];
+                    $ll_result[trim($syno['text'])][] = $_ll_result;
+                }
+            }
+            Log::debug($ll_result);exit;
+            for ($i = 0; $i < count($adje); $i++) {
+                $syno = null;
+                if (preg_match('/^(形容|動詞)/u', $adje[$i], $match)) { // 形容詞が含まれていれば
+                    Log::debug($match);
+
+                    if ($match[0] == '形容') {
+                        Log::debug($pos[$i]);
+                        $syno = Thesaurus::checkThesaurus($pos[$i]);
+                        if ($syno && $syno->text == '無い') {
+                            for ($j = 0; $j < count($_adje); $j++) {
+                                if ($_adje[$j] == '名詞') {
+                                    $syno = Thesaurus::checkThesaurus($_pos[$i]);
+                                }
+                            }
+                        }
+
+                    } else if ($match[0] == '動詞') {
+                        $_syno = Thesaurus::checkThesaurus($pos[$i]);
+                        if ($_syno && isset($pos[1])) {
+                            if (in_array($pos[0].$pos[1], explode(',', $_syno->synonym))) {
+                                $syno = $_syno;
+                            }
+                        }
+                    }
+                    if (!isset($syno)) break;
+
+                    $_ll_result = array();
+                    // もし同じような形容詞があれば１つにまとめていく
+                    if ($syno) {
+                        $_ll_result['text']  = $syno['text'];
+
+                        $_ll_result['rayer'] = $syno['rayer'];
+                        $ll_result[trim($syno['text'])][] = $_ll_result;
+                    }
+                }
+            }
+            exit;
+        } else {
+            Log::debug('out');exit;
+        }
+        */
+
+        //----------------------------------------------------------------------------------------------
 
         $params = Input::all();
         $id = $params['item-id'];
@@ -366,6 +440,25 @@ class GraphController extends BaseController
         foreach ($last_result as $key => $value) {
            
             $s = explode(',', $value['info']);
+
+            /*　すっきりとしたを抽出 */
+            if (strpos($s[2], '副詞') !== false) {
+                $adje = explode('-', $s[6]); // 品詞
+                $pos = explode('-', $s[5]);  // 単語
+                $_adje = explode('-', $s[2]); // 品詞
+                $_pos = explode('-', $s[1]); // 単語
+                if ($syno =thesaurus::checkthesaurus($_pos[0])) {
+                    $_ll_result = array();
+                    // もし同じような形容詞があれば１つにまとめていく
+                    if ($syno) {
+                        $_ll_result['text'] = $syno['text'];
+                        $_ll_result['rayer'] = $syno['rayer'];
+                        $_ll_result['info'] = $value['info'];
+                        $ll_result[trim($syno['text'])][] = $_ll_result;
+                    }
+                }
+            }
+
             // 名詞が形容詞にかかっている場合
             if (preg_match('/.*?(名詞)/u', $s[2]) && preg_match('/.*?(形容|動詞)/u', $s[6])) {
                 $adje = explode('-', $s[6]); // 品詞
@@ -373,7 +466,19 @@ class GraphController extends BaseController
 
                 $_adje = explode('-', $s[2]); // 品詞
                 $_pos = explode('-', $s[1]); // 単語
-
+                /* 爽やかで-美味しい を抽出*/
+                if (count($_pos) < 3) {
+                    if ($syno =thesaurus::checkthesaurus($_pos[0])) {
+                        $_ll_result = array();
+                        // もし同じような形容詞があれば１つにまとめていく
+                        if ($syno) {
+                            $_ll_result['text'] = $syno['text'];
+                            $_ll_result['rayer'] = $syno['rayer'];
+                            $_ll_result['info'] = $value['info'];
+                            $ll_result[trim($syno['text'])][] = $_ll_result;
+                        }
+                    }
+                }
                 for ($i = 0; $i < count($_adje); $i++) {
                     $syno = null;
                     if (preg_match('/.*?(名詞)/u', $_adje[$i]) && count($_adje) > 1) {
@@ -396,6 +501,13 @@ class GraphController extends BaseController
 
                         if ($match[0] == '形容') {
                             $syno = Thesaurus::checkThesaurus($pos[$i]);
+                            if ($syno && $syno->text == '良い') {
+                                for ($j = 0; $j < count($_adje); $j++) {
+                                    if (strpos($_pos[$i], '香り') === false && strpos($_pos[$i], '口当たり') === false) {
+                                        $syno = null;
+                                    }
+                                }
+                            }
                             if ($syno && $syno->text == '無い') {
                                 for ($j = 0; $j < count($_adje); $j++) {
                                     if ($_adje[$j] == '名詞') {

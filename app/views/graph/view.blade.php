@@ -48,7 +48,6 @@
                 <form class="uk-form uk-form-stacked">
                     <h3 class="tm-article-subtitle">決定ルール</h3>
                     <div class="uk-form-row">
-                        <label class="uk-form-label">表示切り替え</label>
                         <div class="uk-form-controls">
                             <div class="uk-button-group" data-uk-button-radio data-uk-switcher="{active:0}" data-switch-type="dr">
                                 <button class="uk-button" type="button" >ON</button>
@@ -56,9 +55,22 @@
                             </div>
                         </div>
                     </div>
+                    <div class="uk-form-row">
+                        <div class="uk-form-controls">
+                            <div class="uk-form-select" data-uk-form-select>
+                                <select id="dr_rule">
+                                    <option value="0" selected>すべて表示</option>
+                                    <option value="3">認識</option>
+                                    <option value="2">認知</option>
+                                    <option value="1">知覚</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
                     <h3 class="tm-article-subtitle">共起強度</h3>
                     <div class="uk-form-row">
-                        <label class="uk-form-label">表示切り替え</label>
                         <div class="uk-form-controls">
                             <div class="uk-button-group" data-uk-button-radio data-uk-switcher="{active:0}" data-switch-type="match">
                                 <button class="uk-button" type="button" >ON</button>
@@ -70,18 +82,9 @@
                         <label class="uk-form-label">閾値</label>
                         <div id="match-slider"></div>
                     </div>
-                    <h3 class="tm-article-subtitle">評価句</h3>
-                    <div class="uk-form-row">
-                        <label class="uk-form-label">表示切り替え</label>
-                        <div class="uk-form-controls">
-                            <div class="uk-button-group" data-uk-button-radio data-uk-switcher="{active:0}" data-switch-type="match">
-                                <button class="uk-button" type="button" >ON</button>
-                                <button class="uk-button" type="button" >OFF</button>
-                            </div>
-                        </div>
-                    </div>
-                    <h3>結論の切り替え</h3>
-                    <a class="uk-button uk-button-primary" href="/graph/view/{{$item->id}}?dr={{$dr}}">低評価の決定ルールを表示する</a>
+                    <br>
+                    <br>
+                    <a class="uk-button uk-button-primary" href="/graph/view/{{$item->id}}?dr={{$dr}}">結論の切り替え</a>
                 </form>
             </div>
             <div class="uk-width-8-10">
