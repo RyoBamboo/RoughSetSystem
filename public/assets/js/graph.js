@@ -496,20 +496,9 @@ function setEvent() {
     $(".attr").mousedown(function(e) {
         // 余計な挙動が起こらないようにする
         e.preventDefault();
-
-        var attr = $(this);
         if (!didFirstClick) {
             didFirstClick = true;
             setTimeout(function() {
-                // 評価句の表示/非表示切り替え
-                if (didFirstClick) {
-                    console.log(attr);
-                    var attr_id = attr.attr("attr_id");
-                    var attr_text = attr.text();
-
-                    $(".chunk.attr_" + attr_id).toggle();
-                    $(".lchunk.attr_" + attr_id).toggle();
-                }
                 didFirstClick = false;
             }, 200);
         } else {
@@ -522,6 +511,14 @@ function setEvent() {
             didFirstClick = false;
         }
     });
+
+    d3.selectAll(".attr").on("click", function() {
+        var attr_id = $(this).attr("attr_id");
+        var attr_text = $(this).text();
+
+        $(".chunk.attr_" + attr_id).toggle();
+        $(".lchunk.attr_" + attr_id).toggle();
+    })
 
 
 
