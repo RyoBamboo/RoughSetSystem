@@ -303,6 +303,7 @@ function loadContent() {
 				update();
                 //hideAttr();
                 hideAllChunk();
+                hideAllMatch();
                 hideUnRelateAttr();
 			}
 		}
@@ -310,9 +311,15 @@ function loadContent() {
 
 }
 
+// 評価句を非表示
 function hideAllChunk() {
     d3.selectAll(".chunk").style("display", "none");
     d3.selectAll(".lchunk").style("display", "none");
+}
+
+// 共起強度を非表示
+function hideAllMatch() {
+    d3.selectAll("line.match").style("display", "none");
 }
 
 function hideAttr() {
