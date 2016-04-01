@@ -476,22 +476,54 @@ function setEvent() {
 
 
     // 評価句の表示/非表示切り替え
-    d3.selectAll(".attr").on("click", function() {
-        var attr_id = $(this).attr("attr_id");
-        var attr_text = $(this).text();
-
-        $(".chunk.attr_" + attr_id).toggle();
-        $(".lchunk.attr_" + attr_id).toggle();
-    });
+    //d3.selectAll(".attr").on("click", function() {
+    //    var attr_id = $(this).attr("attr_id");
+    //    var attr_text = $(this).text();
+    //
+    //    $(".chunk.attr_" + attr_id).toggle();
+    //    $(".lchunk.attr_" + attr_id).toggle();
+    //});
 
     // ダブルクリックで感性ワードを投下させる
-    d3.selectAll("g").on("dblclick", function() {
-        if ($(this).css("opacity") == 1) {
-            $(this).css("opacity", "0.3");
+    //d3.selectAll("g").on("dblclick", function() {
+    //    if ($(this).css("opacity") == 1) {
+    //        $(this).css("opacity", "0.3");
+    //    } else {
+    //        $(this).css("opacity", "1");
+    //    }
+    //})
+    var didFirstClick = false;
+    $(".attr").mousedown(function(e) {
+        // 余計な挙動が起こらないようにする
+        e.preventDefault();
+
+        var attr = $(this);
+        if (!didFirstClick) {
+            didFirstClick = true;
+            setTimeout(function() {
+                // 評価句の表示/非表示切り替え
+                if (didFirstClick) {
+                    console.log(attr);
+                    var attr_id = attr.attr("attr_id");
+                    var attr_text = attr.text();
+
+                    $(".chunk.attr_" + attr_id).toggle();
+                    $(".lchunk.attr_" + attr_id).toggle();
+                }
+                didFirstClick = false;
+            }, 200);
         } else {
-            $(this).css("opacity", "1");
+            // ノードを半透明に
+            if ($(this).css("opacity") == 1) {
+                $(this).css("opacity", "0.3");
+            } else {
+                $(this).css("opacity", "1");
+            }
+            didFirstClick = false;
         }
-    })
+    });
+
+
 
 }
 
