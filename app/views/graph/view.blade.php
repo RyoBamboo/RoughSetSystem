@@ -83,7 +83,8 @@
                         <div id="match-slider"></div>
                     </div>
                     <br>
-                    <br>
+                    <h3 class="tm-article-subtitle">結論</h3>
+                    <p>現在：{{ isset($dr) && $dr != 1 ? "高評価" : "低評価" }}</p>
                     <a class="uk-button uk-button-primary" href="/graph/view/{{$item->id}}?dr={{$dr}}">結論の切り替え</a>
                 </form>
             </div>
