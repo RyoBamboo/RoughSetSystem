@@ -374,7 +374,7 @@ class GraphController extends BaseController
                 $pos = explode('-', $s[5]);  // 単語
                 $_adje = explode('-', $s[2]); // 品詞
                 $_pos = explode('-', $s[1]); // 単語
-                if ($syno =thesaurus::checkthesaurus($_pos[0])) {
+                if ($syno =Thesaurus::checkThesaurus($_pos[0])) {
                     $_ll_result = array();
                     // もし同じような形容詞があれば１つにまとめていく
                     if ($syno) {
@@ -395,7 +395,7 @@ class GraphController extends BaseController
                 $_pos = explode('-', $s[1]); // 単語
                 if ($_pos[0] == '洋酒'|| $_pos[0] == 'ウィスキー' || $_pos[0] == 'ブランデー') {
                     $_pos[0] = '洋';
-                    if ($syno =thesaurus::checkthesaurus($_pos[0])) {
+                    if ($syno =Thesaurus::checkThesaurus($_pos[0])) {
                         $_ll_result = array();
                         // もし同じような形容詞があれば１つにまとめていく
                         if ($syno) {
@@ -418,7 +418,7 @@ class GraphController extends BaseController
 
                 /* 爽やかで-美味しい を抽出*/
                 if (count($_pos) < 3) {
-                    if ($syno =thesaurus::checkthesaurus($_pos[0])) {
+                    if ($syno =Thesaurus::checkThesaurus($_pos[0])) {
                         $_ll_result = array();
                         // もし同じような形容詞があれば１つにまとめていく
                         if ($syno) {
