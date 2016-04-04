@@ -28,7 +28,7 @@ var force = self.force = d3.layout.force()
     .gravity(0.05) //重力
     //.distance(500) //ノード間の距離
     .linkDistance(200)
-    .charge(-80) //各ノードの引き合うor反発しあう力
+    .charge(-100) //各ノードの引き合うor反発しあう力
     .size([WIDTH, HEIGHT]); //図のサイズ
 
 function init() {
@@ -91,7 +91,7 @@ force.on("tick", function(e) {
 	.style("stroke", function(d) {if(isset(d.params)) { return d.params.color;} return "#BABABA"; })
 	.attr("stroke-width", function(d) {
           if(isset(d.matching) && d.matching.kl >= 1) { 
-               return parseInt(d.matching.kl); 
+               return parseInt(d.matching.kl);
           }
           return ( d.params.width < 10) ? d.params.width : 10;
       })//線の太さ
@@ -107,40 +107,6 @@ function gravity(alpha) {
   };
 }
 
-function draw() {
-    //ATTRS描画
-    for(var key in ATTRS) {
-     var _y;
-     switch(ATTRS[key].params.rayer) {
-          case 1:
-            _y =  Math.floor( Math.random() * 150) + 650;
-            break;
-          case 2:
-            _y =  Math.floor( Math.random() * 150) + 350;
-            break;
-          case 3:
-            _y =  Math.floor( Math.random() * 150) + 100;
-            break;
-     } 
-     ATTRS[key]['_y'] = _y;
-    	nodes.push(ATTRS[key]);
-      for(var k in ATTRS[key]['chunks']) {
-          if(ATTRS[key]['chunks'][k]['dc'] != TYPE) continue;
-          nodes.push(ATTRS[key]['chunks'][k]);
-          links.push({ source:ATTRS[key], target: ATTRS[key]['chunks'][k], params:ATTRS[key]['params'] });
-      }
-    }
-    //DR描画
-    for(var key in DR) {
-        for(var k in DR[key]['attrs']) {
-            var k2 = parseInt(k)+1;
-            if(k2 >= count(DR[key]['attrs'])) { break; }
-            var atr1 = DR[key]['attrs'][k]; 
-            var atr2 = DR[key]['attrs'][k2];
-            links.push({dr:DR[key]['dr'], source: ATTRS[atr1], target: ATTRS[atr2], params: DR[key]['params'], matching: MATCHING[atr1 + "-" + atr2] });
-        }
-    }
-}
 
 function draw2() {
     // すべてのATTRSを描画（^がつくものは決定ルールの条件部に含まれるものだけ表示）
@@ -151,10 +117,10 @@ function draw2() {
                 _y =  Math.floor( Math.random() * 150) + 650;
                 break;
             case 2:
-                _y =  Math.floor( Math.random() * 150) + 400;
+                _y =  Math.floor( Math.random() * 250) + 350;
                 break;
             case 3:
-                _y =  Math.floor( Math.random() * 150) + 150;
+                _y =  Math.floor( Math.random() * 150) + 100;
                 break;
         }
         ALL_ATTRS[key]['_y'] = _y;
@@ -162,15 +128,23 @@ function draw2() {
         // １つもレビューを含まない感性ワードはnodesに追加せず描画しない
         if (!isset(ALL_ATTRS[key]['chunks'][TYPE])) {
             // もしそれが^を含む感性ワードであれば決定ルールに関係するので描画するのでifを抜ける
-            if (ALL_ATTRS[key]['text'].indexOf("^") == -1) {
+            //if (ALL_ATTRS[key]['text'].indexOf("^") == -1) {
                 // 共起率も表示しないため，データを削除する
                 for (var m_key in MATCHING) {
                     if (m_key.indexOf(key) != -1) {
                         delete MATCHING[m_key];
                     }
                 }
+                // DRも表示しないため，データを削除する
+                for (var d_key in DR) {
+                    var dr_str = DR[d_key].dr;
+                    if (dr_str.indexOf(key) != -1) {
+                        delete DR[d_key];
+                    }
+                }
+
                 continue;
-            }
+            //}
         }
 
         nodes.push(ALL_ATTRS[key]);
@@ -240,17 +214,39 @@ function update() {
     .attr("width", "32px")
     .attr("height", "32px")
 
+    // 感性ワードラベル
     nodeEnter.append("svg:text")
     .attr("class", "nodetext")
     .attr("dx", 18)
     .attr("dy", ".37em")
     .text(function(d) {
+            return d.text
+        });
+    // 感性ワード出現率ラベル
+    nodeEnter.append("svg:text")
+        .attr("class", "nodetext")
+        .style("font-size", "13px")
+        .attr("dx", function(d) {
+            if (isset(d.attr_count)) {
+                var _pow = Math.pow(10, 1);
+                var percentStr = Math.floor(d.attr_count[TYPE] * _pow * 100) / _pow; // Javascriptでは指定した小数点以下の切り捨てがないのでここで実装
+                var strLength = String(percentStr).length;
+                if (strLength == 3) {
+                    return -10;
+                } else if (strLength == 4) {
+                    return -15;
+                } else {
+                    return -4;
+                }
+            }
+        })
+        .attr("dy", ".37em")
+        .text(function(d) {
             if (isset(d.attr_count)) {
                 var _pow = Math.pow(10, 1);
                 var percentStr = Math.floor(d.attr_count[TYPE] *_pow * 100)/_pow; // Javascriptでは指定した小数点以下の切り捨てがないのでここで実装
-                return d.text + "(" + percentStr + "%)";
+                return percentStr;
             }
-            return d.text
         });
 
     node.exit().remove(); //要らなくなった要素を削除
@@ -307,6 +303,7 @@ function loadContent() {
 				update();
                 //hideAttr();
                 hideAllChunk();
+                hideAllMatch();
                 hideUnRelateAttr();
 			}
 		}
@@ -314,9 +311,15 @@ function loadContent() {
 
 }
 
+// 評価句を非表示
 function hideAllChunk() {
     d3.selectAll(".chunk").style("display", "none");
     d3.selectAll(".lchunk").style("display", "none");
+}
+
+// 共起強度を非表示
+function hideAllMatch() {
+    d3.selectAll("line.match").style("display", "none");
 }
 
 function hideAttr() {
@@ -453,10 +456,10 @@ function setEvent() {
 		}
 	});
 
-    d3.selectAll("line.link").on("mouseover", function() {
+    d3.selectAll("line.link.dr").on("mouseover", function() {
         var id = "#" + d3.select(this).attr("id");
         if(d3.select(id).style("display") != "none") {
-            d3.selectAll("line.link").style("opacity", 0.2);
+            d3.selectAll("line.link.dr").style("opacity", 0.2);
             d3.selectAll("line.lchunk").style("opacity", 1);
             d3.selectAll(id)
                 .attr("id", function(l) {
@@ -473,13 +476,51 @@ function setEvent() {
 
 
     // 評価句の表示/非表示切り替え
+    //d3.selectAll(".attr").on("click", function() {
+    //    var attr_id = $(this).attr("attr_id");
+    //    var attr_text = $(this).text();
+    //
+    //    $(".chunk.attr_" + attr_id).toggle();
+    //    $(".lchunk.attr_" + attr_id).toggle();
+    //});
+
+    // ダブルクリックで感性ワードを投下させる
+    //d3.selectAll("g").on("dblclick", function() {
+    //    if ($(this).css("opacity") == 1) {
+    //        $(this).css("opacity", "0.3");
+    //    } else {
+    //        $(this).css("opacity", "1");
+    //    }
+    //})
+    var didFirstClick = false;
+    $(".attr").mousedown(function(e) {
+        // 余計な挙動が起こらないようにする
+        e.preventDefault();
+        if (!didFirstClick) {
+            didFirstClick = true;
+            setTimeout(function() {
+                didFirstClick = false;
+            }, 200);
+        } else {
+            // ノードを半透明に
+            if ($(this).css("opacity") == 1) {
+                $(this).css("opacity", "0.3");
+            } else {
+                $(this).css("opacity", "1");
+            }
+            didFirstClick = false;
+        }
+    });
+
     d3.selectAll(".attr").on("click", function() {
         var attr_id = $(this).attr("attr_id");
         var attr_text = $(this).text();
 
         $(".chunk.attr_" + attr_id).toggle();
         $(".lchunk.attr_" + attr_id).toggle();
-    });
+    })
+
+
 
 }
 
@@ -593,94 +634,10 @@ d3.select("#menu_negaposi").on("click", function() {
 
 });
 
-d3.select("#rayer1").on("click",function() {
-    d3.selectAll(".r1").style("display", "block"); 
-    d3.selectAll(".r2").style("display", "none"); 
-    d3.selectAll(".r3").style("display", "none");
-    d3.selectAll("line.link").style("display", function(l) {
-        if(isset(l.source.params)) {
-            if(l.source.params.rayer == "1") {
-                var id = "#n_" + l.target.id;
-                d3.select(id).style("display", "block");
-                return "inline";
-            }
-        } 
-        if(isset(l.target.params)) {
-            if(l.target.params.rayer == "1") {
-                var id = "#n_" + l.source.id;
-                d3.select(id).style("display", "block");
-                return "inline";
-            }
-        }
-        return "none"; 
-    });
-    d3.selectAll(".chunk").style("display", "none"); 
-    d3.selectAll(".lchunk").style("display", "none");
-});
-
-d3.select("#rayer1").on("click", function() {
-})
-
-d3.select("#rayer2").on("click",function() {
-    d3.selectAll(".r1").style("display", "none"); 
-    d3.selectAll(".r2").style("display", "block"); 
-    d3.selectAll(".r3").style("display", "none");
-    d3.selectAll("line.link").style("display", function(l) {
-        if(isset(l.source.params)) {
-            if(l.source.params.rayer == "2") {
-                var id = "#n_" + l.target.id;
-                d3.select(id).style("display", "block");
-                return "inline";
-            }
-        } 
-        if(isset(l.target.params)) {
-            if(l.target.params.rayer == "2") {
-                var id = "#n_" + l.source.id;
-                d3.select(id).style("display", "block");
-                return "inline";
-            }
-        }
-        return "none"; 
-    });
-    d3.selectAll(".chunk").style("display", "none"); 
-    d3.selectAll(".lchunk").style("display", "none"); 
-});
-
-d3.select("#rayer3").on("click",function() {
-    d3.selectAll(".r1").style("display", "none"); 
-    d3.selectAll(".r2").style("display", "none"); 
-    d3.selectAll(".r3").style("display", "block");
-    d3.selectAll("line.link").style("display", function(l) {
-        if(isset(l.source.params)) {
-            if(l.source.params.rayer == "3") {
-		var id = "#n_" + l.target.id;
-		d3.select(id).style("display", "block");
-                return "inline";
-            }
-        } 
-        if(isset(l.target.params)) {
-            if(l.target.params.rayer == "3") {
-                var id = "#n_" + l.source.id;
-                d3.select(id).style("display", "block");
-                return "inline";
-            }
-        }
-        return "none"; 
-    });
-    d3.selectAll(".chunk").style("display", "none"); 
-    d3.selectAll(".lchunk").style("display", "none"); 
-});
-
-d3.select("#rayer4").on("click",function() {
-    d3.selectAll("line.link").style("display", "block");
-    d3.selectAll("g.node").style("display", "block");
-    d3.selectAll(".r1").style("display","block");
-    d3.selectAll(".r2").style("display","block");
-    d3.selectAll(".r3").attr("display","block");
-});
 
 // 共起率の表示/非表示切り替え
 d3.select("#match-rate").on("click", function() {
+    d3.select(".attr").style("dispaley")
     $(".link.match").toggle();
 });
 
@@ -727,9 +684,9 @@ $('[data-uk-switcher]').on('show.uk.switcher', function(event, area){
 });
 
 $("#match-slider").slider({
-    max:0.1, //最大値
+    max:1, //最大値
     min: 0, //最小値
-    value: 0.05, //初期値
+    value: 0.5, //初期値
     step: 0.01, //幅
     //orientation: "vertical", //縦設置か横設置か
 
@@ -738,3 +695,37 @@ $("#match-slider").slider({
     }
 });
 
+$("#dr_rule").on("change", function() {
+    // 共起強度を非表示
+    d3.selectAll("line.match").style("display", "none");
+
+    var rayer = $(this).val();
+    // すべての要素表示
+    if (rayer == 0) {
+        d3.selectAll("line.link.dr").style("display", "block").style("opacity", "1");
+        d3.selectAll(".attr").style("display","block");
+        return;
+    }
+
+    d3.selectAll(".attr").style("display", "none");
+    d3.selectAll(".r" + rayer).style("display", "block");
+    d3.selectAll("line.link.dr").style("opacity", "1").style("display", function(l) {
+        if(isset(l.source.params)) {
+            if(l.source.params.rayer == rayer) {
+                var id = "#n_" + l.target.id;
+                d3.select(id).style("display", "block").style();
+                return "inline";
+            }
+        }
+        if(isset(l.target.params)) {
+            if(l.target.params.rayer == rayer) {
+                var id = "#n_" + l.source.id;
+                d3.select(id).style("display", "block");
+                return "inline";
+            }
+        }
+        return "none";
+    });
+    d3.selectAll(".chunk").style("display", "none");
+    d3.selectAll(".lchunk").style("display", "none");
+});

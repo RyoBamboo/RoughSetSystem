@@ -366,6 +366,48 @@ class GraphController extends BaseController
         foreach ($last_result as $key => $value) {
            
             $s = explode(',', $value['info']);
+//            if ($s[8] != 36761) continue;
+//            Log::debug($s);continue;
+            /*　すっきりとしたを抽出 */
+            if (strpos($s[2], '副詞') !== false) {
+                $adje = explode('-', $s[6]); // 品詞
+                $pos = explode('-', $s[5]);  // 単語
+                $_adje = explode('-', $s[2]); // 品詞
+                $_pos = explode('-', $s[1]); // 単語
+                if ($syno =thesaurus::checkthesaurus($_pos[0])) {
+                    $_ll_result = array();
+                    // もし同じような形容詞があれば１つにまとめていく
+                    if ($syno) {
+                        $_ll_result['text'] = $syno['text'];
+                        $_ll_result['rayer'] = $syno['rayer'];
+                        $_ll_result['info'] = $value['info'];
+                        $ll_result[trim($syno['text'])][] = $_ll_result;
+                    }
+                }
+            }
+
+            /* 洋酒のようなを抽出 */
+            if (strpos($s[2], '名詞-助詞') !== false)  {
+                // 酒を除外
+                $adje = explode('-', $s[6]); // 品詞
+                $pos = explode('-', $s[5]);  // 単語
+                $_adje = explode('-', $s[2]); // 品詞
+                $_pos = explode('-', $s[1]); // 単語
+                if ($_pos[0] == '洋酒'|| $_pos[0] == 'ウィスキー' || $_pos[0] == 'ブランデー') {
+                    $_pos[0] = '洋';
+                    if ($syno =thesaurus::checkthesaurus($_pos[0])) {
+                        $_ll_result = array();
+                        // もし同じような形容詞があれば１つにまとめていく
+                        if ($syno) {
+                            $_ll_result['text'] = $syno['text'];
+                            $_ll_result['rayer'] = $syno['rayer'];
+                            $_ll_result['info'] = $value['info'];
+                            $ll_result[trim($syno['text'])][] = $_ll_result;
+                        }
+                    }
+                }
+            }
+
             // 名詞が形容詞にかかっている場合
             if (preg_match('/.*?(名詞)/u', $s[2]) && preg_match('/.*?(形容|動詞)/u', $s[6])) {
                 $adje = explode('-', $s[6]); // 品詞
@@ -374,6 +416,19 @@ class GraphController extends BaseController
                 $_adje = explode('-', $s[2]); // 品詞
                 $_pos = explode('-', $s[1]); // 単語
 
+                /* 爽やかで-美味しい を抽出*/
+                if (count($_pos) < 3) {
+                    if ($syno =thesaurus::checkthesaurus($_pos[0])) {
+                        $_ll_result = array();
+                        // もし同じような形容詞があれば１つにまとめていく
+                        if ($syno) {
+                            $_ll_result['text'] = $syno['text'];
+                            $_ll_result['rayer'] = $syno['rayer'];
+                            $_ll_result['info'] = $value['info'];
+                            $ll_result[trim($syno['text'])][] = $_ll_result;
+                        }
+                    }
+                }
                 for ($i = 0; $i < count($_adje); $i++) {
                     $syno = null;
                     if (preg_match('/.*?(名詞)/u', $_adje[$i]) && count($_adje) > 1) {
@@ -396,6 +451,13 @@ class GraphController extends BaseController
 
                         if ($match[0] == '形容') {
                             $syno = Thesaurus::checkThesaurus($pos[$i]);
+                            if ($syno && $syno->text == '良い') {
+                                for ($j = 0; $j < count($_adje); $j++) {
+                                    if (strpos($_pos[$i], '香り') === false && strpos($_pos[$i], '口当たり') === false) {
+                                        $syno = null;
+                                    }
+                                }
+                            }
                             if ($syno && $syno->text == '無い') {
                                 for ($j = 0; $j < count($_adje); $j++) {
                                     if ($_adje[$j] == '名詞') {
@@ -464,6 +526,7 @@ class GraphController extends BaseController
                     }
                 }
         }
+//        exit;
 
         // foreach ($last_result as $key => $value) {
         //     $s = explode(',', $value['info']);
