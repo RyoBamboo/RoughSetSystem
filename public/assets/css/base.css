@@ -8,6 +8,9 @@ body, h1, h2, h3, h4, h5, h6,
 
 /* Base
  =============================================================*/
+.tm-no-padding {
+    padding: 0 !important;
+}
 
 
 
@@ -15,6 +18,18 @@ body, h1, h2, h3, h4, h5, h6,
  =============================================================*/
 .tm-background {
     /*background: #252525;*/
+}
+
+
+/**
+ * Title
+ */
+.tm-article-subtitle {
+    padding-left: 6px;
+    border-left: 3px solid #1FA2D6;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 18px;
 }
 
 
@@ -33,6 +48,28 @@ body, h1, h2, h3, h4, h5, h6,
     position: relative;
     left: 0;
     overflow-x: hidden;
+}
+
+/**
+ * Panels
+ */
+.tm-pannel {
+    margin: 0 20px !important;
+    padding: 20px 20px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px #c0c0c0;
+    background: #ffffff;
+}
+
+.tm-pannel-header {
+    color: #3a3a3a;
+    font-weight: bold;
+    width: 100%;
+    margin: -20px -20px 15px -20px;
+    padding: 15px 20px;
+    border-radius: 4px 4px 0 0;
+    background: #cbcbcb;
+    border-bottom: 1px solid #cfcfcf;
 }
 
 /**

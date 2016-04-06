@@ -52,8 +52,11 @@ class GraphController extends BaseController
         $lines = @file($filename);
 
         $loadFlg = array('ATTRS' => false, 'INFOATTRS' => false, 'DR' => false, 'DRH' => false, 'MATCHING' => false);
-        $DR_TEXT = ""; $DRH_TEXT = ""; $ATTR_TEXT = "";
-        //$dbname = 'experiment_' . $car . '_121230';
+        $DR_TEXT = ""; $DRH_TEXT = ""; $ATTR_TEXT = ""; $ALL_ATTRS = "";
+        $ATTR_COUNT = array(
+            'total'=>array('0'=>0, '1'=>0)
+        ); // 感性ワードの出現数(total[0][1], attr_id[0][1])
+
         $dbname = 'reviews';
         $REVIES = array();
         $_chunks = array();
@@ -112,8 +115,11 @@ class GraphController extends BaseController
                     $_str = preg_split("/ /u", $str);
                     $_attrs[$_str[1]] = array('text' => $_str[0], 'rayer' => $_str[2] + 1);
                     $ATTR_TEXT .= "属性値:" . $_str[1] . "　テキスト:" . $_str[0] . "　階層:" . ($_str[2] + 1) . "<br />";
+                    $ATTR_COUNT[$_str[1].'1'][0] = 0; // 属性値カウントの初期化 $ATTR_COUNT['a1'][0] = 0 （結論が定評か）
+                    $ATTR_COUNT[$_str[1].'1'][1] = 0; // 属性値カウントの初期化 $ATTR_COUNT['a1'][1] = 0 （結論が高評価）
                 }
             }
+
 
             if($loadFlg['DRH']) {
                 if(preg_match("/^#/u", $str)) { $loadFlg['DRH'] = false; } else {
@@ -133,12 +139,14 @@ class GraphController extends BaseController
                         $dc = 0;
                         $dc = array_pop($_str);//一番後ろの要素がDC
                         $replace_chunks = array();
+                        $ATTR_COUNT['total'][$dc]++; // 感性ワードの出現数をカウント（すべての）
                         foreach($_str as $val) {
                             if(trim($val) === "*") continue;
                             $_val = preg_split("/:/u", $val);
                             $_a = $_val[0];
                             $_review['attr_id'] = $_a; // reviewに感性ワードIDを持たせる
                             $__val = preg_split("/,/u", $_val[1]);
+                            $ATTR_COUNT[$_a . 1][$dc]++;// その結論に含まれる感性ワードの出現数をカウント $ATTR_COUNT['a1'][1]++
                             foreach($__val as $k =>  $v) {
                                 $_v = preg_split("/;/u", $v);
                                 $_chunks[$_a][] = array('id' => $_a . '-' . $_id . '-' . $k  , 'attrid' => $_a , 'text' => $_v[0], 'negaposi' => $_v[1], 'review_id' => $_review_id, 'dc' => $dc);
@@ -195,7 +203,78 @@ class GraphController extends BaseController
             }
         }
 
-        //TODO:要修正
+        /*------------------------------------------
+        * すべての感性ワードを格納した配列を作成
+        * (決定ルールに関係しない^のつく感性ワードは除外）
+        *------------------------------------------*/
+        // 決定ルールに関係する^がつく感性ワードのリストを作成
+        $key_list0 = isset($ATTRS[0]) ? array_keys($ATTRS[0]) : array(); // 結論が低評価(0)のリスト
+        $key_list1 = isset($ATTRS[1]) ? array_keys($ATTRS[1]) : array(); // 結論が高評価(1)のリスト
+        $attrs_list = array_merge($key_list0, $key_list1); // 決定ルールに関係する感性ワードのリスト
+        foreach ($attrs_list as $key => $attr) {
+            // ^がつく感性ワードだけを残す
+            if (strpos($attr, '2') === false) {
+                unset($attrs_list[$key]);
+            }
+        }
+
+
+        // すべての感性ワードを含む配列を作成
+        $attr_id = 0;
+        foreach($_attrs as $key => $val) {
+            if (!isset($_chunks[$key])) $_chunks[$key] = array(); // TODO: 決定表のレビューが抜け落ちている可能性があり，エラー回避のための応急処理，要調査（issue番号 #102）
+
+            // どの結論に属する感性ワードかを判別（0 => 低評価, 1 => 高評価, 2 => 両方, -1 => どちらにも属さない）
+            $dc_rel = '';
+            for ($i=1; $i<=2; $i++) {
+                // a1, a2の両方をforで回して確認($i = 1, 2）
+                $dc0 = in_array($key . $i, $key_list0) ? true : false;
+                $dc1 = in_array($key . $i, $key_list1) ? true : false;
+                if ($dc0 === true && $dc1 === true) {
+                    $dc_rel[$i] = 2; // 両方の結論に属する感性ワード
+                } else if ($dc1 === true) {
+                    $dc_rel[$i] = 1; // 高評価だけに属する感性ワード
+                } else if ($dc0 === true) {
+                    $dc_rel[$i] = 0; // 低評価だけに属する感性ワード
+                } else {
+                    $dc_rel[$i] = -1; //どちらにも属さない感性ワード（共起率の視覚化で利用）
+                }
+            }
+
+            // 評価句の分別（低評価に関係するもの，高評価に関係するものに分ける）
+            $chunks = array();
+            foreach ($_chunks[$key] as $chunk) {
+                if ($chunk['dc'] == 1) {
+                    $chunks[1][] = $chunk;
+                } else {
+                    $chunks[0][] = $chunk;
+                }
+            }
+
+            // ^がつかない感性ワードはすべて格納
+            $ALL_ATTRS[$key . 1] = array(
+                'id' => ++$attr_id,
+                'dcrel' => $dc_rel[1],
+                'text' => $_attrs[$key]['text'],
+                'attrid' => $key,
+                'chunks' => $chunks,
+                'attr_count'=>array('0'=>$ATTR_COUNT[$key . 1][0]/$ATTR_COUNT['total'][0], '1'=>$ATTR_COUNT[$key . 1][1]/$ATTR_COUNT['total'][1]),
+                'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer'])
+            );
+
+            // ^がつく感性ワードは作成したリスト（決定ルールの条件部）に載っているものだけ格納
+            if (in_array($key . 2, $attrs_list)) {
+                $ALL_ATTRS[$key . 2] = array(
+                    'id' => ++$attr_id,
+                    'dcrel' => $dc_rel[2],
+                    'text' => "^" . $_attrs[$key]['text'],
+                    'attrid' => $key,
+                    'chunks' => array(),
+                    'params' => array('width' => '2', 'rayer' => $_attrs[$key]['rayer'])
+                );
+            }
+        }
+
         try {
         foreach($DR as $dc => $_DR) {
 
@@ -227,9 +306,11 @@ class GraphController extends BaseController
         $CONTENT['DR_TEXT'] = $DR_TEXT;
         $CONTENT['DRH_TEXT'] = $DRH_TEXT;
         $CONTENT['ATTRS'] = $ATTRS;
+        $CONTENT['ALL_ATTRS'] = $ALL_ATTRS;
         $CONTENT['ATTR_TEXT'] = $ATTR_TEXT;
         $CONTENT['REVIEWS'] = $REVIEWS;
         $CONTENT['MATCHING'] = $MATCHING;
+        $CONTENT['ATTR_COUNT'] = $ATTR_COUNT;
 
         $json = json_encode($CONTENT);
 
@@ -253,6 +334,7 @@ class GraphController extends BaseController
 
         // TODO: ファイル作成する部分。ファイル以外で実現したい
         //$file_name = 'drh.dat';
+
         $file_name = $id .'.dat';
         $fp = fopen('assets/dat/'.$file_name, 'w');
 
@@ -284,6 +366,48 @@ class GraphController extends BaseController
         foreach ($last_result as $key => $value) {
            
             $s = explode(',', $value['info']);
+//            if ($s[8] != 36761) continue;
+//            Log::debug($s);continue;
+            /*　すっきりとしたを抽出 */
+            if (strpos($s[2], '副詞') !== false) {
+                $adje = explode('-', $s[6]); // 品詞
+                $pos = explode('-', $s[5]);  // 単語
+                $_adje = explode('-', $s[2]); // 品詞
+                $_pos = explode('-', $s[1]); // 単語
+                if ($syno =Thesaurus::checkThesaurus($_pos[0])) {
+                    $_ll_result = array();
+                    // もし同じような形容詞があれば１つにまとめていく
+                    if ($syno) {
+                        $_ll_result['text'] = $syno['text'];
+                        $_ll_result['rayer'] = $syno['rayer'];
+                        $_ll_result['info'] = $value['info'];
+                        $ll_result[trim($syno['text'])][] = $_ll_result;
+                    }
+                }
+            }
+
+            /* 洋酒のようなを抽出 */
+            if (strpos($s[2], '名詞-助詞') !== false)  {
+                // 酒を除外
+                $adje = explode('-', $s[6]); // 品詞
+                $pos = explode('-', $s[5]);  // 単語
+                $_adje = explode('-', $s[2]); // 品詞
+                $_pos = explode('-', $s[1]); // 単語
+                if ($_pos[0] == '洋酒'|| $_pos[0] == 'ウィスキー' || $_pos[0] == 'ブランデー') {
+                    $_pos[0] = '洋';
+                    if ($syno =Thesaurus::checkThesaurus($_pos[0])) {
+                        $_ll_result = array();
+                        // もし同じような形容詞があれば１つにまとめていく
+                        if ($syno) {
+                            $_ll_result['text'] = $syno['text'];
+                            $_ll_result['rayer'] = $syno['rayer'];
+                            $_ll_result['info'] = $value['info'];
+                            $ll_result[trim($syno['text'])][] = $_ll_result;
+                        }
+                    }
+                }
+            }
+
             // 名詞が形容詞にかかっている場合
             if (preg_match('/.*?(名詞)/u', $s[2]) && preg_match('/.*?(形容|動詞)/u', $s[6])) {
                 $adje = explode('-', $s[6]); // 品詞
@@ -292,6 +416,19 @@ class GraphController extends BaseController
                 $_adje = explode('-', $s[2]); // 品詞
                 $_pos = explode('-', $s[1]); // 単語
 
+                /* 爽やかで-美味しい を抽出*/
+                if (count($_pos) < 3) {
+                    if ($syno =Thesaurus::checkThesaurus($_pos[0])) {
+                        $_ll_result = array();
+                        // もし同じような形容詞があれば１つにまとめていく
+                        if ($syno) {
+                            $_ll_result['text'] = $syno['text'];
+                            $_ll_result['rayer'] = $syno['rayer'];
+                            $_ll_result['info'] = $value['info'];
+                            $ll_result[trim($syno['text'])][] = $_ll_result;
+                        }
+                    }
+                }
                 for ($i = 0; $i < count($_adje); $i++) {
                     $syno = null;
                     if (preg_match('/.*?(名詞)/u', $_adje[$i]) && count($_adje) > 1) {
@@ -314,6 +451,13 @@ class GraphController extends BaseController
 
                         if ($match[0] == '形容') {
                             $syno = Thesaurus::checkThesaurus($pos[$i]);
+                            if ($syno && $syno->text == '良い') {
+                                for ($j = 0; $j < count($_adje); $j++) {
+                                    if (strpos($_pos[$i], '香り') === false && strpos($_pos[$i], '口当たり') === false) {
+                                        $syno = null;
+                                    }
+                                }
+                            }
                             if ($syno && $syno->text == '無い') {
                                 for ($j = 0; $j < count($_adje); $j++) {
                                     if ($_adje[$j] == '名詞') {
@@ -382,6 +526,7 @@ class GraphController extends BaseController
                     }
                 }
         }
+//        exit;
 
         // foreach ($last_result as $key => $value) {
         //     $s = explode(',', $value['info']);
