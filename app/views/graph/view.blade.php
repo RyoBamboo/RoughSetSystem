@@ -82,6 +82,11 @@
                         <label class="uk-form-label">閾値</label>
                         <div id="match-slider"></div>
                     </div>
+                    <h3 class="tm-article-subtitle">評価句</h3>
+                    <div>
+                        <ul id="chunk-list" class="uk-list uk-list-striped uk-scrollable-box">
+                        </ul>
+                    </div>
                     <br>
                     <h3 class="tm-article-subtitle">結論</h3>
                     <p>現在：{{ isset($dr) && $dr != 1 ? "高評価" : "低評価" }}</p>

@@ -389,16 +389,39 @@ $("#review").click(function() {
 	}
 });
 
+function showReview() {
+    if(isset(d3.select(this).attr("review_id")) && d3.select(this).attr("review_id") != null ) {
+        //TODO:textを取得して,レビューに反映
+        var negaposi = d3.select(this).attr("negaposi");
+
+        var c_text = d3.select(this).text();
+        var _c_text = c_text.split("-");
+        var rev_id = "#rev" + d3.select(this).attr("review_id");
+        var review = String($(rev_id).html());
+        var h = String(_c_text[0]); var f = String(_c_text[1]);
+        //review = review.replace(h, ('<b class="point">' + h));
+        //review = review.replace("。", ("。" + '</b>'));
+        var str = SplitStr(review, _c_text[0], "。");
+        str = h + str;
+        review = review.replace(str, ('<b class="point_' + negaposi + '">' + str + '</b>'));
+
+        //$("#review").html($(rev_id).html());
+        $("#review").html(review);
+        $("#review").show("normal");
+    }
+}
+
 function setEvent() {
 	/* Node の表示/非表示 */
 	STAGE.selectAll("g.node").on("click", function() {
 		if(isset(d3.select(this).attr("review_id")) && d3.select(this).attr("review_id") != null ) {
 			//TODO:textを取得して,レビューに反映
 			var negaposi = d3.select(this).attr("negaposi");
-			 
+
 			var c_text = d3.select(this).text();
 			var _c_text = c_text.split("-");
 			var rev_id = "#rev" + d3.select(this).attr("review_id");
+            console.log(rev_id);
 			var review = String($(rev_id).html());
 			var h = String(_c_text[0]); var f = String(_c_text[1]);
 			//review = review.replace(h, ('<b class="point">' + h));
@@ -518,9 +541,30 @@ function setEvent() {
 
         $(".chunk.attr_" + attr_id).toggle();
         $(".lchunk.attr_" + attr_id).toggle();
-    })
 
+        var chunks = ALL_ATTRS[attr_id + 1]['chunks'][1];
+        var listHtml = '';
+        chunks.forEach(function(chunk) {
+            listHtml += '<li class="uk-text-small" data-negaposi=' + chunk.negaposi +' id="' + chunk.review_id + '">' + chunk.text + '</li>';
+        });
+        $('#chunk-list').html(listHtml);
 
+        // イベントの設置
+        d3.selectAll("#chunk-list li").on("click", function() {
+            var chunkText = $(this).text();
+            var negaposi = $(this).data('negaposi');
+            var _c_text = chunkText.split("-");
+            var h = String(_c_text[0]);
+            var f = String(_c_text[1]);
+            //var str = SplitStr(review, _c_text[0], "。");
+            //str = h + str;
+            //review = review.replace(str, ('<b class="point_' + negaposi + '">' + str + '</b>'));
+            var reviewId = $(this).attr("id");
+            var reviewText = $("#rev" + reviewId).html();
+            $("#review").html(reviewText);
+            $("#review").show("normal");
+        });
+    });
 
 }
 
