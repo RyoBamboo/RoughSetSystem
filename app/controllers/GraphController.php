@@ -366,7 +366,7 @@ class GraphController extends BaseController
         foreach ($last_result as $key => $value) {
            
             $s = explode(',', $value['info']);
-//            if ($s[8] != 36761) continue;
+//            if ($s[8] != 36134) continue;
 //            Log::debug($s);continue;
             /*　すっきりとしたを抽出 */
             if (strpos($s[2], '副詞') !== false) {
@@ -404,6 +404,36 @@ class GraphController extends BaseController
                             $_ll_result['info'] = $value['info'];
                             $ll_result[trim($syno['text'])][] = $_ll_result;
                         }
+                    }
+                }
+            }
+
+            /* 軽くを抽出 */
+            if (strpos($s[2], '形容') !== false || strpos($s[2], '名詞') !== false) {
+                // 軽くだけを抽出
+                $adje = explode('-', $s[6]); // 品詞
+                $pos = explode('-', $s[5]);  // 単語
+                $_adje = explode('-', $s[2]); // 品詞
+                $_pos = explode('-', $s[1]); // 単語
+
+                $flag = false;
+                if (strpos($_pos[0], '軽') !== false) {
+                    $_pos[0] = '軽';
+                    $flag = true;
+                } else if (strpos($_pos[0], '柔') !== false) {
+                    $_pos[0] = '柔';
+                    $flag = true;
+                }
+
+                if ($flag === true && $syno =Thesaurus::checkThesaurus($_pos[0])) {
+                    Log::debug($syno);
+                    $_ll_result = array();
+                    // もし同じような形容詞があれば１つにまとめていく
+                    if ($syno) {
+                        $_ll_result['text'] = $syno['text'];
+                        $_ll_result['rayer'] = $syno['rayer'];
+                        $_ll_result['info'] = $value['info'];
+                        $ll_result[trim($syno['text'])][] = $_ll_result;
                     }
                 }
             }
