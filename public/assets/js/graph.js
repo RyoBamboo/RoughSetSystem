@@ -191,7 +191,17 @@ function update() {
     .attr("x1", function(d) { return d.source.x; })
     .attr("y1", function(d) { return d.source.y; })
     .attr("x2", function(d) { return d.target.x; })
-    .attr("y2", function(d) { return d.target.y; });
+    .attr("y2", function(d) { return d.target.y; })
+    .attr("match_id1", function(d) {
+            if (d.type == 'match') {
+                return d.source.attrid;
+            }
+    })
+    .attr("match_id2", function(d) {
+        if (d.type == 'match') {
+            return d.target.attrid;
+        }
+    });
 
     link.exit().remove(); //要らなくなった要素を削除
 
@@ -525,17 +535,24 @@ function setEvent() {
                 didFirstClick = false;
             }, 200);
         } else {
+            var attrId = $(this).attr("attr_id");
             // ノードを半透明に
+            // 関係するノードの決定ルール，共起強度を非表示にする
             if ($(this).css("opacity") == 1) {
                 $(this).css("opacity", "0.3");
+                console.log(attrId);
+                $(".match[match_id1='"+attrId+"']").css("opacity", "0.0");
+                $(".match[match_id2='"+attrId+"']").css("opacity", "0.0");
             } else {
                 $(this).css("opacity", "1");
+                $(".match[match_id1='"+attrId+"']").css("opacity", "1.0");
+                $(".match[match_id2='"+attrId+"']").css("opacity", "1.0");
             }
             didFirstClick = false;
         }
     });
 
-    d3.selectAll(".attr").on("click", function() {
+    d3.selectAll(".attr").on("click", function(event, test,aa) {
         var attr_id = $(this).attr("attr_id");
         var attr_text = $(this).text();
 
