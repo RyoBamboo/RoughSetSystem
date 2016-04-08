@@ -366,7 +366,7 @@ class GraphController extends BaseController
         foreach ($last_result as $key => $value) {
            
             $s = explode(',', $value['info']);
-//            if ($s[8] != 35646) continue;
+//            if ($s[8] != 36653) continue;
 //            Log::debug($s);continue;
             /*　すっきりとしたを抽出 */
             if (strpos($s[2], '副詞') !== false) {
@@ -431,6 +431,13 @@ class GraphController extends BaseController
                     $flag = true;
                 } else if (strpos($_pos[0], '女性') !== false) {
                     $_pos[0] = '女性';
+                    $flag = true;
+                } else if (strpos($_pos[0], 'フルーテ') !== false) {
+                    $_pos[0] = 'フルーテ';
+                    $flag = true;
+                } else if (strpos($_pos[0], '上品') !== false ) {
+                    Log::debug('yes');
+                    $_pos[0] = '上品';
                     $flag = true;
                 }
 
