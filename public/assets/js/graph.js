@@ -28,7 +28,7 @@ var force = self.force = d3.layout.force()
     .gravity(0.05) //重力
     //.distance(500) //ノード間の距離
     .linkDistance(200)
-    .charge(-100) //各ノードの引き合うor反発しあう力
+    .charge(-150) //各ノードの引き合うor反発しあう力
     .size([WIDTH, HEIGHT]); //図のサイズ
 
 function init() {
