@@ -795,6 +795,8 @@ class GraphController extends BaseController
     }
 
     /*-----------------------------------------------------------------------------------------------*/
+
+    // 差分グラフ
     public function test() {
 
         $item_ids = Input::all();
@@ -811,92 +813,6 @@ class GraphController extends BaseController
             $result['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
 
             $file = fopen('assets/dat/'. $item->id .'.dat', "r");
-            while($line = fgets($file)) {
-
-                // #ATTRS 抽出
-                if ($current_flag == 'ATTRS') {
-                    $str = explode(' ', $line);
-                    if (count($str) == 1) {
-                        $current_flag = null;
-                        continue;
-                    }
-
-                    $attr_text = $str[0];
-                    $attr_id = $str[1];
-                    $attr_ids[] = $attr_id;
-                    $data[$item_id]['ATTRS'][$attr_id] = array('type'=>'attr', 'text'=>$attr_text, 'belong'=>$item_id);
-                }
-
-                // #INFOATTR
-                if ($current_flag == 'INFOATTRS') {
-                    $str = explode(' ', $line);
-                    if (count($str) == 1) {
-                        $current_flag = null;
-                        continue;
-                    }
-
-                    $id = $str[0]; unset($str[0]);
-                    $review_id = $str[1]; unset($str[1]);
-                    $review = $this->review_gestion->find($review_id);
-                    $dc = 0;
-                    array_pop($str);
-
-                    foreach ($str as $_str) {
-                        if ($_str == '*') continue;
-                        $__str = explode(":", $_str);
-                        $attr_id = $__str[0];
-                        $___str = preg_split("/,/u", $__str[1]);
-                        foreach ($___str as $____str) {
-                            $test = preg_split("/;/u", $____str);
-                            $negaposi = $test[1];
-                            $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = array('type'=>'chunk', 'text'=>$test[0], 'attr_text'=>$data[$item_id]['ATTRS'][$attr_id]['text'], 'review_text'=>$review->content);
-                        }
-                    }
-                }
-
-
-                // 感性ワード出現率(#RF)の抽出
-                if ($current_flag == 'RF') {
-                    $str = explode(' ', $line);
-                    if (count($str) == 1) {
-                        $current_flag = null;
-                        continue;
-                    }
-
-                    foreach ($attr_ids as $attr_id) {
-                        if ($data[$item_id]['ATTRS'][$attr_id]['text'] == $str[0]) {
-                            $data[$item_id]['ATTRS'][$attr_id]['rf'] = $str[1];
-                        }
-                    }
-                }
-
-                // フラグ検出
-                if (preg_match('/^#([A-Z]+)/', $line, $match)) {
-                    $current_flag = $match[1];
-                }
-            }
-
-
-            // 共通の評価句とそうでないものを分ける
-            if (count($data['ITEMS']) == 1) {
-                foreach ($data[$item_id]['ATTRS'] as $attr) {
-                    $result['ATTRS'][] = $attr;
-                }
-            } else {
-                foreach ($data[$item_id]['ATTRS'] as $attr) {
-                    $break_flag = false;
-                    foreach ($result['ATTRS'] as &$_attr) {
-                        if ($attr['text'] == $_attr['text']) {
-                            $_attr['belong'] = 0;
-                            $break_flag = true;
-                            break;
-                        }
-                    }
-                    if ($break_flag) { continue;;}
-
-                    $result['ATTRS'][] = $attr;
-                }
-            }
         }
 
         $json = json_encode($result);
@@ -933,6 +849,7 @@ class GraphController extends BaseController
 
     public function testGraph() {
         $results = array();
+        Log::debug('tet');
 
         $item_ids = explode('_', Input::get('item_ids'));
         $current_flag = null; // ファイル読み込み時に使う分岐用フラグ
