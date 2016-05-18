@@ -801,7 +801,7 @@ class GraphController extends BaseController
 
         $item_ids = Input::all();
         $attr_ids = array();
-        $current_flag = null; // ファイル読み込み時に使う分岐用フラグ
+        $loadFlg = null; // ファイル読み込み時に使う分岐用フラグ
         $data = array();
         $result = array();
 
@@ -809,10 +809,62 @@ class GraphController extends BaseController
             $item = $this->item_gestion->find($item_id);
             $attr_ids = null;
             $current_flag = null;
-            $data['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
             $result['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
-
+            $DR_TEXT = "";
             $file = fopen('assets/dat/'. $item->id .'.dat', "r");
+            // ファイルを一行ずつ読み込んでいく
+            while($line = fgets($file)) {
+                $str = trim($line);
+                if($str === "") continue;
+                /*---------------------
+                 * 決定ルールの読み込み
+                 *-------------------*/
+                if($loadFlg['DR']) {
+                    if(preg_match("/^#/u", $str)) {
+                        $loadFlg['DR'] = false;
+                    } else {
+                        if(preg_match('/^DC:/u', $val)) {
+                            $_str = preg_split("/:/u", $val);
+                            $dc = trim($_str[1]);
+                        } else {
+                            //Split DR
+                            $_str = explode(" ", $str);
+                            $ps1 = preg_split("/[0-9]+/u", $_str[0]);
+                            $ps2 = preg_split("/([a-z]+|[A-Z]+)/u", $_str[0]);
+                            $_ps1 = array();
+                            foreach($ps1 as $val) {
+                                if(trim($val) === "") continue;
+                                $_ps1[] = $val;
+                            }
+                            $_ps2 = array();
+                            foreach($ps2 as $val) {
+                                if(trim($val) === "") continue;
+                                $_ps2[] = $val;
+                            }
+                            $_ps1_ps2 = array();
+                            foreach($_ps1 as $key => $val) {
+                                $_ps1_ps2[] = $_ps1[$key] . $_ps2[$key];
+                            }
+                            //Split CI
+                            $__str1 = preg_split('/=/u', $_str[1]);
+                            $ci = $__str1[1];
+                            $color = "blue";
+                            foreach($_ps1_ps2 as $val) {
+                                if($dc == 1) {
+                                    $isset_attrs1[$val] = $dc;
+                                } else {
+                                    $isset_attrs2[$val] = $dc;
+                                }
+                            }
+
+                            $DR[$dc][] = array('dr' => $_str[0], 'attrs' => $_ps1_ps2, 'params' => array('width' => $ci * 20 , 'color' => $color, 'hide' => false));
+                        }
+                        $DR_TEXT .= "<p>" . $str . "</p>" . PHP_EOL;
+                    }
+                }
+            }
+
+
         }
 
         $json = json_encode($result);
