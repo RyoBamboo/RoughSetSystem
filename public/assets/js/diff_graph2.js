@@ -1,12 +1,24 @@
 /*--------------------------------------------
  * 初期設定
  *------------------------------------------*/
-var WIDTH = 1000, HEIGHT = 600; // 描画する幅と高さ
+
+var WIDTH = 1350, HEIGHT = 900;
+var vbox_x = 0;
+var vbox_y = 0;
+var vbox_default_width = vbox_width = 1350;
+var vbox_default_height = vbox_height = 900;
 var STAGE; // 描画するステージ
 var item1;
 var item2;
 var NODES = []; // ノードを格納する配列
 var LINKS = []; // ノード間のリンク情報を納める配列
+
+// ドラッグの設定
+drag = d3.behavior.drag().on("drag", function(d) {
+    vbox_x -= d3.event.dx;
+    vbox_y -= d3.event.dy;
+    return STAGE.attr("viewBox", "" + vbox_x + " " + vbox_y + " " + vbox_width + " " + vbox_height);  //svgタグのviewBox属性を更新
+});
 
 init();
 
@@ -16,12 +28,9 @@ var force = d3.layout.force()
     .size([WIDTH, HEIGHT])
     .links(LINKS)
     .linkStrength(0.1)
-    .friction(0.7)
-    .distance(50)
-    .charge(-30)
-    .gravity(0.0)
-    .theta(0.1)
-    .alpha(0.1);
+    .linkDistance(200)
+    .charge(-150)
+    .gravity(0.05)
 
 force.on("tick", function() {
     var node = STAGE.selectAll("g.node").data(NODES);
@@ -39,9 +48,14 @@ force.on("tick", function() {
 });
 
 function init() {
-    STAGE = d3.select("div#graph").append("svg:svg").attr("width", WIDTH).attr("height", HEIGHT);
+    STAGE = d3.select("div#graph")
+        .append("svg:svg")
+        .attr("width", WIDTH)
+        .attr("height", HEIGHT)
+        .attr("viewBox", "" + vbox_x + " " + vbox_y + " " + vbox_width + " " + vbox_height);
 
     loadContent();
+    STAGE.call(drag);
 }
 
 
