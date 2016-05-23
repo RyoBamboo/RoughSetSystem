@@ -808,13 +808,14 @@ class GraphController extends BaseController
         foreach ($item_ids as $item_id) {
             $item = $this->item_gestion->find($item_id);
             $attr_ids = null;
-            $current_flag = null;
+            $loadFlg = array('ATTRS' => false, 'INFOATTRS' => false, 'DR' => false, 'DRH' => false, 'MATCHING' => false);
+
             $result['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
             $DR_TEXT = "";
             $file = fopen('assets/dat/'. $item->id .'.dat', "r");
             // ファイルを一行ずつ読み込んでいく
-            while($line = fgets($file)) {
-                $str = trim($line);
+            while($val = fgets($file)) {
+                $str = trim($val);
                 if($str === "") continue;
                 /*---------------------
                  * 決定ルールの読み込み
@@ -856,17 +857,52 @@ class GraphController extends BaseController
                                     $isset_attrs2[$val] = $dc;
                                 }
                             }
-
-                            $DR[$dc][] = array('dr' => $_str[0], 'attrs' => $_ps1_ps2, 'params' => array('width' => $ci * 20 , 'color' => $color, 'hide' => false));
+                            $DR[$item_id][$dc][] = array('dr' => $_str[0], 'attrs' => $_ps1_ps2, 'params' => array('width' => $ci * 20 , 'color' => $color, 'hide' => false));
                         }
                         $DR_TEXT .= "<p>" . $str . "</p>" . PHP_EOL;
                     }
                 }
+
+                if(preg_match("/#ATTRS/u", $str)) { $loadFlg['ATTRS'] = true; continue; }
+                if(preg_match("/#INFOATTRS/u", $str)) { $loadFlg['INFOATTRS'] = true; continue; }
+                if(preg_match("/(#DRH)/u", $str)) { $loadFlg['DRH'] = true; continue; }
+                if(preg_match("/(#DR)/u", $str)) { $loadFlg['DR'] = true; continue; }
+                if(preg_match("/(#MATCHING)/u", $str)) { $loadFlg['MATCHING'] = true; continue; }
             }
-
-
         }
 
+        /*------------------------
+         * 共通の決定ルールの振り分け
+         *----------------------*/
+        $_dr = array();
+        /*
+         array['アイテムID']['購入フラグ0/1']['決定ルール']
+         の形に成形する
+        */
+        foreach ($DR as $item_id => $dr_sets) {
+                foreach ($dr_sets as $key => $value) {
+                    foreach ($value as $dr_info) {
+                        $_dr[$item_id][$key][] = $dr_info['dr'];
+                    }
+            }
+        }
+
+        // 共通する決定ルールを抽出
+        $common_drs = array_intersect($_dr[138][1], $_dr[139][1]);
+        // 各item_idにある決定ルールから共通のものを削除
+        foreach ($common_drs as $common_dr) {
+            if(($key = array_search($common_dr, $_dr[138][1])) !== false) {
+                unset($_dr[138][1][$key]);
+            }
+            if(($key = array_search($common_dr, $_dr[139][1])) !== false) {
+                unset($_dr[139][1][$key]);
+            }
+        }
+
+        // 感性ワード読み込み
+
+
+      exit;
         $json = json_encode($result);
         echo $json;
         return;
