@@ -1,6 +1,6 @@
 /*--------------------------------------------
-* 初期設定
-*------------------------------------------*/
+ * 初期設定
+ *------------------------------------------*/
 var WIDTH = 1000, HEIGHT = 600; // 描画する幅と高さ
 var STAGE; // 描画するステージ
 var item1;
@@ -47,20 +47,25 @@ function init() {
 
 function loadContent() {
     var params = location.href.split("?")[1];
-    var item_ids = params.split("=")[1];
+    var items = params.split("&");
+    item1 = items[0].split("=")[1];
+    item2 = items[1].split("=")[1];
 
     var data = {
-        "item_ids" : item_ids,
+        "item1" : item1,
+        "item2" : item2
     };
 
     $.ajax({
         type: "POST",
-        url: "/graph/testGraph",
+        url: "/graph/test",
         data: data,
         success: function(res){
             if(res){
                 json = $.parseJSON(res);
                 ATTRS = json['ATTRS'];
+                console.log(ATTRS);
+                DR = json['DR'];
                 ITEMS = json['ITEMS'];
                 draw();
                 update();
@@ -77,14 +82,39 @@ function draw() {
         NODES.push(ITEMS[key]);
     }
 
-    // ATTRS描画
-    for (var key in ATTRS) {
-        NODES.push(ATTRS[key]);
-        for (var _key in ATTRS[key]['chunks']) {
-            NODES.push(ATTRS[key]['chunks'][_key]);
-            LINKS.push({ source: ATTRS[key], target: ATTRS[key]['chunks'][_key]});
+    // 決定ルールの描画
+
+    for (var itemId in DR) {
+        // ノードの追加
+        for (var attr_id in ATTRS[itemId]) {
+            NODES.push(ATTRS[itemId][attr_id]);
+        }
+
+        for (var dr in DR[itemId][1]['attrs']) {
+            // 否定の感性ワードを条件に含む決定ルールは無視
+            if (DR[itemId][1]['dr'][dr].indexOf('2') != -1) continue;
+            var attrCnt = count(DR[itemId][1]['attrs'][dr]);
+                // 決定ルールの条件部が複数の場合
+                for (var i = 0; i < attrCnt; i++) {
+                    if (i+1 >= attrCnt) break;
+                    // いらない文字（A '1')を削除
+                    var attrKey1 = DR[itemId][1]['attrs'][dr][i].replace('1', '');
+                    var attrKey2 = DR[itemId][1]['attrs'][dr][i+1].replace('1', '');
+
+                    LINKS.push({ source: ATTRS[itemId][attrKey1], target: ATTRS[itemId][attrKey2] });
+                }
         }
     }
+    console.log(NODES);
+
+    // ATTRS描画
+    //for (var key in ATTRS) {
+    //    NODES.push(ATTRS[key]);
+    //    for (var _key in ATTRS[key]['chunks']) {
+    //        NODES.push(ATTRS[key]['chunks'][_key]);
+    //        LINKS.push({ source: ATTRS[key], target: ATTRS[key]['chunks'][_key]});
+    //    }
+    //}
 
     for (key in NODES) {
         // 共通の評価句のリンク追加
@@ -115,30 +145,43 @@ function update() {
     var node = STAGE.selectAll("g.node").data(NODES);
     var nodeEnter = node.enter().append("svg:g")
         .attr("class", function(d) {
-           return "node " + d.type;
+            return "node " + d.type;
         })
         .attr("attr_text", function(d) {
             return d.attr_text;
         })
+        .attr("review_text", function(d) {
+            return d.review_text;
+        })
         .call(force.drag);
 
+    nodeEnter.append("svg:image")
+        .attr("class", "circle")
+        .attr("xlink:href", function(n) {console.log(n); if(isset(n.rayer)) { var _rayer = parseInt(n.rayer) + 1; return "http://rough.prodrb.com/img/rayer/" + _rayer + ".png"; } return "http://rough.prodrb.com/img/negaposi/" + n.negaposi + ".png";} ) //ノード用画像の設定
+        .attr("negaposi", function(n) { if(isset(n.negaposi)) { return n.negaposi; } } ) //ノード用画像の設定
+        .attr("x", "-16px")
+        .attr("y", "-16px")
+        .attr("width", "32px")
+        .attr("height", "32px")
+
+    /*
     nodeEnter.append("image")
         .attr("class", "circle")
         .attr("xlink:href", function (d) {
             if (d.type == 'item') {
                 return '/assets/img/red.png';
-            //switch (d.type) {
-            //    case 'item':
-            //        return '/assets/img/red.png';
-            //        break;
-            //    case 'attr':
-            //        return '/assets/img/blue.png';
-            //        break;
-            //    case 'chunk':
-            //        return '/assets/img/green.png';
-            //    default:
-            //        return 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg'
-            //        break;
+                //switch (d.type) {
+                //    case 'item':
+                //        return '/assets/img/red.png';
+                //        break;
+                //    case 'attr':
+                //        return '/assets/img/blue.png';
+                //        break;
+                //    case 'chunk':
+                //        return '/assets/img/green.png';
+                //    default:
+                //        return 'http://www.webdesignlibrary.jp/images/article/ps_12659_1.jpg'
+                //        break;
             } else if (d.type == 'attr' && d.belong == 0) {
                 return '/assets/img/green.png';
             } else {
@@ -149,9 +192,16 @@ function update() {
         .attr("y", "-16px")
         .attr("width", "32px")
         .attr("height", "32px");
-
+        */
     nodeEnter.append("text")
-        .text(function(d) { return d.text });
+        .text(function(d) {
+            if (d.type == 'attr') {
+                var text = d.text + " : " + d.rf + "%";
+            } else {
+                var text = d.text;
+            }
+            return text;
+        });
 
     node.exit().remove();
     force.start();
@@ -172,13 +222,27 @@ function hideReviewNodes() {
 /*--------------------------------------------------
  * Event Handler
  *------------------------------------------------*/
-// 評価句ノードをクリックするとレビューノードの表示/非表示切り替え
 function setEvent() {
+    // 評価句ノードをクリックするとレビューノードの表示/非表示切り替え
     STAGE.selectAll("g.attr")
         .on("click", function() {
             var attr_text = $(this).closest('text').context.textContent;
+            attr_text = attr_text.split(" ")[0];
             $("line[attr_text=" + attr_text +"]").toggle();
             $("g[attr_text=" + attr_text +"]").toggle();
+        });
+
+    // チャンクノードをクリックすると元のレビューを表示
+    STAGE.selectAll("g.chunk")
+        .on("click", function(d) {
+            var modal = UIkit.modal(".uk-modal");
+            if ( modal.isActive() ) {
+                modal.hide();
+            } else {
+                $(".uk-modal-dialog .review_text").text(d.review_text);
+                $(".uk-modal-dialog .chunk_text").text(d.text);
+                modal.show();
+            }
         });
 }
 

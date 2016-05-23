@@ -883,28 +883,49 @@ class GraphController extends BaseController
         foreach ($DR as $item_id => $dr_sets) {
                 foreach ($dr_sets as $key => $value) {
                     foreach ($value as $dr_info) {
-                        $_dr[$item_id][$key][] = $dr_info['dr'];
+                        $_dr[$item_id][$key]['dr'][] = $dr_info['dr'];
+                        $_dr[$item_id][$key]['attrs'][] = $dr_info['attrs'];
                     }
             }
         }
 
         // 共通する決定ルールを抽出
-        $common_drs = array_intersect($_dr[138][1], $_dr[139][1]);
+        $_dr['common'][1]['dr'] = array_intersect($_dr[138][1]['dr'], $_dr[139][1]['dr']);
         // 各item_idにある決定ルールから共通のものを削除
-        foreach ($common_drs as $common_dr) {
-            if(($key = array_search($common_dr, $_dr[138][1])) !== false) {
-                unset($_dr[138][1][$key]);
+        foreach ($_dr['common'][1]['dr'] as $common_dr) {
+            if(($key = array_search($common_dr, $_dr[138][1]['dr'])) !== false) {
+                $_dr['common'][1]['attrs'][$key] = $_dr[138][1]['attrs'][$key];
+                unset($_dr[138][1]['dr'][$key]);// 削除
+                unset($_dr[138][1]['attrs'][$key]);// 削除
             }
-            if(($key = array_search($common_dr, $_dr[139][1])) !== false) {
-                unset($_dr[139][1][$key]);
+            if(($key = array_search($common_dr, $_dr[139][1]['dr'])) !== false) {
+                unset($_dr[139][1]['dr'][$key]);
+                unset($_dr[139][1]['attrs'][$key]);
+            }
+        }
+        Log::debug($_dr);
+
+
+        // 感性ワード読み込み
+        //array['アイテムID'][購入フラグ]['attrs']　の形を作る
+        $attrs = $this->thesaurus_gestion->all();
+        foreach ($attrs as $attr) {
+            $_attrs[$attr->identified_string] = $attr;
+        }
+        foreach ($_dr as $item_id=>$drs) {
+            foreach ($drs[1]['dr'] as $_key => $dr) {
+                if (strpos($dr, '2') === false) {
+                    foreach ($drs[1]['attrs'][$_key] as $attr) {
+                        $attr_id = str_replace('1', '', $attr);
+                        if (!isset($ATTRS[$item_id][$attr_id])) {
+                            $ATTRS[$item_id][$attr_id] = $_attrs[$attr_id]['original'];
+                        }
+                    }
+                }
             }
         }
 
-        // 感性ワード読み込み
-        $ATTRS = $this->thesaurus_gestion->all();
-
-
-        $CONTENT['DR'] = $DR;
+        $CONTENT['DR'] = $_dr;
         $CONTENT['ATTRS'] = $ATTRS;
         $json = json_encode($CONTENT);
 

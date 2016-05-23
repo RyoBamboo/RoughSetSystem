@@ -49,8 +49,8 @@ function init() {
 force.on("tick", function(e) {
     var node = STAGE.selectAll("g.node").data(nodes, function(d) { return d.id;} );
         //node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ") scale(1.0, 1.0)"; });
-	node
-  .attr("transform", function(d) {
+    console.log(node);
+	node.attr("transform", function(d) {
 		//階層毎にNodeの大きさを分ける
 		if(isset(d.params)){
 			var r = "";
@@ -159,6 +159,7 @@ function draw2() {
             }
         }
     }
+    console.log(nodes);
 
     //DR描画
     for(var key in DR) {

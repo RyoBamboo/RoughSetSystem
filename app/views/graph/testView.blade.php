@@ -7,7 +7,7 @@
 @section('js')
     <script src="/assets/js/d3.v2.js"></script>
     <script src="/assets/js/util.js"></script>
-    <script src="/assets/js/diff_graph.js"></script>
+    <script src="/assets/js/diff_graph2.js"></script>
 @stop
 
 @section('content')
