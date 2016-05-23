@@ -5,10 +5,11 @@ class GraphController extends BaseController
     protected $item_gestion;
     protected $review_gestion;
 
-    public function __construct(Review $review_gestion, Item $item_gestion)
+    public function __construct(Review $review_gestion, Item $item_gestion, Thesaurus $thesaurus_gestion)
     {
         $this->item_gestion = $item_gestion;
         $this->review_gestion = $review_gestion;
+        $this->thesaurus_gestion = $thesaurus_gestion;
 
         $this->data['pagename'] = 'graph';
     }
@@ -900,12 +901,15 @@ class GraphController extends BaseController
         }
 
         // 感性ワード読み込み
+        $ATTRS = $this->thesaurus_gestion->all();
 
 
-      exit;
-        $json = json_encode($result);
+        $CONTENT['DR'] = $DR;
+        $CONTENT['ATTRS'] = $ATTRS;
+        $json = json_encode($CONTENT);
+
         echo $json;
-        return;
+        exit;
     }
 
     public function testView() {
