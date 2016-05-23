@@ -918,7 +918,9 @@ class GraphController extends BaseController
                     foreach ($drs[1]['attrs'][$_key] as $attr) {
                         $attr_id = str_replace('1', '', $attr);
                         if (!isset($ATTRS[$item_id][$attr_id])) {
-                            $ATTRS[$item_id][$attr_id] = $_attrs[$attr_id]['original'];
+                            $attr_info = $_attrs[$attr_id]['original'];
+                            $attr_info['item_id'] = $item_id;
+                            $ATTRS[$item_id][$attr_id] = $attr_info;
                         }
                     }
                 }

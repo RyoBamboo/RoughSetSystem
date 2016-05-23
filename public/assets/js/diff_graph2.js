@@ -29,21 +29,46 @@ var force = d3.layout.force()
     .links(LINKS)
     .linkStrength(0.1)
     .linkDistance(200)
-    .charge(-150)
+    .charge(-2000)
     .gravity(0.05)
 
 force.on("tick", function() {
     var node = STAGE.selectAll("g.node").data(NODES);
+    /*
     node.attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ") scale(1.0, 1.0)";
+    });
+    */
+    node.attr("transform", function(d) {
+        //階層毎にNodeの大きさを分ける
+        if(isset(d.rayer)){
+            var r = "";
+            var rayer = parseInt(d.rayer)+1;
+            switch(rayer) {
+                case 1:
+                    //r = "translate(" + d.x + ", " + d.y + ") scale( 1.2, 1.2)";
+                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.2, 1.2)";
+                    break;
+                case 2:
+                    //r = "translate(" + d.x + ", " + d.y + ") scale( 1.4, 1.4)";
+                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.4, 1.4)";
+                    break;
+                case 3:
+                    //r = "translate(" + d.x + ", " + d.y + ") scale( 1.7, 1.7)";
+                    r = "translate(" + d.x + ", " + d._y + ") scale( 1.7, 1.7)";
+                    break;
+            }
+            return r;
+        }
         return "translate(" + d.x + "," + d.y + ") scale(1.0, 1.0)";
     });
 
     var link = STAGE.selectAll("line").data(LINKS);
     link.attr({
         x1: function(d) { return d.source.x; },
-        y1: function(d) { return d.source.y; },
+        y1: function(d) { return d.source._y; },
         x2: function(d) { return d.target.x; },
-        y2: function(d) { return d.target.y; }
+        y2: function(d) { return d.target._y; }
     });
 });
 
@@ -97,12 +122,27 @@ function draw() {
     }
 
     // 決定ルールの描画
-
     for (var itemId in DR) {
         // ノードの追加
         for (var attr_id in ATTRS[itemId]) {
+            var _y;
+            var _rayer = parseInt(ATTRS[itemId][attr_id].rayer)+1;
+            switch(_rayer) {
+                case 1:
+                    _y =  Math.floor( Math.random() * 150) + 650;
+                    break;
+                case 2:
+                    _y =  Math.floor( Math.random() * 250) + 350;
+                    break;
+                case 3:
+                    _y =  Math.floor( Math.random() * 150) + 100;
+                    break;
+            }
+            ATTRS[itemId][attr_id]['_y'] = _y;
+
             NODES.push(ATTRS[itemId][attr_id]);
         }
+        console.log(ATTRS);
 
         for (var dr in DR[itemId][1]['attrs']) {
             // 否定の感性ワードを条件に含む決定ルールは無視
@@ -154,7 +194,7 @@ function update() {
         .attr("class", function(d) {
             return d.target.type;
         })
-        .style({stroke: "#ccc", "stroke-width": 1});
+        .style({stroke: "#ccc", "stroke-width": 4});
 
     var node = STAGE.selectAll("g.node").data(NODES);
     var nodeEnter = node.enter().append("svg:g")
@@ -163,6 +203,13 @@ function update() {
         })
         .attr("attr_text", function(d) {
             return d.attr_text;
+        })
+        .attr("attr_id", function(d) {
+            return d.identified_string;
+        })
+        .attr("item_id", function(d) {
+            console.log(d);
+            return d.item_id;
         })
         .attr("review_text", function(d) {
             return d.review_text;
@@ -222,6 +269,9 @@ function update() {
 
     // レビューノードを非表示にする
     hideReviewNodes();
+
+    // 決定ルールが1つだけの感性ワードを非表示にする
+    hideOnlyAttrDR();
 }
 
 
@@ -231,6 +281,21 @@ function update() {
  *------------------------------------------------*/
 function hideReviewNodes() {
     $(".chunk").hide();
+}
+
+function hideOnlyAttrDR() {
+   for (var itemId in DR) {
+        for(var dr in DR[itemId][1]['attrs']) {
+            if (count(DR[itemId][1]['attrs'][dr]) == 1 && DR[itemId][1]['attrs'][dr].indexOf("2" == -1)) {
+                var attr_id = DR[itemId][1]['dr'][dr].replace('1', '');
+                $(".node").each(function() {
+                    if ($(this).attr('attr_id') == attr_id && $(this).attr('item_id') == itemId) {
+                        $(this).css('display', 'none');
+                    }
+                });
+            }
+        }
+   }
 }
 
 /*--------------------------------------------------
