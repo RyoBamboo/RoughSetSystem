@@ -20,6 +20,20 @@ drag = d3.behavior.drag().on("drag", function(d) {
     return STAGE.attr("viewBox", "" + vbox_x + " " + vbox_y + " " + vbox_width + " " + vbox_height);  //svgタグのviewBox属性を更新
 });
 
+// ズームの設定
+zoom = d3.behavior.zoom().on("zoom", function(d) {
+    var befere_vbox_width, before_vbox_height, d_x, d_y;
+    befere_vbox_width = vbox_width;
+    before_vbox_height = vbox_height;
+    vbox_width = vbox_default_width * d3.event.scale;
+    vbox_height = vbox_default_height * d3.event.scale;
+    d_x = (befere_vbox_width - vbox_width) / 2;
+    d_y = (before_vbox_height - vbox_height) / 2;
+    vbox_x += d_x;
+    vbox_y += d_y;
+    return STAGE.attr("viewBox", "" + vbox_x + " " + vbox_y + " " + vbox_width + " " + vbox_height);  //svgタグのviewBox属性を更新
+});
+
 init();
 
 // グラフの初期設定
@@ -80,6 +94,7 @@ function init() {
         .attr("viewBox", "" + vbox_x + " " + vbox_y + " " + vbox_width + " " + vbox_height);
 
     loadContent();
+    STAGE.call(zoom);
     STAGE.call(drag);
 }
 
