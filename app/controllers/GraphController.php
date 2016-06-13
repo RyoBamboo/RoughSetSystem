@@ -889,22 +889,21 @@ class GraphController extends BaseController
             }
         }
 
+
         // 共通する決定ルールを抽出
-        $_dr['common'][1]['dr'] = array_intersect($_dr[138][1]['dr'], $_dr[139][1]['dr']);
+        $_dr['common'][1]['dr'] = array_intersect($_dr[$item_ids['item1']][1]['dr'], $_dr[$item_ids['item2']][1]['dr']);
         // 各item_idにある決定ルールから共通のものを削除
         foreach ($_dr['common'][1]['dr'] as $common_dr) {
-            if(($key = array_search($common_dr, $_dr[138][1]['dr'])) !== false) {
-                $_dr['common'][1]['attrs'][$key] = $_dr[138][1]['attrs'][$key];
-                unset($_dr[138][1]['dr'][$key]);// 削除
-                unset($_dr[138][1]['attrs'][$key]);// 削除
+            if(($key = array_search($common_dr, $_dr[$item_ids['item1']][1]['dr'])) !== false) {
+                $_dr['common'][1]['attrs'][$key] = $_dr[$item_ids['item1']][1]['attrs'][$key];
+                unset($_dr[$item_ids['item1']][1]['dr'][$key]);// 削除
+                unset($_dr[$item_ids['item1']][1]['attrs'][$key]);// 削除
             }
-            if(($key = array_search($common_dr, $_dr[139][1]['dr'])) !== false) {
-                unset($_dr[139][1]['dr'][$key]);
-                unset($_dr[139][1]['attrs'][$key]);
+            if(($key = array_search($common_dr, $_dr[$item_ids['item2']][1]['dr'])) !== false) {
+                unset($_dr[$item_ids['item2']][1]['dr'][$key]);
+                unset($_dr[$item_ids['item2']][1]['attrs'][$key]);
             }
         }
-        Log::debug($_dr);
-
 
         // 感性ワード読み込み
         //array['アイテムID'][購入フラグ]['attrs']　の形を作る
