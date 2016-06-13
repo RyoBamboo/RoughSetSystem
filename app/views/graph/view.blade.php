@@ -21,25 +21,6 @@
         @include('graph.menubar')
     </div>
     <div id="header">
-        <!--
-        <div id="navimenu">
-            <h4>表示条件指定</h4>
-            <ul class="menu cf">
-                <li class="box" id="rayer1">形態要素に関するルール表示</li>
-                <li class="box" id="rayer2">認知に関するルール表示</li>
-                <li class="box" id="rayer3">イメージに関するルール表示</li>
-                <li class="box" id="rayer4">全ての表示する</li>
-                <li class="box" id="menu_hidedr" style="display:none;">全てのルールを表示する</li>
-            </ul>
-            <br />
-            <ul class="menu">
-                <li class="box" id="menu_chunk">評価句表示/非表示切り替え</li>
-                <li class="box" id="menu_negaposi">評価句のみ表示</li>
-                <li class="box" id="menu_posi">ポジティブな評価句のみ表示</li>
-                <li class="box" id="menu_nega">ネガティブな評価句のみ表示</li>
-            </ul>
-        </div>
-        -->
         <div class="tm-pannel uk-grid">
             <div class="tm-pannel-header">
                 グラフ操作パネル

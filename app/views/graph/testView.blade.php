@@ -7,17 +7,68 @@
 @section('js')
     <script src="/assets/js/d3.v2.js"></script>
     <script src="/assets/js/util.js"></script>
-    <script src="/assets/js/diff_graph.js"></script>
+    <script src="/assets/js/diff_graph2.js"></script>
 @stop
 
 @section('content')
-    <div class="uk-container uk-container-center">
-        <div class="uk-grid">
-            <div class="tm-sidebar uk-width-2-10">
-                @include('graph.sidebar')
+    <div class="tm-menubar uk-width-1-1">
+        @include('graph.menubar')
+    </div>
+    <div id="header">
+        <div class="tm-pannel uk-grid">
+            <div class="tm-pannel-header">
+                グラフ操作パネル
             </div>
-            <div class="tm-main uk-width-8-10">
-                <!-- ここにグラフ描画 -->
+            <div class="uk-width-1-10">
+                <form class="uk-form uk-form-stacked">
+                    <h3 class="tm-article-subtitle">決定ルール</h3>
+                    <div class="uk-form-row">
+                        <div class="uk-form-controls">
+                            <div class="uk-button-group" data-uk-button-radio data-uk-switcher="{active:0}" data-switch-type="dr">
+                                <button class="uk-button" type="button" >ON</button>
+                                <button class="uk-button" type="button" >OFF</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-form-row">
+                        <div class="uk-form-controls">
+                            <div class="uk-form-select" data-uk-form-select>
+                                <select id="dr_rule">
+                                    <option value="0" selected>すべて表示</option>
+                                    <option value="3">認識</option>
+                                    <option value="2">認知</option>
+                                    <option value="1">知覚</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <h3 class="tm-article-subtitle">共起強度</h3>
+                    <div class="uk-form-row">
+                        <div class="uk-form-controls">
+                            <div class="uk-button-group" data-uk-button-radio data-uk-switcher="{active:0}" data-switch-type="match">
+                                <button class="uk-button" type="button" >ON</button>
+                                <button class="uk-button" type="button" >OFF</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="uk-form-row">
+                        <label class="uk-form-label">閾値</label>
+                        <div id="match-slider"></div>
+                    </div>
+                    <h3 class="tm-article-subtitle">評価句</h3>
+                    <div>
+                        <ul id="chunk-list" class="uk-list uk-list-striped uk-scrollable-box">
+                        </ul>
+                    </div>
+                    <br>
+                    <h3 class="tm-article-subtitle">結論</h3>
+                    <p>現在：{{ isset($dr) && $dr != 1 ? "高評価" : "低評価" }}</p>
+                    {{--<a class="uk-button uk-button-primary" href="/graph/view/{{$item->id}}?dr={{$dr}}">結論の切り替え</a>--}}
+                </form>
+            </div>
+            <div class="uk-width-8-10">
                 <div id="graph"></div>
             </div>
         </div>

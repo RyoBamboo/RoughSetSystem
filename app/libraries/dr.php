@@ -17,9 +17,15 @@ class Dr {
         $i = 0;
 
         // 形容詞にアルファベットを割り当てていく
+//        foreach($params as $k => $p) {
+//            if($al[$i] === 'Z') { break; }
+//            $dra[$k] = $al[$i++];
+//        }
+
         foreach($params as $k => $p) {
-            if($al[$i] === 'Z') { break; }
-            $dra[$k] = $al[$i++];
+            Log::debug($k);
+            $thesaurus = Thesaurus::where('text', '=', $k)->get();
+            $dra[$k] = $thesaurus[0]['identified_string'];
         }
 
 
@@ -66,10 +72,15 @@ class Dr {
         //draの整形：冗長
         // 対応するアルファベットに連番をつける
         $i = 0;
+//        foreach($params as $k => $p) {
+//            if($al[$i] === 'Z') { break; }
+//            $dra[$k] = $al[$i++] . " " . $p[0]['rayer'];
+//        }
         foreach($params as $k => $p) {
-            if($al[$i] === 'Z') { break; }
-            $dra[$k] = $al[$i++] . " " . $p[0]['rayer'];
+            $thesaurus = Thesaurus::where('text', '=', $k)->get();
+            $dra[$k] = $thesaurus[0]['identified_string'] . " " . $p[0]['rayer'];
         }
+
 
         $result['drh'] = $_result;
         $result['attrs'] = $dra;

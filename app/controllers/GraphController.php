@@ -5,10 +5,11 @@ class GraphController extends BaseController
     protected $item_gestion;
     protected $review_gestion;
 
-    public function __construct(Review $review_gestion, Item $item_gestion)
+    public function __construct(Review $review_gestion, Item $item_gestion, Thesaurus $thesaurus_gestion)
     {
         $this->item_gestion = $item_gestion;
         $this->review_gestion = $review_gestion;
+        $this->thesaurus_gestion = $thesaurus_gestion;
 
         $this->data['pagename'] = 'graph';
     }
@@ -795,113 +796,143 @@ class GraphController extends BaseController
     }
 
     /*-----------------------------------------------------------------------------------------------*/
+
+    // 差分グラフ
     public function test() {
 
         $item_ids = Input::all();
         $attr_ids = array();
-        $current_flag = null; // ファイル読み込み時に使う分岐用フラグ
+        $loadFlg = null; // ファイル読み込み時に使う分岐用フラグ
         $data = array();
         $result = array();
 
         foreach ($item_ids as $item_id) {
             $item = $this->item_gestion->find($item_id);
             $attr_ids = null;
-            $current_flag = null;
-            $data['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
+            $loadFlg = array('ATTRS' => false, 'INFOATTRS' => false, 'DR' => false, 'DRH' => false, 'MATCHING' => false);
+
             $result['ITEMS'][] = array('type'=>'item', 'text'=>$item->name, 'item_id'=>$item_id);
-
+            $DR_TEXT = "";
             $file = fopen('assets/dat/'. $item->id .'.dat', "r");
-            while($line = fgets($file)) {
-
-                // #ATTRS 抽出
-                if ($current_flag == 'ATTRS') {
-                    $str = explode(' ', $line);
-                    if (count($str) == 1) {
-                        $current_flag = null;
-                        continue;
-                    }
-
-                    $attr_text = $str[0];
-                    $attr_id = $str[1];
-                    $attr_ids[] = $attr_id;
-                    $data[$item_id]['ATTRS'][$attr_id] = array('type'=>'attr', 'text'=>$attr_text, 'belong'=>$item_id);
-                }
-
-                // #INFOATTR
-                if ($current_flag == 'INFOATTRS') {
-                    $str = explode(' ', $line);
-                    if (count($str) == 1) {
-                        $current_flag = null;
-                        continue;
-                    }
-
-                    $id = $str[0]; unset($str[0]);
-                    $review_id = $str[1]; unset($str[1]);
-                    $review = $this->review_gestion->find($review_id);
-                    $dc = 0;
-                    array_pop($str);
-
-                    foreach ($str as $_str) {
-                        if ($_str == '*') continue;
-                        $__str = explode(":", $_str);
-                        $attr_id = $__str[0];
-                        $___str = preg_split("/,/u", $__str[1]);
-                        foreach ($___str as $____str) {
-                            $test = preg_split("/;/u", $____str);
-                            $negaposi = $test[1];
-                            $data[$item_id]['ATTRS'][$attr_id]['chunks'][] = array('type'=>'chunk', 'text'=>$test[0], 'attr_text'=>$data[$item_id]['ATTRS'][$attr_id]['text'], 'review_text'=>$review->content);
+            // ファイルを一行ずつ読み込んでいく
+            while($val = fgets($file)) {
+                $str = trim($val);
+                if($str === "") continue;
+                /*---------------------
+                 * 決定ルールの読み込み
+                 *-------------------*/
+                if($loadFlg['DR']) {
+                    if(preg_match("/^#/u", $str)) {
+                        $loadFlg['DR'] = false;
+                    } else {
+                        if(preg_match('/^DC:/u', $val)) {
+                            $_str = preg_split("/:/u", $val);
+                            $dc = trim($_str[1]);
+                        } else {
+                            //Split DR
+                            $_str = explode(" ", $str);
+                            $ps1 = preg_split("/[0-9]+/u", $_str[0]);
+                            $ps2 = preg_split("/([a-z]+|[A-Z]+)/u", $_str[0]);
+                            $_ps1 = array();
+                            foreach($ps1 as $val) {
+                                if(trim($val) === "") continue;
+                                $_ps1[] = $val;
+                            }
+                            $_ps2 = array();
+                            foreach($ps2 as $val) {
+                                if(trim($val) === "") continue;
+                                $_ps2[] = $val;
+                            }
+                            $_ps1_ps2 = array();
+                            foreach($_ps1 as $key => $val) {
+                                $_ps1_ps2[] = $_ps1[$key] . $_ps2[$key];
+                            }
+                            //Split CI
+                            $__str1 = preg_split('/=/u', $_str[1]);
+                            $ci = $__str1[1];
+                            $color = "blue";
+                            foreach($_ps1_ps2 as $val) {
+                                if($dc == 1) {
+                                    $isset_attrs1[$val] = $dc;
+                                } else {
+                                    $isset_attrs2[$val] = $dc;
+                                }
+                            }
+                            $DR[$item_id][$dc][] = array('dr' => $_str[0], 'attrs' => $_ps1_ps2, 'params' => array('width' => $ci * 20 , 'color' => $color, 'hide' => false));
                         }
+                        $DR_TEXT .= "<p>" . $str . "</p>" . PHP_EOL;
                     }
                 }
 
-
-                // 感性ワード出現率(#RF)の抽出
-                if ($current_flag == 'RF') {
-                    $str = explode(' ', $line);
-                    if (count($str) == 1) {
-                        $current_flag = null;
-                        continue;
-                    }
-
-                    foreach ($attr_ids as $attr_id) {
-                        if ($data[$item_id]['ATTRS'][$attr_id]['text'] == $str[0]) {
-                            $data[$item_id]['ATTRS'][$attr_id]['rf'] = $str[1];
-                        }
-                    }
-                }
-
-                // フラグ検出
-                if (preg_match('/^#([A-Z]+)/', $line, $match)) {
-                    $current_flag = $match[1];
-                }
+                if(preg_match("/#ATTRS/u", $str)) { $loadFlg['ATTRS'] = true; continue; }
+                if(preg_match("/#INFOATTRS/u", $str)) { $loadFlg['INFOATTRS'] = true; continue; }
+                if(preg_match("/(#DRH)/u", $str)) { $loadFlg['DRH'] = true; continue; }
+                if(preg_match("/(#DR)/u", $str)) { $loadFlg['DR'] = true; continue; }
+                if(preg_match("/(#MATCHING)/u", $str)) { $loadFlg['MATCHING'] = true; continue; }
             }
+        }
+
+        /*------------------------
+         * 共通の決定ルールの振り分け
+         *----------------------*/
+        $_dr = array();
+        /*
+         array['アイテムID']['購入フラグ0/1']['決定ルール']
+         の形に成形する
+        */
+        foreach ($DR as $item_id => $dr_sets) {
+                foreach ($dr_sets as $key => $value) {
+                    foreach ($value as $dr_info) {
+                        $_dr[$item_id][$key]['dr'][] = $dr_info['dr'];
+                        $_dr[$item_id][$key]['attrs'][] = $dr_info['attrs'];
+                    }
+            }
+        }
+
+        // 共通する決定ルールを抽出
+        $_dr['common'][1]['dr'] = array_intersect($_dr[138][1]['dr'], $_dr[139][1]['dr']);
+        // 各item_idにある決定ルールから共通のものを削除
+        foreach ($_dr['common'][1]['dr'] as $common_dr) {
+            if(($key = array_search($common_dr, $_dr[138][1]['dr'])) !== false) {
+                $_dr['common'][1]['attrs'][$key] = $_dr[138][1]['attrs'][$key];
+                unset($_dr[138][1]['dr'][$key]);// 削除
+                unset($_dr[138][1]['attrs'][$key]);// 削除
+            }
+            if(($key = array_search($common_dr, $_dr[139][1]['dr'])) !== false) {
+                unset($_dr[139][1]['dr'][$key]);
+                unset($_dr[139][1]['attrs'][$key]);
+            }
+        }
+        Log::debug($_dr);
 
 
-            // 共通の評価句とそうでないものを分ける
-            if (count($data['ITEMS']) == 1) {
-                foreach ($data[$item_id]['ATTRS'] as $attr) {
-                    $result['ATTRS'][] = $attr;
-                }
-            } else {
-                foreach ($data[$item_id]['ATTRS'] as $attr) {
-                    $break_flag = false;
-                    foreach ($result['ATTRS'] as &$_attr) {
-                        if ($attr['text'] == $_attr['text']) {
-                            $_attr['belong'] = 0;
-                            $break_flag = true;
-                            break;
+        // 感性ワード読み込み
+        //array['アイテムID'][購入フラグ]['attrs']　の形を作る
+        $attrs = $this->thesaurus_gestion->all();
+        foreach ($attrs as $attr) {
+            $_attrs[$attr->identified_string] = $attr;
+        }
+        foreach ($_dr as $item_id=>$drs) {
+            foreach ($drs[1]['dr'] as $_key => $dr) {
+                if (strpos($dr, '2') === false) {
+                    foreach ($drs[1]['attrs'][$_key] as $attr) {
+                        $attr_id = str_replace('1', '', $attr);
+                        if (!isset($ATTRS[$item_id][$attr_id])) {
+                            $attr_info = $_attrs[$attr_id]['original'];
+                            $attr_info['item_id'] = $item_id;
+                            $ATTRS[$item_id][$attr_id] = $attr_info;
                         }
                     }
-                    if ($break_flag) { continue;;}
-
-                    $result['ATTRS'][] = $attr;
                 }
             }
         }
 
-        $json = json_encode($result);
+        $CONTENT['DR'] = $_dr;
+        $CONTENT['ATTRS'] = $ATTRS;
+        $json = json_encode($CONTENT);
+
         echo $json;
-        return;
+        exit;
     }
 
     public function testView() {
@@ -933,6 +964,7 @@ class GraphController extends BaseController
 
     public function testGraph() {
         $results = array();
+        Log::debug('tet');
 
         $item_ids = explode('_', Input::get('item_ids'));
         $current_flag = null; // ファイル読み込み時に使う分岐用フラグ
